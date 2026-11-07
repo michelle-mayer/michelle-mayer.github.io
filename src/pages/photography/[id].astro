@@ -1,0 +1,262 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AmbientGlow from '../../components/AmbientGlow.astro';
+import SectionNav from '../../components/SectionNav.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import TagList from '../../components/TagList.astro';
+import { Image, getImage } from 'astro:assets';
+import {
+  pictureLogs,
+  type PictureLog,
+} from '../../utils/pictureLogs';
+import { getGalleryPhotoHref } from '../../utils/logTimeline';
+import { computePhotoCacheKey, type AdjacentPhoto } from '../../utils/photoCache';
+import { siteConfig } from '../../site.config';
+import { loadPhotoImage } from '../../utils/photoImages';
+import { isFeatureEnabled } from '../../utils/features';
+
+export async function getStaticPaths() {
+  if (!isFeatureEnabled('photography')) {
+    return [];
+  }
+  // Sort photos in descending chronological order (newest first)
+  const sorted = [...pictureLogs].sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
+
+  return sorted.map((photo, index) => {
+    // index - 1 is newer (next)
+    // index + 1 is older (previous)
+    const nextPhoto: AdjacentPhoto = index > 0
+      ? {
+          id: sorted[index - 1].id,
+          title: sorted[index - 1].title,
+          dateFormatted: sorted[index - 1].dateFormatted,
+        }
+      : null;
+    const prevPhoto: AdjacentPhoto = index < sorted.length - 1
+      ? {
+          id: sorted[index + 1].id,
+          title: sorted[index + 1].title,
+          dateFormatted: sorted[index + 1].dateFormatted,
+        }
+      : null;
+
+    return {
+      params: { id: String(photo.id) },
+      props: {
+        photo,
+        nextPhoto,
+        prevPhoto,
+      },
+      cacheKey: computePhotoCacheKey(photo, prevPhoto, nextPhoto),
+    };
+  });
+}
+
+interface Props {
+  photo: PictureLog;
+  nextPhoto: AdjacentPhoto;
+  prevPhoto: AdjacentPhoto;
+}
+
+const { photo, nextPhoto, prevPhoto } = Astro.props;
+
+const imgMeta = await loadPhotoImage(photo.imageKey);
+const fullImage = imgMeta ? await getImage({ src: imgMeta, format: 'webp' }) : null;
+const fullImageSrc = fullImage?.src ?? (imgMeta ? imgMeta.src : '');
+
+const galleryHref = getGalleryPhotoHref(photo.id);
+
+const pageTitle = `${photo.title} — Photograph #${photo.id}`;
+const description = photo.story
+  ? `${photo.location} — ${photo.story}`
+  : `${photo.title}, captured in ${photo.location} by ${siteConfig.author.name}.`;
+
+const ogImage = `/og/photography/${photo.id}.jpg`;
+
+// Schema.org ImageObject structured data for search engine indexing
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageObject',
+  name: photo.title,
+  caption: description,
+  contentUrl: `${siteConfig.site.url}/photography/${photo.id}/`,
+  datePublished: photo.pubDate.toISOString(),
+  author: {
+    '@type': 'Person',
+    name: siteConfig.author.name,
+    url: `${siteConfig.site.url}/`,
+  },
+  contentLocation: {
+    '@type': 'Place',
+    name: photo.location,
+  },
+  keywords: photo.tags.join(', '),
+};
+---
+
+<BaseLayout
+  pageTitle={pageTitle}
+  description={description}
+  image={ogImage}
+  section="Photography"
+  tags={photo.tags}
+  publishedTime={photo.pubDate}
+  breadcrumbs={[
+    { name: 'Photography', href: '/photography/' },
+    { name: `#${photo.id} ${photo.title}` },
+  ]}
+>
+  <SectionNav slot="breadcrumb-extra" />
+
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <div class="relative isolate overflow-hidden py-10 sm:py-16 transition-colors">
+    <AmbientGlow preset="photography" />
+
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      
+      <!-- Compact Top Navigation & Utility Bar -->
+      <div class="flex items-center justify-between gap-4 mb-6 sm:mb-8">
+        <a
+          href={galleryHref}
+          class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-amber-700 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300 transition-colors"
+        >
+          <span aria-hidden="true">&larr;</span>
+          <span>Back to Gallery</span>
+        </a>
+
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-mono text-gray-500 dark:text-gray-400">
+            #{photo.id} / {pictureLogs.length}
+          </span>
+        </div>
+      </div>
+
+      <!-- The Photo Stage (100% Navbar Width = 1216px Edge-to-Edge) -->
+      <div class="mb-8 sm:mb-12 w-full flex justify-center">
+        {imgMeta && (
+          <a
+            href={fullImageSrc}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group relative block w-full rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-900/10 dark:ring-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-zoom-in"
+            title="Open original full-resolution image"
+            aria-label={`Open original full-resolution image of ${photo.title}`}
+          >
+            <Image
+              src={imgMeta}
+              alt={photo.title}
+              widths={[400, 665, 828, 1024, 1216]}
+              sizes="(min-width: 1280px) 1216px, (min-width: 1024px) calc(100vw - 4rem), (min-width: 640px) calc(100vw - 3rem), calc(100vw - 2rem)"
+              quality={68}
+              loading="eager"
+              fetchpriority="high"
+              class="w-full h-auto object-contain rounded-2xl transition-transform duration-300 group-hover:scale-[1.006]"
+            />
+          </a>
+        )}
+      </div>
+
+      <!-- Integrated Caption & Metadata Island (Matches max-w-7xl navbar width) -->
+      <div class="w-full rounded-2xl border border-gray-200/80 dark:border-gray-800/80 bg-white/70 dark:bg-gray-900/70 p-6 sm:p-8 backdrop-blur-xs shadow-sm mb-8 space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 dark:border-gray-800 pb-4">
+          <div>
+            <div class="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-1">
+              {photo.category}
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">
+              {photo.title}
+            </h1>
+          </div>
+          <div class="text-left sm:text-right text-xs sm:text-sm text-gray-500 dark:text-gray-400 space-y-1">
+            <div class="flex items-center sm:justify-end gap-1.5 font-medium text-gray-900 dark:text-gray-200">
+              <svg class="size-4 text-amber-600 dark:text-amber-500 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="m9.69 18.933.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.355 7.588a13.43 13.43 0 0 0 3.031 2.198l.018.008.006.003.002.001ZM10 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+              </svg>
+              <span>{photo.location}</span>
+            </div>
+            <div class="flex items-center sm:justify-end gap-1.5">
+              <svg class="size-4 text-amber-600 dark:text-amber-500 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z" clip-rule="evenodd" />
+              </svg>
+              <FormattedDate date={photo.pubDate} />
+            </div>
+            {photo.attribution && (
+              <div class="flex items-center sm:justify-end gap-1.5 text-xs text-gray-500 dark:text-gray-400 font-mono">
+                <svg class="size-3.5 text-amber-600 dark:text-amber-500 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M1 5.25A2.25 2.25 0 0 1 3.25 3h2.382a2.25 2.25 0 0 0 1.95-1.125l.436-.654A2.25 2.25 0 0 1 10.068 0h3.864a2.25 2.25 0 0 1 2.05 1.221l.436.654A2.25 2.25 0 0 0 18.368 3h2.382A2.25 2.25 0 0 1 23 5.25v12.5A2.25 2.25 0 0 1 20.75 20H3.25A2.25 2.25 0 0 1 1 17.75V5.25ZM12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0-2a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
+                </svg>
+                <span>{photo.attribution}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {photo.story && (
+          <div>
+            <p class="text-base sm:text-lg leading-relaxed text-gray-700 dark:text-gray-300 font-serif italic">
+              &ldquo;{photo.story}&rdquo;
+            </p>
+          </div>
+        )}
+
+        {photo.tags && photo.tags.length > 0 && (
+          <div class="flex flex-wrap items-center gap-1.5 pt-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mr-1.5">
+              Related Topics
+            </span>
+            <TagList tags={photo.tags} />
+          </div>
+        )}
+      </div>
+
+      <!-- Adjacent Photo Navigation (Matches max-w-7xl navbar width) -->
+      <nav class="w-full grid grid-cols-1 sm:grid-cols-2 gap-4" aria-label="Adjacent photographs">
+        {nextPhoto ? (
+          <a
+            href={`/photography/${nextPhoto.id}/`}
+            class="group flex flex-col justify-between rounded-xl border border-gray-200/80 dark:border-gray-800 bg-white/60 dark:bg-gray-900/60 p-4 hover:border-amber-500/40 dark:hover:border-amber-500/40 transition-all hover:shadow-xs"
+          >
+            <div class="flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-400 mb-1">
+              <span aria-hidden="true">&larr;</span>
+              <span>Newer Photograph</span>
+            </div>
+            <div class="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+              #{nextPhoto.id} {nextPhoto.title}
+            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {nextPhoto.dateFormatted}
+            </div>
+          </a>
+        ) : (
+          <div class="rounded-xl border border-dashed border-gray-200 dark:border-gray-800 p-4 opacity-50 text-xs text-gray-400 flex items-center justify-center">
+            Latest photograph
+          </div>
+        )}
+
+        {prevPhoto ? (
+          <a
+            href={`/photography/${prevPhoto.id}/`}
+            class="group flex flex-col justify-between rounded-xl border border-gray-200/80 dark:border-gray-800 bg-white/60 dark:bg-gray-900/60 p-4 text-right hover:border-amber-500/40 dark:hover:border-amber-500/40 transition-all hover:shadow-xs"
+          >
+            <div class="flex items-center justify-end gap-1 text-xs font-medium text-amber-700 dark:text-amber-400 mb-1">
+              <span>Older Photograph</span>
+              <span aria-hidden="true">&rarr;</span>
+            </div>
+            <div class="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+              #{prevPhoto.id} {prevPhoto.title}
+            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {prevPhoto.dateFormatted}
+            </div>
+          </a>
+        ) : (
+          <div class="rounded-xl border border-dashed border-gray-200 dark:border-gray-800 p-4 opacity-50 text-xs text-gray-400 flex items-center justify-center">
+            Earliest photograph
+          </div>
+        )}
+      </nav>
+
+    </div>
+  </div>
+</BaseLayout>

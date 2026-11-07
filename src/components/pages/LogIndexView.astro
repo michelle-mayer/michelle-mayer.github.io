@@ -1,0 +1,424 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AmbientGlow from '../AmbientGlow.astro';
+import SectionNav from '../SectionNav.astro';
+import TechTooltipsScript from '../scripts/TechTooltipsScript.astro';
+import YouTubeEmbedScript from '../scripts/YouTubeEmbedScript.astro';
+import PathsForward from '../PathsForward.astro';
+import PaginationControls from '../PaginationControls.astro';
+import FormattedDate from '../FormattedDate.astro';
+import TagList from '../TagList.astro';
+import { Image } from 'astro:assets';
+import { getEntry } from 'astro:content';
+import {
+  getLogDataBundle,
+  getGalleryPhotoHref,
+  type LogFilterKind,
+} from '../../utils/logTimeline';
+import { LOG_PAGE_SIZE } from '../../utils/pagination';
+import { isFeatureEnabled } from '../../utils/features';
+
+interface Props {
+  filter?: LogFilterKind;
+  currentPage?: number;
+}
+
+const { filter = 'all', currentPage = 1 } = Astro.props;
+const showPhotography = isFeatureEnabled('photography');
+
+const {
+  timeline,
+  noteEntries,
+  changelogEntries,
+  photoEntries,
+  anchorToPage,
+} = await getLogDataBundle();
+
+const filterConfig: Record<
+  LogFilterKind,
+  { basePath: string; itemLabel: string; titleSuffix: string; items: typeof timeline }
+> = {
+  all: {
+    basePath: '/log',
+    itemLabel: 'entries',
+    titleSuffix: '',
+    items: timeline,
+  },
+  note: {
+    basePath: '/log/status',
+    itemLabel: 'status-updates',
+    titleSuffix: ' — Status-Updates',
+    items: noteEntries,
+  },
+  changelog: {
+    basePath: '/log/changelogs',
+    itemLabel: 'changelogs',
+    titleSuffix: ' — Changelogs',
+    items: changelogEntries,
+  },
+  photo: {
+    basePath: '/log/photos',
+    itemLabel: 'photo rolls',
+    titleSuffix: ' — Photo Rolls',
+    items: photoEntries,
+  },
+};
+
+const activeConfig = filterConfig[filter];
+const startIdx = (currentPage - 1) * LOG_PAGE_SIZE;
+const pageItems = activeConfig.items.slice(startIdx, startIdx + LOG_PAGE_SIZE);
+
+const logPageEntry = await getEntry('pages', 'log');
+const logPageData = logPageEntry!.data;
+const pageSuffix = currentPage > 1 ? ` (Page ${currentPage})` : '';
+const pageTitle = `${logPageData.pageTitle}${activeConfig.titleSuffix}${pageSuffix}`;
+const description = logPageData.description;
+
+const filterTabs: { kind: LogFilterKind; href: string; label: string; count: number }[] = [
+  { kind: 'all', href: '/log/', label: 'All', count: timeline.length },
+  { kind: 'note', href: '/log/status/', label: 'Status-Updates', count: noteEntries.length },
+  { kind: 'changelog', href: '/log/changelogs/', label: 'Changelogs', count: changelogEntries.length },
+  ...(showPhotography
+    ? [{ kind: 'photo' as const, href: '/log/photos/', label: 'Photo Roll', count: photoEntries.length }]
+    : []),
+];
+
+const rawBadge = logPageData.badge ?? 'Stream • Changelogs, Status-Updates & Photo Rolls';
+const headerBadge = showPhotography
+  ? rawBadge
+  : rawBadge.replace(/,\s*Status-Updates\s*&\s*Photo Rolls/i, ' & Status-Updates').replace(/\s*&\s*Photo Rolls/i, '');
+---
+
+<BaseLayout
+  pageTitle={pageTitle}
+  description={description}
+  image="/og/log.jpg"
+  imageAlt={logPageData.pageTitle}
+  breadcrumbs={[{ name: 'Log', href: filter !== 'all' || currentPage > 1 ? '/log/' : undefined }]}
+>
+  <!-- Floating Back to Top Button on scroll -->
+  <SectionNav slot="breadcrumb-extra" />
+
+  <div class="relative isolate overflow-hidden py-24 sm:py-32">
+    <AmbientGlow preset="log" />
+
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <!-- Header Card -->
+      <div
+        id="log-header"
+        class="w-full rounded-2xl p-8 sm:p-12 shadow-lg ring-1 ring-gray-900/5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm dark:ring-white/10 space-y-6 scroll-mt-20"
+      >
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="inline-flex items-center gap-2 rounded-full bg-amber-50 dark:bg-gray-700/60 px-3 py-1 text-xs font-semibold text-amber-700 dark:text-amber-500 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/30">
+            <span class="inline-flex size-2 rounded-full bg-amber-600 dark:bg-amber-400 animate-pulse"></span>
+            <span>{headerBadge}</span>
+          </div>
+          <span class="text-xs font-mono text-gray-500 dark:text-gray-400">
+            {timeline.length} entries ({noteEntries.length} status-updates • {changelogEntries.length} changelogs{showPhotography ? ` • ${photoEntries.length} photo rolls` : ''})
+          </span>
+        </div>
+
+        <div>
+          <h1 class="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-5xl">{logPageData.heading ?? 'Log'}</h1>
+          <p class="mt-4 text-xl/8 text-gray-600 dark:text-gray-300">
+            {logPageData.subtitle}
+          </p>
+        </div>
+
+        <!-- Static Filter Tabs -->
+        <nav aria-label="Filter log stream" class="pt-2 flex flex-wrap gap-2 border-t border-gray-100 dark:border-gray-700/60 text-xs font-medium" id="log-filters">
+          {filterTabs.map((tab) => {
+            const isActive = tab.kind === filter;
+            return (
+              <a
+                href={tab.href}
+                aria-current={isActive ? 'page' : undefined}
+                class={
+                  isActive
+                    ? 'inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-amber-700 text-white font-semibold transition no-underline'
+                    : 'inline-flex items-center gap-1.5 rounded-full px-3 py-1 bg-gray-100 dark:bg-gray-700/60 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition no-underline'
+                }
+              >
+                {tab.kind === 'all' && (
+                  <svg class="size-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                  </svg>
+                )}
+                {tab.kind === 'note' && (
+                  <svg class="size-3.5 shrink-0" aria-hidden="true">
+                    <use href="#i-chat" />
+                  </svg>
+                )}
+                {tab.kind === 'changelog' && (
+                  <svg class="size-3.5 shrink-0" aria-hidden="true">
+                    <use href="#i-check" />
+                  </svg>
+                )}
+                {tab.kind === 'photo' && (
+                  <svg class="size-3.5 shrink-0" aria-hidden="true">
+                    <use href="#i-camera" />
+                  </svg>
+                )}
+                <span>{tab.label} ({tab.count})</span>
+              </a>
+            );
+          })}
+        </nav>
+      </div>
+
+      <!-- Timeline Stream -->
+      <div class="w-full mt-12">
+        <div class="relative ml-4 sm:ml-6 pl-6 sm:pl-8 space-y-12" id="timeline-container">
+          <!-- Continuous vertical spine line -->
+          <div
+            class="absolute left-0 top-2 bottom-2 w-0.5 bg-gradient-to-b from-amber-500 via-amber-400/60 to-gray-300 dark:via-amber-500/40 dark:to-gray-700"
+            aria-hidden="true"
+          ></div>
+          {pageItems.map((item) => {
+            if (item.kind === 'note') {
+              const { entry, Content, id: anchorId } = item;
+              return (
+                <article id={anchorId} data-kind="note" class="timeline-entry relative group/entry scroll-mt-28">
+                  <div class="log-dot" aria-hidden="true"></div>
+
+                  <div class="flex items-center gap-x-3 text-xs mb-3">
+                    <FormattedDate date={entry.data.date} />
+                    <span class="log-badge">
+                      <svg class="size-3 text-gray-500 dark:text-gray-400" aria-hidden="true">
+                        <use href="#i-chat" />
+                      </svg>
+                      <span>Status-Update</span>
+                    </span>
+                  </div>
+
+                  <div class="log-card">
+                    <h2 class="log-h2">
+                      <span>{entry.data.title}</span>
+                      <a
+                        href={`#${anchorId}`}
+                        class="log-anchor"
+                        aria-label={`Link to entry: ${entry.data.title}`}
+                        title="Direct link to this entry"
+                      >
+                        #
+                      </a>
+                    </h2>
+
+                    <div class="log-prose mt-4">
+                      <Content />
+                    </div>
+
+                    {entry.data.tags && entry.data.tags.length > 0 && (
+                      <div class="log-footer">
+                        <TagList tags={entry.data.tags} />
+                      </div>
+                    )}
+                  </div>
+                </article>
+              );
+            } else if (item.kind === 'changelog') {
+              const anchorId = item.id;
+              return (
+                <article id={anchorId} data-kind="changelog" class="timeline-entry relative group/entry scroll-mt-28">
+                  <div class="log-dot" aria-hidden="true"></div>
+
+                  <div class="flex items-center gap-x-3 text-xs mb-3">
+                    <FormattedDate date={item.date} />
+                    <span class="log-badge">
+                      <svg class="size-3 text-gray-500 dark:text-gray-400" aria-hidden="true">
+                        <use href="#i-check" />
+                      </svg>
+                      <span>Changelog</span>
+                    </span>
+                  </div>
+
+                  <div class="log-card">
+                    <h2 class="log-h2">
+                      <span>{item.title}</span>
+                      <a
+                        href={`#${anchorId}`}
+                        class="log-anchor"
+                        aria-label={`Link to entry: ${item.title}`}
+                        title="Direct link to this entry"
+                      >
+                        #
+                      </a>
+                    </h2>
+
+                    <div class="log-prose changelog-prose mt-4" set:html={item.previewHtml} />
+
+                    {item.restHtml && (
+                      <details class="changelog-details group/details mt-3">
+                        <summary class="changelog-summary">
+                          <span class="group-open/details:hidden">Show full release ({item.restCount} more)</span>
+                          <span class="hidden group-open/details:inline">Show less</span>
+                          <svg class="size-3.5 transition-transform duration-200 group-open/details:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                          </svg>
+                        </summary>
+                        <div class="log-prose changelog-prose mt-3 pt-3 border-t border-gray-100 dark:border-gray-700/50" set:html={item.restHtml} />
+                      </details>
+                    )}
+
+                    {item.tags && item.tags.length > 0 && (
+                      <div class="log-footer">
+                        <TagList tags={item.tags} />
+                      </div>
+                    )}
+                  </div>
+                </article>
+              );
+            } else {
+              const { photo, imageMetadata } = item;
+              const galleryHref = getGalleryPhotoHref(photo.id);
+              return (
+                <article id={`photo-${photo.id}`} data-kind="photo" class="timeline-entry relative group/entry scroll-mt-28">
+                  <div class="log-dot" aria-hidden="true"></div>
+
+                  <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs mb-3">
+                    <FormattedDate date={photo.pubDate} />
+                    <span class="log-badge">
+                      <svg class="size-3 text-gray-500 dark:text-gray-400" aria-hidden="true">
+                        <use href="#i-camera" />
+                      </svg>
+                      <span>Photo • {photo.category}</span>
+                    </span>
+                    <span class="text-gray-400 dark:text-gray-500" aria-hidden="true">•</span>
+                    <span class="inline-flex items-center gap-1 text-gray-500 dark:text-gray-400 font-medium">
+                      <svg class="size-3.5 text-amber-600 dark:text-amber-500 shrink-0" aria-hidden="true">
+                        <use href="#i-pin" />
+                      </svg>
+                      <span>{photo.location}</span>
+                    </span>
+                    {photo.attribution && (
+                      <>
+                        <span class="text-gray-400 dark:text-gray-500" aria-hidden="true">•</span>
+                        <span class="text-gray-500 dark:text-gray-400 font-mono text-[11px]">{photo.attribution}</span>
+                      </>
+                    )}
+                  </div>
+
+                  <div class="border-beam-card group/card log-photo-card">
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-6 items-start">
+                      <a
+                        href={galleryHref}
+                        aria-label={`View ${photo.title} in photo gallery`}
+                        class="sm:col-span-5 relative block overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-900 ring-1 ring-gray-900/10 dark:ring-white/10 shadow-sm aspect-[4/3] w-full group/thumb z-10"
+                      >
+                        {imageMetadata && (
+                          <Image
+                            src={imageMetadata}
+                            alt={photo.title}
+                            widths={[280, 360, 480]}
+                            sizes="(min-width: 640px) 320px, 85vw"
+                            quality={60}
+                            loading="lazy"
+                            class="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-105 group-hover/card:scale-105"
+                          />
+                        )}
+                      </a>
+
+                      <div class="sm:col-span-7 flex flex-col justify-between h-full space-y-4">
+                        <div>
+                          <div class="pb-2 border-b border-gray-100 dark:border-gray-700/60">
+                            <h2 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white group-hover/card:text-amber-600 dark:group-hover/card:text-amber-400 transition-colors">
+                              <a href={galleryHref}>
+                                <span class="absolute inset-0 z-0" aria-hidden="true"></span>
+                                {photo.title}
+                              </a>
+                            </h2>
+                          </div>
+
+                          <p class="text-sm/6 text-gray-600 dark:text-gray-300 mt-3">
+                            {photo.story}
+                          </p>
+                        </div>
+
+                        <div class="pt-3 border-t border-gray-100 dark:border-gray-700/60 relative z-10 flex flex-wrap items-center justify-between gap-3">
+                          {photo.tags && photo.tags.length > 0 ? (
+                            <TagList tags={photo.tags} />
+                          ) : (
+                            <span aria-hidden="true"></span>
+                          )}
+                          <a
+                            href={galleryHref}
+                            class="text-xs font-semibold text-amber-700 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300 inline-flex items-center gap-1 transition-colors relative z-10"
+                          >
+                            <span>View in gallery</span>
+                            <span aria-hidden="true">&rarr;</span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            }
+          })}
+        </div>
+
+        <PaginationControls
+          currentPage={currentPage}
+          totalItems={activeConfig.items.length}
+          pageSize={LOG_PAGE_SIZE}
+          basePath={activeConfig.basePath}
+          itemLabel={activeConfig.itemLabel}
+          ariaLabel="Log entries pagination"
+          class="mt-10"
+        />
+
+        <!-- Paths Forward & Cross-Links Card -->
+        <PathsForward variant="log" class="mt-14" />
+      </div>
+    </div>
+  </div>
+  {pageItems.some((it) => it.kind === 'note') && (
+    <>
+      <TechTooltipsScript />
+      <YouTubeEmbedScript />
+    </>
+  )}
+</BaseLayout>
+
+<script type="application/json" id="log-anchor-pages" set:html={JSON.stringify(anchorToPage)} />
+
+<script>
+  function handleHashTarget() {
+    if (!window.location.hash || window.location.hash.length <= 1) return;
+    const targetId = decodeURIComponent(window.location.hash.slice(1));
+    const targetArticle = document.getElementById(targetId);
+
+    if (targetArticle) {
+      if (targetArticle.getAttribute('data-kind') === 'changelog') {
+        const details = targetArticle.querySelector<HTMLDetailsElement>('.changelog-details');
+        if (details && !details.open) {
+          details.open = true;
+        }
+      }
+      return;
+    }
+
+    // Legacy bookmark fallback: redirect to the static page hosting this anchor
+    try {
+      const mapEl = document.getElementById('log-anchor-pages');
+      if (!mapEl || !mapEl.textContent) return;
+      const anchorPages = JSON.parse(mapEl.textContent) as Record<string, number>;
+      const page = anchorPages[targetId];
+      if (!page) return;
+      const destPath = page <= 1 ? '/log/' : `/log/page/${page}/`;
+      if (window.location.pathname !== destPath) {
+        window.location.replace(`${destPath}#${encodeURIComponent(targetId)}`);
+      }
+    } catch {
+      // ignore malformed JSON
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', handleHashTarget);
+  } else {
+    handleHashTarget();
+  }
+  window.addEventListener('hashchange', handleHashTarget);
+</script>
+

@@ -1,0 +1,193 @@
+---
+export type GlowPreset =
+  | 'home-top'
+  | 'home-bottom'
+  | 'home-photos'
+  | 'home-blog'
+  | 'home-log'
+  | 'about'
+  | 'now'
+  | 'log'
+  | 'blog-top'
+  | 'blog-archive'
+  | 'photography'
+  | 'contact'
+  | 'tags-index'
+  | 'tag-detail'
+  | '404'
+  | 'blog-post';
+
+interface Props {
+  preset: GlowPreset;
+  class?: string;
+}
+
+interface GlowAtmosphere {
+  placement: 'top' | 'bottom' | 'full';
+  lightGradient: string;
+  darkGradient: string;
+  fadeMask: string;
+}
+
+const TOP_FADE =
+  'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.72) 52%, rgba(0,0,0,0) 100%)';
+const SOFT_TOP_FADE =
+  'linear-gradient(180deg, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 48%, rgba(0,0,0,0) 100%)';
+const BOTTOM_FADE =
+  'linear-gradient(0deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.45) 50%, rgba(0,0,0,0) 100%)';
+const SECTION_FADE =
+  'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.75) 55%, rgba(0,0,0,0.25) 100%)';
+
+const ATMOSPHERES: Record<GlowPreset, GlowAtmosphere> = {
+  'home-top': {
+    placement: 'top',
+    lightGradient:
+      'radial-gradient(ellipse 58% 68% at 28% 12%, rgba(251, 191, 36, 0.24) 0%, rgba(217, 119, 6, 0.11) 52%, transparent 80%), radial-gradient(ellipse 46% 52% at 74% 8%, rgba(253, 224, 71, 0.16) 0%, transparent 72%)',
+    darkGradient:
+      'radial-gradient(ellipse 60% 70% at 28% 10%, rgba(180, 83, 9, 0.24) 0%, rgba(120, 53, 15, 0.12) 55%, transparent 82%), radial-gradient(ellipse 44% 50% at 75% 6%, rgba(217, 119, 6, 0.12) 0%, transparent 72%)',
+    fadeMask: TOP_FADE,
+  },
+  'home-bottom': {
+    placement: 'bottom',
+    lightGradient:
+      'radial-gradient(ellipse 54% 66% at 76% 85%, rgba(251, 191, 36, 0.18) 0%, rgba(234, 88, 12, 0.10) 52%, transparent 80%)',
+    darkGradient:
+      'radial-gradient(ellipse 56% 68% at 76% 85%, rgba(245, 158, 11, 0.15) 0%, rgba(180, 83, 9, 0.09) 54%, transparent 82%)',
+    fadeMask: BOTTOM_FADE,
+  },
+  'home-photos': {
+    placement: 'full',
+    lightGradient:
+      'radial-gradient(ellipse 55% 62% at 80% 20%, rgba(232, 121, 249, 0.25) 0%, rgba(162, 28, 175, 0.10) 52%, transparent 80%), radial-gradient(ellipse 46% 54% at 18% 78%, rgba(240, 171, 252, 0.20) 0%, rgba(217, 70, 239, 0.07) 50%, transparent 75%)',
+    darkGradient:
+      'radial-gradient(ellipse 58% 66% at 80% 18%, rgba(134, 25, 143, 0.30) 0%, rgba(112, 26, 117, 0.15) 55%, transparent 82%), radial-gradient(ellipse 46% 52% at 18% 78%, rgba(192, 38, 211, 0.18) 0%, rgba(88, 28, 135, 0.09) 50%, transparent 75%)',
+    fadeMask: SECTION_FADE,
+  },
+  'home-blog': {
+    placement: 'full',
+    lightGradient:
+      'radial-gradient(ellipse 58% 68% at 16% 22%, rgba(34, 211, 238, 0.25) 0%, rgba(14, 116, 144, 0.11) 52%, transparent 80%), radial-gradient(ellipse 44% 50% at 84% 74%, rgba(103, 232, 249, 0.18) 0%, rgba(6, 182, 212, 0.07) 50%, transparent 75%)',
+    darkGradient:
+      'radial-gradient(ellipse 60% 70% at 16% 20%, rgba(14, 116, 144, 0.30) 0%, rgba(21, 94, 117, 0.16) 55%, transparent 82%), radial-gradient(ellipse 46% 52% at 84% 74%, rgba(6, 182, 212, 0.16) 0%, rgba(15, 23, 42, 0.09) 50%, transparent 75%)',
+    fadeMask: SECTION_FADE,
+  },
+  'home-log': {
+    placement: 'full',
+    lightGradient:
+      'radial-gradient(ellipse 56% 66% at 76% 20%, rgba(251, 191, 36, 0.24) 0%, rgba(180, 83, 9, 0.10) 52%, transparent 80%), radial-gradient(ellipse 44% 48% at 20% 80%, rgba(253, 230, 138, 0.18) 0%, transparent 72%)',
+    darkGradient:
+      'radial-gradient(ellipse 58% 68% at 76% 18%, rgba(180, 83, 9, 0.28) 0%, rgba(120, 53, 15, 0.14) 55%, transparent 82%), radial-gradient(ellipse 44% 48% at 20% 80%, rgba(217, 119, 6, 0.14) 0%, transparent 72%)',
+    fadeMask: SECTION_FADE,
+  },
+  about: {
+    placement: 'top',
+    lightGradient:
+      'radial-gradient(ellipse 58% 68% at 26% 12%, rgba(129, 140, 248, 0.24) 0%, rgba(79, 70, 229, 0.10) 54%, transparent 80%), radial-gradient(ellipse 42% 48% at 76% 10%, rgba(165, 180, 252, 0.16) 0%, transparent 72%)',
+    darkGradient:
+      'radial-gradient(ellipse 60% 70% at 26% 10%, rgba(67, 56, 202, 0.28) 0%, rgba(49, 46, 129, 0.14) 55%, transparent 82%), radial-gradient(ellipse 44% 48% at 76% 8%, rgba(99, 102, 241, 0.12) 0%, transparent 72%)',
+    fadeMask: TOP_FADE,
+  },
+  now: {
+    placement: 'top',
+    lightGradient:
+      'radial-gradient(ellipse 56% 66% at 30% 12%, rgba(52, 211, 153, 0.22) 0%, rgba(5, 150, 105, 0.10) 54%, transparent 80%), radial-gradient(ellipse 44% 50% at 72% 8%, rgba(110, 231, 183, 0.15) 0%, transparent 72%)',
+    darkGradient:
+      'radial-gradient(ellipse 58% 68% at 30% 10%, rgba(5, 150, 105, 0.24) 0%, rgba(6, 78, 59, 0.14) 55%, transparent 82%), radial-gradient(ellipse 44% 48% at 72% 8%, rgba(16, 185, 129, 0.11) 0%, transparent 72%)',
+    fadeMask: TOP_FADE,
+  },
+  log: {
+    placement: 'top',
+    lightGradient:
+      'radial-gradient(ellipse 58% 68% at 30% 12%, rgba(251, 191, 36, 0.22) 0%, rgba(180, 83, 9, 0.10) 54%, transparent 80%), radial-gradient(ellipse 44% 48% at 72% 10%, rgba(253, 230, 138, 0.18) 0%, transparent 72%)',
+    darkGradient:
+      'radial-gradient(ellipse 60% 70% at 30% 10%, rgba(180, 83, 9, 0.25) 0%, rgba(120, 53, 15, 0.13) 55%, transparent 82%), radial-gradient(ellipse 44% 48% at 72% 8%, rgba(217, 119, 6, 0.12) 0%, transparent 72%)',
+    fadeMask: TOP_FADE,
+  },
+  'blog-top': {
+    placement: 'top',
+    lightGradient:
+      'radial-gradient(ellipse 58% 68% at 26% 12%, rgba(34, 211, 238, 0.22) 0%, rgba(14, 116, 144, 0.10) 54%, transparent 80%), radial-gradient(ellipse 44% 50% at 76% 10%, rgba(103, 232, 249, 0.15) 0%, transparent 72%)',
+    darkGradient:
+      'radial-gradient(ellipse 60% 70% at 26% 10%, rgba(14, 116, 144, 0.26) 0%, rgba(21, 94, 117, 0.14) 55%, transparent 82%), radial-gradient(ellipse 44% 48% at 76% 8%, rgba(6, 182, 212, 0.12) 0%, transparent 72%)',
+    fadeMask: TOP_FADE,
+  },
+  'blog-archive': {
+    placement: 'top',
+    lightGradient:
+      'radial-gradient(ellipse 54% 62% at 72% 10%, rgba(34, 211, 238, 0.18) 0%, rgba(8, 145, 178, 0.08) 54%, transparent 80%)',
+    darkGradient:
+      'radial-gradient(ellipse 56% 64% at 72% 10%, rgba(14, 116, 144, 0.22) 0%, rgba(22, 78, 99, 0.11) 55%, transparent 82%)',
+    fadeMask: SOFT_TOP_FADE,
+  },
+  photography: {
+    placement: 'top',
+    lightGradient:
+      'radial-gradient(ellipse 58% 66% at 24% 12%, rgba(232, 121, 249, 0.22) 0%, rgba(162, 28, 175, 0.09) 54%, transparent 80%), radial-gradient(ellipse 44% 48% at 76% 10%, rgba(240, 171, 252, 0.15) 0%, transparent 72%)',
+    darkGradient:
+      'radial-gradient(ellipse 60% 68% at 24% 10%, rgba(134, 25, 143, 0.26) 0%, rgba(112, 26, 117, 0.13) 55%, transparent 82%), radial-gradient(ellipse 44% 48% at 76% 8%, rgba(192, 38, 211, 0.11) 0%, transparent 72%)',
+    fadeMask: TOP_FADE,
+  },
+  contact: {
+    placement: 'top',
+    lightGradient:
+      'radial-gradient(ellipse 56% 66% at 28% 12%, rgba(96, 165, 250, 0.22) 0%, rgba(29, 78, 216, 0.09) 54%, transparent 80%), radial-gradient(ellipse 44% 48% at 74% 10%, rgba(147, 197, 253, 0.15) 0%, transparent 72%)',
+    darkGradient:
+      'radial-gradient(ellipse 58% 68% at 28% 10%, rgba(30, 64, 175, 0.26) 0%, rgba(30, 58, 138, 0.13) 55%, transparent 82%), radial-gradient(ellipse 44% 48% at 74% 8%, rgba(59, 130, 246, 0.11) 0%, transparent 72%)',
+    fadeMask: TOP_FADE,
+  },
+  'tags-index': {
+    placement: 'top',
+    lightGradient:
+      'radial-gradient(ellipse 56% 66% at 30% 12%, rgba(167, 139, 250, 0.22) 0%, rgba(109, 40, 217, 0.09) 54%, transparent 80%), radial-gradient(ellipse 44% 48% at 74% 10%, rgba(196, 181, 253, 0.16) 0%, transparent 72%)',
+    darkGradient:
+      'radial-gradient(ellipse 58% 68% at 30% 10%, rgba(91, 33, 182, 0.26) 0%, rgba(76, 29, 149, 0.13) 55%, transparent 82%), radial-gradient(ellipse 44% 48% at 74% 8%, rgba(139, 92, 246, 0.12) 0%, transparent 72%)',
+    fadeMask: TOP_FADE,
+  },
+  'tag-detail': {
+    placement: 'top',
+    lightGradient:
+      'radial-gradient(ellipse 56% 66% at 28% 12%, rgba(167, 139, 250, 0.22) 0%, rgba(109, 40, 217, 0.09) 54%, transparent 80%), radial-gradient(ellipse 42% 46% at 74% 10%, rgba(196, 181, 253, 0.14) 0%, transparent 72%)',
+    darkGradient:
+      'radial-gradient(ellipse 58% 68% at 28% 10%, rgba(91, 33, 182, 0.26) 0%, rgba(76, 29, 149, 0.13) 55%, transparent 82%), radial-gradient(ellipse 42% 46% at 74% 8%, rgba(139, 92, 246, 0.11) 0%, transparent 72%)',
+    fadeMask: TOP_FADE,
+  },
+  '404': {
+    placement: 'top',
+    lightGradient:
+      'radial-gradient(ellipse 54% 64% at 34% 16%, rgba(234, 88, 12, 0.20) 0%, rgba(225, 29, 72, 0.10) 50%, transparent 80%), radial-gradient(ellipse 46% 52% at 68% 18%, rgba(79, 70, 229, 0.14) 0%, transparent 75%)',
+    darkGradient:
+      'radial-gradient(ellipse 56% 66% at 34% 14%, rgba(154, 52, 18, 0.22) 0%, rgba(136, 19, 55, 0.12) 52%, transparent 82%), radial-gradient(ellipse 46% 52% at 68% 16%, rgba(49, 46, 129, 0.18) 0%, transparent 75%)',
+    fadeMask: TOP_FADE,
+  },
+  'blog-post': {
+    placement: 'top',
+    lightGradient:
+      'radial-gradient(ellipse 52% 60% at 28% 10%, rgba(251, 191, 36, 0.20) 0%, rgba(245, 158, 11, 0.08) 52%, transparent 78%), radial-gradient(ellipse 48% 54% at 70% 14%, rgba(244, 63, 94, 0.13) 0%, rgba(236, 72, 153, 0.06) 50%, transparent 76%)',
+    darkGradient:
+      'radial-gradient(ellipse 54% 62% at 28% 10%, rgba(180, 83, 9, 0.20) 0%, rgba(120, 53, 15, 0.09) 52%, transparent 80%), radial-gradient(ellipse 48% 54% at 70% 12%, rgba(159, 18, 57, 0.15) 0%, rgba(131, 24, 67, 0.08) 50%, transparent 78%)',
+    fadeMask: SOFT_TOP_FADE,
+  },
+};
+
+const config = ATMOSPHERES[Astro.props.preset];
+const inlineVars = [
+  `--ambient-light: ${config.lightGradient}`,
+  `--ambient-dark: ${config.darkGradient}`,
+  `mask-image: ${config.fadeMask}`,
+  `-webkit-mask-image: ${config.fadeMask}`,
+].join('; ');
+---
+
+<div
+  aria-hidden="true"
+  class:list={[
+    'ambient-atmosphere pointer-events-none absolute -z-10 overflow-hidden',
+    config.placement === 'top'
+      ? 'inset-x-0 top-0 h-[32rem] sm:h-[38rem]'
+      : config.placement === 'bottom'
+        ? 'inset-x-0 bottom-0 h-[24rem] sm:h-[30rem]'
+        : 'inset-0',
+    Astro.props.class,
+  ]}
+  style={inlineVars}
+></div>

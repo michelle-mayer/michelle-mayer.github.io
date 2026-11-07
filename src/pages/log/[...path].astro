@@ -1,0 +1,68 @@
+---
+import LogIndexView from '../../components/pages/LogIndexView.astro';
+import { getLogDataBundle, computeLogPageCacheKey, type LogFilterKind } from '../../utils/logTimeline';
+import { LOG_PAGE_SIZE } from '../../utils/pagination';
+import { isFeatureEnabled } from '../../utils/features';
+
+export async function getStaticPaths() {
+  if (!isFeatureEnabled('log')) {
+    return [];
+  }
+
+  const { timeline, noteEntries, changelogEntries, photoEntries } = await getLogDataBundle();
+
+  const paths: {
+    params: { path: string };
+    props: { filter: LogFilterKind; currentPage: number };
+    cacheKey: string;
+  }[] = [];
+
+  // 1. All-entries paginated pages (/log/page/2/, /log/page/3/, ...)
+  const allTotalPages = Math.ceil(timeline.length / LOG_PAGE_SIZE);
+  for (let page = 2; page <= allTotalPages; page++) {
+    paths.push({
+      params: { path: `page/${page}` },
+      props: { filter: 'all', currentPage: page },
+      cacheKey: computeLogPageCacheKey('all', page, timeline),
+    });
+  }
+
+  // 2. Category sub-streams (/log/status/, /log/changelogs/, /log/photos/ + their pages)
+  const subStreams = [
+    { slug: 'status', filter: 'note' as const, items: noteEntries },
+    { slug: 'changelogs', filter: 'changelog' as const, items: changelogEntries },
+    ...(isFeatureEnabled('photography')
+      ? [{ slug: 'photos', filter: 'photo' as const, items: photoEntries }]
+      : []),
+  ];
+
+  for (const stream of subStreams) {
+    paths.push({
+      params: { path: stream.slug },
+      props: { filter: stream.filter, currentPage: 1 },
+      cacheKey: computeLogPageCacheKey(stream.filter, 1, stream.items),
+    });
+
+    const streamTotalPages = Math.ceil(stream.items.length / LOG_PAGE_SIZE);
+    for (let page = 2; page <= streamTotalPages; page++) {
+      paths.push({
+        params: { path: `${stream.slug}/page/${page}` },
+        props: { filter: stream.filter, currentPage: page },
+        cacheKey: computeLogPageCacheKey(stream.filter, page, stream.items),
+      });
+    }
+  }
+
+  return paths;
+}
+
+interface Props {
+  filter: LogFilterKind;
+  currentPage: number;
+}
+
+const { filter, currentPage } = Astro.props;
+---
+
+<LogIndexView filter={filter} currentPage={currentPage} />
+

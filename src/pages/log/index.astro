@@ -1,0 +1,6 @@
+---
+import LogIndexView from '../../components/pages/LogIndexView.astro';
+import { isFeatureEnabled } from '../../utils/features';
+---
+
+{isFeatureEnabled('log') && <LogIndexView filter="all" currentPage={1} />}

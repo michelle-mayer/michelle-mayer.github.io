@@ -1,0 +1,99 @@
+---
+import YouTubeEmbedScript from './scripts/YouTubeEmbedScript.astro';
+interface Props {
+  videoId: string;
+  title: string;
+  thumbUrl: string;
+  badgeLabel?: string;
+  duration?: string;
+  aspectClass?: string;
+  playButtonSize?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const {
+  videoId,
+  title,
+  thumbUrl,
+  badgeLabel = 'Video Article',
+  duration,
+  aspectClass = 'aspect-video',
+  playButtonSize = 'md',
+  class: className = '',
+} = Astro.props;
+
+const buttonSizeClasses = {
+  sm: 'size-10',
+  md: 'size-12 sm:size-14',
+  lg: 'size-14 sm:size-16',
+}[playButtonSize];
+
+const iconSizeClasses = {
+  sm: 'size-5',
+  md: 'size-6 sm:size-7',
+  lg: 'size-7 sm:size-8',
+}[playButtonSize];
+---
+
+<div
+  class:list={[
+    'youtube-embed youtube-card-embed youtube-poster-embed relative z-20 w-full overflow-hidden bg-gray-950',
+    aspectClass,
+    className,
+  ]}
+  data-video-id={videoId}
+  data-title={title}
+>
+  <button
+    type="button"
+    class="youtube-embed-btn group/poster relative block h-full w-full cursor-pointer text-left focus:outline-hidden"
+    aria-label={`Play video: ${title}`}
+  >
+    <img
+      src={thumbUrl}
+      alt={title}
+      loading="lazy"
+      decoding="async"
+      width="640"
+      height="360"
+      class="h-full w-full object-cover transition-transform duration-500 group-hover/poster:scale-105"
+    />
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-950/90 via-gray-950/20 to-gray-950/40" aria-hidden="true"></div>
+
+    <!-- Top Floating Badges -->
+    <div class="pointer-events-none absolute top-3 left-3 z-10">
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-950/80 backdrop-blur-md px-2.5 py-1 text-[11px] font-semibold text-amber-400 ring-1 ring-white/20 shadow-xs">
+        <svg class="size-3 fill-current shrink-0" viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M6.3 2.84A1.5 1.5 0 0 0 4 4.11v11.78a1.5 1.5 0 0 0 2.3 1.27l9.344-5.891a1.5 1.5 0 0 0 0-2.538L6.3 2.841Z" />
+        </svg>
+        <span>{badgeLabel}</span>
+      </span>
+    </div>
+
+    {duration && (
+      <div class="pointer-events-none absolute top-3 right-3 z-10">
+        <span class="inline-flex items-center rounded-md bg-black/75 backdrop-blur-md px-2 py-0.5 text-[10px] font-mono font-medium text-gray-200 ring-1 ring-white/10 shadow-xs">
+          {duration}
+        </span>
+      </div>
+    )}
+
+    <!-- Centered Glowing Play Button -->
+    <div class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+      <span class:list={[
+        'inline-flex items-center justify-center rounded-full bg-amber-500 text-gray-950 shadow-2xl ring-4 ring-white/30 backdrop-blur-xs transition-all duration-300 group-hover/poster:scale-115 group-hover/poster:bg-amber-400 group-hover/poster:shadow-amber-500/50',
+        buttonSizeClasses,
+      ]}>
+        <svg class:list={['translate-x-[1px] fill-current', iconSizeClasses]} viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M6.3 2.84A1.5 1.5 0 0 0 4 4.11v11.78a1.5 1.5 0 0 0 2.3 1.27l9.344-5.891a1.5 1.5 0 0 0 0-2.538L6.3 2.841Z" />
+        </svg>
+      </span>
+    </div>
+
+    <!-- Channel Attribution / Title Overlay -->
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 z-10 p-3 text-xs text-gray-200">
+      <p class="line-clamp-1 font-medium drop-shadow-sm">{title}</p>
+    </div>
+  </button>
+</div>
+<YouTubeEmbedScript />

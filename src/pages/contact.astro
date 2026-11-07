@@ -1,0 +1,6 @@
+---
+import ContactView from '../components/pages/ContactView.astro';
+import { isFeatureEnabled } from '../utils/features';
+---
+
+{isFeatureEnabled('contact') && <ContactView />}

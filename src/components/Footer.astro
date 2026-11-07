@@ -1,0 +1,327 @@
+---
+import Logo from './Logo.astro';
+import { themeConfig } from '../theme.config';
+import { isFeatureEnabled, isUrlEnabled } from '../utils/features';
+const currentYear = new Date().getFullYear();
+const { site, author, socials, footer } = themeConfig;
+const showContact = isFeatureEnabled('contact');
+const showHome = isFeatureEnabled('home');
+const showAbout = isFeatureEnabled('about');
+const showNow = isFeatureEnabled('now');
+const showBlog = isFeatureEnabled('blog');
+const showPhotography = isFeatureEnabled('photography');
+const showLog = isFeatureEnabled('log');
+const showTags = isFeatureEnabled('tags');
+const showRss = isFeatureEnabled('rss');
+const showLlms = isFeatureEnabled('llms');
+const enabledPoweredByLinks = footer.poweredByLinks.filter((item) => isUrlEnabled(item.href));
+const showPoweredBy = footer.showPoweredBy && enabledPoweredByLinks.length > 0;
+---
+
+<footer class="border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 transition-colors">
+  <div class="mx-auto max-w-7xl px-6 py-16 sm:py-24 lg:px-8 lg:py-28">
+    <div class="grid grid-cols-1 gap-14 xl:grid-cols-12 xl:gap-8">
+      <div class="xl:col-span-4">
+        <a
+          href="/"
+          title={`${site.title} - Home`}
+          aria-label={`${site.title} Homepage`}
+          class="group inline-block xl:-mt-3"
+        >
+          <Logo class="h-12 w-auto overflow-visible transition-opacity group-hover:opacity-80" />
+        </a>
+      </div>
+
+      <nav
+        aria-label="Footer directory"
+        class:list={[
+          'grid grid-cols-2 gap-x-8 gap-y-10 xl:col-span-8',
+          showPoweredBy ? 'sm:grid-cols-4' : 'sm:grid-cols-3',
+        ]}
+      >
+        <div>
+          <h2 class="text-sm/6 font-semibold text-gray-900 dark:text-white">Social</h2>
+          <ul class="mt-5 space-y-3.5">
+            {showContact && (
+            <li>
+              <a href="/contact/" class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-blue-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                <span>Contact</span>
+              </a>
+            </li>
+            )}
+            <li>
+              <a href={`mailto:${author.email}`} class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-rose-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+                <span>{author.email}</span>
+              </a>
+            </li>
+            {socials.linkedin && (
+            <li>
+              <a href={socials.linkedin} class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-[#0a66c2] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.69 1.69 0 0 0 1.69-1.69 1.7 1.7 0 0 0-1.69-1.7 1.7 1.7 0 0 0-1.7 1.7 1.69 1.69 0 0 0 1.7 1.69m1.4 9.74v-8.37H5.06v8.37h2.8Z"/>
+                </svg>
+                <span>LinkedIn</span>
+              </a>
+            </li>
+            )}
+            {socials.github && (
+            <li>
+              <a href={socials.github} class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-gray-900 dark:group-hover:text-white shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z" />
+                </svg>
+                <span>GitHub</span>
+              </a>
+            </li>
+            )}
+            {socials.gitlab && (
+            <li>
+              <a href={socials.gitlab} class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-[#fc6d26] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M23.955 13.587l-1.342-4.135-2.664-8.189c-.135-.423-.73-.423-.867 0L16.418 9.45H7.582L4.919 1.263C4.783.84 4.185.84 4.05 1.26L1.386 9.449.044 13.587c-.121.375.014.789.331 1.023L12 23.054l11.625-8.443c.318-.235.453-.647.33-1.024Z"/>
+                </svg>
+                <span>GitLab</span>
+              </a>
+            </li>
+            )}
+            {socials.instagram && (
+            <li>
+              <a href={socials.instagram} class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-[#E4405F] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                </svg>
+                <span>Instagram</span>
+              </a>
+            </li>
+            )}
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-sm/6 font-semibold text-gray-900 dark:text-white">{footer.siteColumnTitle}</h2>
+          <ul class="mt-5 space-y-3.5">
+            {showHome && (
+            <li>
+              <a href="/" class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <span>Home</span>
+              </a>
+            </li>
+            )}
+            {showAbout && (
+            <li>
+              <a href="/about/" class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-indigo-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <span>About</span>
+              </a>
+            </li>
+            )}
+            {showNow && (
+            <li>
+              <a href="/now/" class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-emerald-500 shrink-0" aria-hidden="true"><use href="#i-clock" /></svg>
+                <span>Now</span>
+              </a>
+            </li>
+            )}
+            {showBlog && (
+            <li>
+              <a href="/blog/" class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-cyan-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                  <path d="M6 6h10" />
+                  <path d="M6 10h10" />
+                </svg>
+                <span>Blog</span>
+              </a>
+            </li>
+            )}
+            {showPhotography && (
+            <li>
+              <a href="/photography/" class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-fuchsia-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                  <circle cx="12" cy="13" r="3" />
+                </svg>
+                <span>Photography</span>
+              </a>
+            </li>
+            )}
+            {showLog && (
+            <li>
+              <a href="/log/" class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-amber-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                  <polyline points="10 9 9 9 8 9" />
+                </svg>
+                <span>Log</span>
+              </a>
+            </li>
+            )}
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="text-sm/6 font-semibold text-gray-900 dark:text-white">Index &amp; Feeds</h2>
+          <ul class="mt-5 space-y-3.5">
+            {showTags && (
+            <li>
+              <a href="/tags/" class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-violet-500 shrink-0" aria-hidden="true"><use href="#i-tag" /></svg>
+                <span>Tags</span>
+              </a>
+            </li>
+            )}
+            {showRss && (
+            <li class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400">
+              <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 11a9 9 0 0 1 9 9" />
+                <path d="M4 4a16 16 0 0 1 16 16" />
+                <circle cx="5" cy="19" r="1" />
+              </svg>
+              <div class="inline-flex items-center gap-1.5">
+                <a href="/rss.xml" class="hover:text-gray-900 dark:hover:text-white transition-colors">RSS</a>
+                <span class="text-gray-300 dark:text-gray-600 select-none" aria-hidden="true">/</span>
+                <a href="/atom.xml" class="hover:text-gray-900 dark:hover:text-white transition-colors">Atom</a>
+              </div>
+            </li>
+            )}
+            <li>
+              <a href="/sitemap-index.xml" class="group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-teal-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="6" height="6" x="9" y="3" rx="1" />
+                  <path d="M12 9v4" />
+                  <path d="M5 13h14" />
+                  <path d="M5 13v4" />
+                  <path d="M19 13v4" />
+                  <rect width="6" height="6" x="2" y="17" rx="1" />
+                  <rect width="6" height="6" x="16" y="17" rx="1" />
+                </svg>
+                <span>Sitemap</span>
+              </a>
+            </li>
+            {showLlms && (
+            <li class="group inline-flex flex-wrap items-center gap-x-2 gap-y-1 text-sm/6 text-gray-600 dark:text-gray-400">
+              <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-sky-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 8V4H8" />
+                <rect width="16" height="12" x="4" y="8" rx="2" />
+                <path d="M2 14h2" />
+                <path d="M20 14h2" />
+                <path d="M15 13v2" />
+                <path d="M9 13v2" />
+              </svg>
+              <span class="sr-only">LLM-readable site files:</span>
+              <div class="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                <a href="/llms.txt" class="hover:text-gray-900 dark:hover:text-white transition-colors">llms.txt</a>
+                <span class="text-gray-300 dark:text-gray-600 select-none" aria-hidden="true">/</span>
+                <a href="/llms-full.txt" class="hover:text-gray-900 dark:hover:text-white transition-colors">full</a>
+                <span class="text-gray-300 dark:text-gray-600 select-none" aria-hidden="true">/</span>
+                <a href="/llms.json" class="hover:text-gray-900 dark:hover:text-white transition-colors">json</a>
+              </div>
+            </li>
+            )}
+          </ul>
+        </div>
+
+        {showPoweredBy && (
+        <div>
+          <h2 class="text-sm/6 font-semibold text-gray-900 dark:text-white">Powered by</h2>
+          <ul class="mt-5 space-y-3.5">
+            {enabledPoweredByLinks.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class={
+                    item.highlight
+                      ? 'group inline-flex items-center gap-2 text-sm/6 font-semibold text-amber-700 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300 transition-colors'
+                      : 'group inline-flex items-center gap-2 text-sm/6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors'
+                  }
+                >
+                  {item.icon === 's3' && (
+                    <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-[#ff9900] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <ellipse cx="12" cy="5" rx="9" ry="3" />
+                      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                    </svg>
+                  )}
+                  {item.icon === 'mrap' && (
+                    <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-[#ff9900] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="2" y1="12" x2="22" y2="12" />
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                  )}
+                  {item.icon === 'cloudfront' && (
+                    <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-[#ff9900] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+                    </svg>
+                  )}
+                  {item.icon === 'info' && (
+                    <svg class="size-4 text-amber-600/70 dark:text-amber-500/70 transition-colors group-hover:text-amber-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="16" x2="12" y2="12" />
+                      <line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>
+                  )}
+                  <span>
+                    {item.label}
+                    {item.highlight && <span aria-hidden="true"> &rarr;</span>}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        )}
+      </nav>
+    </div>
+
+    <div data-footer-bottom class="mt-16 border-t border-gray-100 dark:border-gray-800/80 pt-8 sm:mt-20 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 dark:text-gray-400">
+      <p>&copy; {currentYear} <a href={site.url} class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">{author.name}</a></p>
+      {footer.showThemeAttribution && (
+        <p class="flex flex-wrap items-center justify-center gap-1.5 text-gray-500 dark:text-gray-400">
+          <span>Based on <a href="https://github.com/edstuurman/the-navigator" class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">The Navigator</a> by <a href="https://www.stuurman.com" class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors">Ed Stuurman</a>. Built with</span>
+          <span class="inline-flex items-center">
+            <a href="https://astro.build/" class="group inline-flex items-center gap-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+              <svg class="size-3.5 shrink-0 fill-gray-500 dark:fill-gray-400 group-hover:fill-gray-800 dark:group-hover:fill-gray-200 transition-colors" viewBox="0 0 85 107" fill="currentColor" aria-hidden="true">
+                <path d="M0 69.6s14.3-7 28.7-7l10.8-33.5c.4-1.6 1.6-2.7 3-2.7 1.2 0 2.4 1.1 2.8 2.7l10.9 33.5c17 0 28.6 7 28.6 7L60.5 3.2c-.7-2-2-3.2-3.5-3.2H27.8c-1.6 0-2.7 1.3-3.4 3.2L0 69.6Z" />
+                <path d="M27.6 91.1c-4.8-4.4-6.3-13.7-4.2-20.4 3.5 4.2 8.3 5.6 13.3 6.3 7.7 1.2 15.3.8 22.5-2.8l2.5-1.4c.7 2 .9 3.9.6 5.9-.6 4.9-3 8.7-6.9 11.5-1.5 1.2-3.2 2.2-4.8 3.3-4.9 3.3-6.2 7.2-4.4 12.9l.2.6a13 13 0 0 1-5.7-5 13.8 13.8 0 0 1-2.2-7.4c0-1.3 0-2.7-.2-4-.5-3.1-2-4.6-4.8-4.7a5.5 5.5 0 0 0-5.7 4.6l-.2.6Z" />
+              </svg>
+              <span>Astro</span>
+            </a>,
+          </span>
+          <svg class="size-3.5 text-gray-500 dark:text-gray-400 fill-current shrink-0" viewBox="0 0 20 20" aria-label="love">
+            <path d="m9.653 16.915-.005-.003-.019-.01a20.759 20.759 0 0 1-3.016-2.072 17.585 17.585 0 0 1-3.32-3.414C2.36 9.878 2 8.356 2 6.75 2 4.126 4.126 2 6.75 2c1.378 0 2.658.604 3.25 1.579C10.592 2.604 11.872 2 13.25 2 15.874 2 18 4.126 18 6.75c0 1.606-.36 3.128-1.308 4.665a17.585 17.585 0 0 1-3.32 3.414 20.759 20.759 0 0 1-3.016 2.072l-.019.01-.005.003h-.002a.75.75 0 0 1-.69 0h-.002Z" />
+          </svg>
+          <span>and</span>
+          <svg class="size-3.5 text-gray-500 dark:text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="robots">
+            <path d="M12 8V4H8" />
+            <rect width="16" height="12" x="4" y="8" rx="2" />
+            <path d="M2 14h2" />
+            <path d="M20 14h2" />
+            <path d="M15 13v2" />
+            <path d="M9 13v2" />
+          </svg>
+        </p>
+      )}
+    </div>
+  </div>
+</footer>

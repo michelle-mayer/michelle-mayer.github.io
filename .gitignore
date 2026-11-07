@@ -1,0 +1,23 @@
+node_modules
+node_modules/
+.astro/
+.cache/
+.npm/
+dist/
+.DS_Store
+.venv/
+credentials.json
+token.json
+*.token
+*.pickle
+raw_photos/
+
+# AI & Assistant Directives / Tooling
+AGENTS.md
+GEMINI.md
+CLAUDE.md
+.gemini/
+.cursor/
+.claude/
+.restricted-patterns
+scripts/*.mjs

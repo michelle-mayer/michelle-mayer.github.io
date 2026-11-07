@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content';
+import BlogIndexView from '../../../components/pages/BlogIndexView.astro';
+import { OLDER_BLOGS_PAGE_SIZE } from '../../../utils/pagination';
+import { isFeatureEnabled } from '../../../utils/features';
+
+export async function getStaticPaths() {
+  if (!isFeatureEnabled('blog')) {
+    return [];
+  }
+  const posts = await getCollection('blog');
+  const olderPostsCount = Math.max(0, posts.length - 3);
+  const totalPages = Math.ceil(olderPostsCount / OLDER_BLOGS_PAGE_SIZE);
+
+  const paths = [];
+  for (let page = 2; page <= totalPages; page++) {
+    paths.push({
+      params: { page: String(page) },
+      props: { currentPage: page },
+    });
+  }
+  return paths;
+}
+
+interface Props {
+  currentPage: number;
+}
+
+const { currentPage } = Astro.props;
+---
+
+<BlogIndexView currentPage={currentPage} />
+

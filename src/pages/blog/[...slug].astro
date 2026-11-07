@@ -1,0 +1,71 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import BlogPost from '../../layouts/BlogPost.astro';
+import { getReadingTime } from '../../utils/readingTime';
+import { hasVideoEmbed } from '../../utils/postVideo';
+import { computeBlogCacheKey, type AdjacentPost } from '../../utils/blogCache';
+import { isFeatureEnabled } from '../../utils/features';
+
+export async function getStaticPaths() {
+	if (!isFeatureEnabled('blog')) {
+		return [];
+	}
+	const posts = (await getCollection('blog')).sort(
+		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+	);
+	return posts.map((post, index) => {
+		// In descending chronological order:
+		// index - 1 is newer (next)
+		// index + 1 is older (previous)
+		const nextPost: AdjacentPost = index > 0
+			? {
+					id: posts[index - 1].id,
+					title: posts[index - 1].data.title,
+					description: posts[index - 1].data.description,
+				}
+			: null;
+		const prevPost: AdjacentPost = index < posts.length - 1
+			? {
+					id: posts[index + 1].id,
+					title: posts[index + 1].data.title,
+					description: posts[index + 1].data.description,
+				}
+			: null;
+
+		return {
+			params: { slug: post.id },
+			props: {
+				post,
+				nextPost,
+				prevPost,
+			},
+			cacheKey: computeBlogCacheKey(post, nextPost, prevPost),
+		};
+	});
+}
+
+interface Props {
+	post: CollectionEntry<'blog'>;
+	nextPost: AdjacentPost;
+	prevPost: AdjacentPost;
+}
+
+const { post, nextPost, prevPost } = Astro.props;
+const { Content, headings } = await render(post);
+const readingTime = getReadingTime(post.body);
+const hasMermaid = /```mermaid\b/.test(post.body ?? '');
+const hasYouTube = hasVideoEmbed(post.body);
+---
+
+<BlogPost
+	{...post.data}
+	id={post.id}
+	readingTime={readingTime}
+	nextPost={nextPost}
+	prevPost={prevPost}
+	headings={headings}
+	hasMermaid={hasMermaid}
+	hasYouTube={hasYouTube}
+>
+	<Content />
+</BlogPost>

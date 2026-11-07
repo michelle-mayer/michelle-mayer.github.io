@@ -1,0 +1,663 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import AmbientGlow from '../components/AmbientGlow.astro';
+import TagList from '../components/TagList.astro';
+import ContactForm from '../components/ContactForm.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import SectionNav from '../components/SectionNav.astro';
+import TechTooltipsScript from '../components/scripts/TechTooltipsScript.astro';
+import MermaidZoomScript from '../components/scripts/MermaidZoomScript.astro';
+import YouTubeEmbedScript from '../components/scripts/YouTubeEmbedScript.astro';
+import { Image } from 'astro:assets';
+import { authorAvatarImage as authorImage } from '../utils/authorImages';
+import type { CollectionEntry } from 'astro:content';
+import type { MarkdownHeading } from 'astro';
+import { resolveBlogSections } from '../utils/sectionNav';
+import { themeConfig } from '../theme.config';
+import { isContactFormEnabled, isFeatureEnabled } from '../utils/features';
+
+const showAbout = isFeatureEnabled('about');
+const showContactForm = isContactFormEnabled();
+
+type AdjacentPost = {
+  id: string;
+  title: string;
+  description: string;
+} | null;
+
+type Props = CollectionEntry<'blog'>['data'] & {
+  author?: string;
+  readingTime?: string;
+  id?: string;
+  nextPost?: AdjacentPost;
+  prevPost?: AdjacentPost;
+  headings?: MarkdownHeading[];
+  hasMermaid?: boolean;
+  hasYouTube?: boolean;
+};
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  heroImage,
+  heroImageAlt,
+  tags,
+  author = themeConfig.author.name,
+  readingTime,
+  id,
+  nextPost,
+  prevPost,
+  headings = [],
+  showSections,
+  sectionNav,
+  sectionDepth,
+  sections: manualSections,
+  hasMermaid = true,
+  hasYouTube = true,
+} = Astro.props;
+
+const blogSections = resolveBlogSections(
+  { showSections, sectionNav, sectionDepth, sections: manualSections },
+  headings
+);
+
+const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
+---
+
+<BaseLayout
+  pageTitle={`${themeConfig.site.title} - ${title}`}
+  description={description}
+  image={ogImage}
+  imageAlt={heroImageAlt || title}
+  type="article"
+  publishedTime={pubDate}
+  modifiedTime={updatedDate}
+  author={author}
+  tags={tags}
+  section={tags?.[0]}
+  breadcrumbs={[{ name: "Blog", href: "/blog/" }, { name: title }]}
+>
+  <!-- Section navigation pills in breadcrumbs bar + Floating capsule / Back to top on scroll -->
+  <SectionNav sections={blogSections} slot="breadcrumb-extra" ariaLabel="Article sections" />
+
+  <article class="relative isolate overflow-hidden py-24 sm:py-32">
+    <AmbientGlow preset="blog-post" />
+
+    <header class="mx-auto max-w-3xl px-6 lg:px-8">
+      <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-gray-500 dark:text-gray-400">
+        <span class="inline-flex items-center gap-1.5">
+          <span>Published</span>
+          <FormattedDate date={pubDate} class="inline font-medium text-gray-700 dark:text-gray-200" />
+        </span>
+        {updatedDate && (
+          <>
+            <span class="text-gray-300 dark:text-gray-700" aria-hidden="true">&bull;</span>
+            <span class="inline-flex items-center gap-1.5 font-medium text-amber-700 dark:text-amber-400">
+              <svg class="size-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+              </svg>
+              <span>Updated</span>
+              <FormattedDate date={updatedDate} class="inline font-medium text-amber-700 dark:text-amber-400" />
+            </span>
+          </>
+        )}
+        {readingTime && (
+          <>
+            <span class="text-gray-300 dark:text-gray-700" aria-hidden="true">&bull;</span>
+            <span class="inline-flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
+              <svg class="size-4 shrink-0 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              {readingTime}
+            </span>
+          </>
+        )}
+      </div>
+      <h1 class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 dark:text-white sm:text-5xl">
+        {title}
+      </h1>
+      <p class="mt-5 text-xl/8 text-gray-600 dark:text-gray-300">{description}</p>
+    </header>
+
+    <div class="mx-auto mt-10 max-w-3xl px-6 text-base/7 text-gray-700 dark:text-gray-300 lg:px-8">
+      <div class="prose dark:prose-invert max-w-2xl text-gray-600 dark:text-gray-300">
+        <slot />
+        <div class="not-prose mt-8 border-t border-gray-200 dark:border-gray-800 pt-6">
+          <TagList tags={tags} showLabel={true} />
+        </div>
+      </div>
+
+      <!-- Adjacent Articles Navigation -->
+      {(nextPost || prevPost) && (
+        <nav aria-label="Adjacent articles" class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            {nextPost ? (
+              <a
+                href={`/blog/${nextPost.id}/`}
+                class="border-beam-card group flex flex-col justify-between rounded-2xl p-5 sm:p-6 shadow-md ring-1 ring-gray-900/5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm dark:ring-white/10 transition-all duration-200 hover:shadow-lg no-underline text-inherit"
+              >
+                <div>
+                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-500 mb-2">
+                    <svg class="size-3.5 transition-transform group-hover:-translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="m15 18-6-6 6-6"/>
+                    </svg>
+                    <span>Next Article</span>
+                  </span>
+                  <h2 class="text-base font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors line-clamp-2">
+                    {nextPost.title}
+                  </h2>
+                </div>
+                {nextPost.description && (
+                  <p class="mt-3 text-xs/5 text-gray-600 dark:text-gray-400 line-clamp-2">
+                    {nextPost.description}
+                  </p>
+                )}
+              </a>
+            ) : null}
+
+            {prevPost ? (
+              <a
+                href={`/blog/${prevPost.id}/`}
+                class={`border-beam-card group flex flex-col justify-between rounded-2xl p-5 sm:p-6 shadow-md ring-1 ring-gray-900/5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm dark:ring-white/10 transition-all duration-200 hover:shadow-lg no-underline text-inherit ${!nextPost ? 'sm:col-start-2' : ''}`}
+              >
+                <div class="sm:text-right">
+                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-500 mb-2 sm:self-end">
+                    <span>Previous Article</span>
+                    <svg class="size-3.5 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="m9 18 6-6-6-6"/>
+                    </svg>
+                  </span>
+                  <h2 class="text-base font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors line-clamp-2">
+                    {prevPost.title}
+                  </h2>
+                </div>
+                {prevPost.description && (
+                  <p class="mt-3 text-xs/5 text-gray-600 dark:text-gray-400 line-clamp-2 sm:text-right">
+                    {prevPost.description}
+                  </p>
+                )}
+              </a>
+            ) : null}
+          </div>
+        </nav>
+      )}
+
+      <!-- About the Author Box -->
+      {showAbout ? (
+        <a
+          href="/about/"
+          class="border-beam-card group mt-12 block rounded-2xl p-6 sm:p-8 shadow-lg ring-1 ring-gray-900/5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm dark:ring-white/10 transition-all duration-200 hover:shadow-xl cursor-pointer no-underline text-inherit"
+        >
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <div class="shrink-0">
+              <Image
+                src={authorImage}
+                alt={author}
+                width={128}
+                height={128}
+                widths={[64, 128]}
+                sizes="64px"
+                quality={70}
+                loading="lazy"
+                class="size-16 rounded-full object-cover ring-2 ring-amber-600/30 group-hover:ring-amber-600 transition"
+              />
+            </div>
+            <div class="space-y-1">
+              <p class="text-xs font-semibold tracking-wider uppercase text-amber-700 dark:text-amber-500">About the author</p>
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition flex items-center gap-1.5">
+                <span>{author}</span>
+                <span class="text-amber-600 dark:text-amber-500 text-sm font-normal group-hover:translate-x-1 transition-transform" aria-hidden="true">&rarr;</span>
+              </h2>
+              <p class="text-sm/6 text-gray-600 dark:text-gray-300">
+                {themeConfig.author.bio}
+              </p>
+            </div>
+          </div>
+        </a>
+      ) : (
+        <div class="mt-12 block rounded-2xl p-6 sm:p-8 shadow-lg ring-1 ring-gray-900/5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm dark:ring-white/10">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <div class="shrink-0">
+              <Image
+                src={authorImage}
+                alt={author}
+                width={128}
+                height={128}
+                widths={[64, 128]}
+                sizes="64px"
+                quality={70}
+                loading="lazy"
+                class="size-16 rounded-full object-cover ring-2 ring-amber-600/30"
+              />
+            </div>
+            <div class="space-y-1">
+              <p class="text-xs font-semibold tracking-wider uppercase text-amber-700 dark:text-amber-500">About the author</p>
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                <span>{author}</span>
+              </h2>
+              <p class="text-sm/6 text-gray-600 dark:text-gray-300">
+                {themeConfig.author.bio}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <!-- Feedback / Discussion -->
+      {showContactForm && (
+        <div class="mt-12">
+          <ContactForm 
+            title="Thoughts or questions on this article?"
+            subtitle="Found a bug, tested a similar setup, or want to discuss the details? Drop a message below."
+            subject={`Feedback on: ${title}`}
+            compact={true}
+          />
+        </div>
+      )}
+    </div>
+  </article>
+
+  <script>
+    function setupCodeCopyButtons() {
+      const preBlocks = document.querySelectorAll<HTMLElement>('.prose pre');
+      if (preBlocks.length === 0) return;
+
+      const copySvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+      const checkSvg = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.75 6 6 9-13.5"/></svg>';
+
+      preBlocks.forEach((pre) => {
+        if (pre.parentElement?.classList.contains('code-block-wrapper')) return;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-block-wrapper relative group my-6';
+
+        if (pre.parentNode) {
+          pre.parentNode.insertBefore(wrapper, pre);
+          wrapper.appendChild(pre);
+        }
+
+        const toolbar = document.createElement('div');
+        toolbar.className = 'code-block-toolbar';
+
+        const lang = pre.getAttribute('data-language');
+        if (lang && lang !== 'plaintext') {
+          const badge = document.createElement('span');
+          badge.className = 'code-lang-badge';
+          badge.textContent = lang;
+          toolbar.appendChild(badge);
+        }
+
+        const copyBtn = document.createElement('button');
+        copyBtn.type = 'button';
+        copyBtn.className = 'copy-code-btn';
+        copyBtn.setAttribute('aria-label', 'Copy code to clipboard');
+        copyBtn.setAttribute('title', 'Copy code to clipboard');
+        copyBtn.innerHTML = copySvg;
+
+        let copiedTimeout: ReturnType<typeof setTimeout> | null = null;
+        const setCopied = () => {
+          if (copiedTimeout) clearTimeout(copiedTimeout);
+          copyBtn.innerHTML = checkSvg;
+          copyBtn.classList.add('is-copied');
+          copyBtn.classList.remove('is-error');
+          copyBtn.setAttribute('title', 'Copied to clipboard!');
+          copyBtn.setAttribute('aria-label', 'Copied to clipboard!');
+          copiedTimeout = setTimeout(() => {
+            copyBtn.innerHTML = copySvg;
+            copyBtn.classList.remove('is-copied');
+            copyBtn.setAttribute('title', 'Copy code to clipboard');
+            copyBtn.setAttribute('aria-label', 'Copy code to clipboard');
+            copiedTimeout = null;
+          }, 2000);
+        };
+
+        const setCopyError = () => {
+          copyBtn.setAttribute('title', 'Failed to copy');
+          copyBtn.classList.add('is-error');
+          setTimeout(() => {
+            copyBtn.innerHTML = copySvg;
+            copyBtn.classList.remove('is-error');
+            copyBtn.setAttribute('title', 'Copy code to clipboard');
+          }, 2000);
+        };
+
+        copyBtn.addEventListener('click', () => {
+          const code = pre.querySelector('code');
+          const codeText = (code || pre).innerText;
+
+          if (navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText(codeText).then(setCopied).catch(setCopyError);
+          } else {
+            setCopyError();
+          }
+        });
+
+        toolbar.appendChild(copyBtn);
+        wrapper.appendChild(toolbar);
+      });
+    }
+
+    setupCodeCopyButtons();
+  </script>
+  <TechTooltipsScript />
+  {hasMermaid && <MermaidZoomScript />}
+  {hasYouTube && <YouTubeEmbedScript />}
+</BaseLayout>
+
+<style is:global>
+  /* Markdown Alert Callouts (GitHub-style Alerts) */
+  .markdown-alert {
+    position: relative;
+    margin-top: 1.75rem;
+    margin-bottom: 1.75rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.75rem;
+    border-width: 1px;
+    border-style: solid;
+    border-left-width: 4px;
+  }
+
+  .prose .markdown-alert,
+  .prose .markdown-alert * {
+    font-style: normal !important;
+  }
+
+  .prose .markdown-alert p {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9375rem;
+    line-height: 1.625;
+  }
+
+  .prose .markdown-alert p:first-of-type {
+    margin-top: 0.35rem;
+  }
+
+  .prose .markdown-alert p:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .prose .markdown-alert p::before,
+  .prose .markdown-alert p::after {
+    content: none !important;
+  }
+
+  .markdown-alert-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    letter-spacing: -0.01em;
+  }
+
+  .markdown-alert-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .markdown-alert-warning {
+    background-color: rgb(255 247 237 / 0.95);
+    border-color: rgb(253 186 116 / 0.85);
+    border-left-color: rgb(234 88 12);
+    box-shadow: 0 1px 3px 0 rgb(234 88 12 / 0.08);
+  }
+
+  .markdown-alert-warning .markdown-alert-header {
+    color: rgb(194 65 12);
+  }
+
+  .markdown-alert-warning .markdown-alert-icon {
+    color: rgb(234 88 12);
+  }
+
+  .markdown-alert-warning p {
+    color: rgb(124 45 18) !important;
+  }
+
+  :where(.dark, .dark *) .markdown-alert-warning {
+    background-color: rgb(124 45 18 / 0.25);
+    border-color: rgb(234 88 12 / 0.45);
+    border-left-color: rgb(249 115 22);
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 0.3);
+  }
+
+  :where(.dark, .dark *) .markdown-alert-warning .markdown-alert-header {
+    color: rgb(253 186 116);
+  }
+
+  :where(.dark, .dark *) .markdown-alert-warning .markdown-alert-icon {
+    color: rgb(251 146 60);
+  }
+
+  :where(.dark, .dark *) .markdown-alert-warning p {
+    color: rgb(255 237 213 / 0.95) !important;
+  }
+
+  .markdown-alert-caution {
+    background-color: rgb(254 242 242 / 0.95);
+    border-color: rgb(252 165 165 / 0.85);
+    border-left-color: rgb(220 38 38);
+    box-shadow: 0 1px 3px 0 rgb(220 38 38 / 0.08);
+  }
+
+  .markdown-alert-caution .markdown-alert-header,
+  .markdown-alert-caution .markdown-alert-icon {
+    color: rgb(185 28 28);
+  }
+
+  .markdown-alert-caution p {
+    color: rgb(127 29 29) !important;
+  }
+
+  :where(.dark, .dark *) .markdown-alert-caution {
+    background-color: rgb(127 29 29 / 0.25);
+    border-color: rgb(220 38 38 / 0.45);
+    border-left-color: rgb(239 68 68);
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 0.3);
+  }
+
+  :where(.dark, .dark *) .markdown-alert-caution .markdown-alert-header,
+  :where(.dark, .dark *) .markdown-alert-caution .markdown-alert-icon {
+    color: rgb(252 165 165);
+  }
+
+  :where(.dark, .dark *) .markdown-alert-caution p {
+    color: rgb(254 226 226 / 0.95) !important;
+  }
+
+  .markdown-alert-note {
+    background-color: rgb(239 246 255 / 0.95);
+    border-color: rgb(147 197 253 / 0.85);
+    border-left-color: rgb(37 99 235);
+    box-shadow: 0 1px 3px 0 rgb(37 99 235 / 0.08);
+  }
+
+  .markdown-alert-note .markdown-alert-header,
+  .markdown-alert-note .markdown-alert-icon {
+    color: rgb(37 99 235);
+  }
+
+  .markdown-alert-note p {
+    color: rgb(30 58 138) !important;
+  }
+
+  :where(.dark, .dark *) .markdown-alert-note {
+    background-color: rgb(30 58 138 / 0.25);
+    border-color: rgb(37 99 235 / 0.45);
+    border-left-color: rgb(59 130 246);
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 0.3);
+  }
+
+  :where(.dark, .dark *) .markdown-alert-note .markdown-alert-header,
+  :where(.dark, .dark *) .markdown-alert-note .markdown-alert-icon {
+    color: rgb(147 197 253);
+  }
+
+  :where(.dark, .dark *) .markdown-alert-note p {
+    color: rgb(219 234 254 / 0.95) !important;
+  }
+
+  .markdown-alert-tip {
+    background-color: rgb(236 253 245 / 0.95);
+    border-color: rgb(110 231 183 / 0.85);
+    border-left-color: rgb(5 150 105);
+    box-shadow: 0 1px 3px 0 rgb(5 150 105 / 0.08);
+  }
+
+  .markdown-alert-tip .markdown-alert-header,
+  .markdown-alert-tip .markdown-alert-icon {
+    color: rgb(4 120 87);
+  }
+
+  .markdown-alert-tip p {
+    color: rgb(6 78 59) !important;
+  }
+
+  :where(.dark, .dark *) .markdown-alert-tip {
+    background-color: rgb(6 78 59 / 0.25);
+    border-color: rgb(5 150 105 / 0.45);
+    border-left-color: rgb(16 185 129);
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 0.3);
+  }
+
+  :where(.dark, .dark *) .markdown-alert-tip .markdown-alert-header,
+  :where(.dark, .dark *) .markdown-alert-tip .markdown-alert-icon {
+    color: rgb(110 231 183);
+  }
+
+  :where(.dark, .dark *) .markdown-alert-tip p {
+    color: rgb(209 250 229 / 0.95) !important;
+  }
+
+  .markdown-alert-important {
+    background-color: rgb(250 245 255 / 0.95);
+    border-color: rgb(216 180 254 / 0.85);
+    border-left-color: rgb(147 51 234);
+    box-shadow: 0 1px 3px 0 rgb(147 51 234 / 0.08);
+  }
+
+  .markdown-alert-important .markdown-alert-header,
+  .markdown-alert-important .markdown-alert-icon {
+    color: rgb(147 51 234);
+  }
+
+  .markdown-alert-important p {
+    color: rgb(88 28 135) !important;
+  }
+
+  :where(.dark, .dark *) .markdown-alert-important {
+    background-color: rgb(88 28 135 / 0.25);
+    border-color: rgb(147 51 234 / 0.45);
+    border-left-color: rgb(168 85 247);
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 0.3);
+  }
+
+  :where(.dark, .dark *) .markdown-alert-important .markdown-alert-header,
+  :where(.dark, .dark *) .markdown-alert-important .markdown-alert-icon {
+    color: rgb(216 180 254);
+  }
+
+  :where(.dark, .dark *) .markdown-alert-important p {
+    color: rgb(243 232 255 / 0.95) !important;
+  }
+
+  /* Code Block Copy Button & Wrapper */
+  .code-block-wrapper {
+    position: relative;
+    margin-top: 1.75rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .code-block-wrapper pre {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    border-radius: 0.875rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+    padding-top: 2.5rem !important;
+  }
+
+  .code-block-toolbar {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    user-select: none;
+    pointer-events: auto;
+  }
+
+  .code-lang-badge {
+    font-size: 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgb(209 213 219);
+    background-color: rgba(17, 24, 39, 0.92);
+    border: 1px solid rgba(55, 65, 81, 0.6);
+    border-radius: 0.25rem;
+    padding: 0.125rem 0.375rem;
+    line-height: 1.25;
+  }
+
+  pre.astro-code span[style*="color:#6A737D"],
+  pre.astro-code span[style*="color: #6A737D"],
+  pre.astro-code span[style*="color:#6a737d"] {
+    color: #8b949e !important;
+  }
+
+  .copy-code-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.875rem;
+    height: 1.875rem;
+    border-radius: 0.375rem;
+    color: rgb(156 163 175);
+    background-color: rgba(17, 24, 39, 0.85);
+    border: 1px solid rgba(55, 65, 81, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    padding: 0;
+    opacity: 1;
+  }
+
+  .copy-code-btn:hover {
+    color: rgb(255, 255, 255);
+    background-color: rgba(31, 41, 55, 0.95);
+    border-color: rgba(107, 114, 128, 0.8);
+  }
+
+  .copy-code-btn:focus-visible {
+    outline: 2px solid rgba(245, 158, 11, 0.6);
+    outline-offset: 1px;
+  }
+
+  .copy-code-btn.is-copied {
+    color: rgb(52, 211, 153);
+    border-color: rgba(16, 185, 129, 0.6);
+    background-color: rgba(6, 78, 59, 0.4);
+  }
+
+  .copy-code-btn.is-copied:hover {
+    color: rgb(52, 211, 153);
+    border-color: rgba(16, 185, 129, 0.8);
+    background-color: rgba(6, 78, 59, 0.5);
+  }
+
+  .copy-code-btn.is-error {
+    color: rgb(248, 113, 113);
+    border-color: rgba(239, 68, 68, 0.6);
+    background-color: rgba(127, 29, 29, 0.3);
+  }
+</style>

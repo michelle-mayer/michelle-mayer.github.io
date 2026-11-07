@@ -1,0 +1,60 @@
+---
+export interface BreadcrumbItem {
+  name: string;
+  href?: string;
+}
+
+export interface Props {
+  items: BreadcrumbItem[];
+  class?: string;
+}
+
+const { items = [], class: className = "" } = Astro.props;
+
+// Ensure 'Home' is always the first item in the breadcrumb trail
+const allItems: BreadcrumbItem[] = [
+  { name: "Home", href: "/" },
+  ...items.filter((item) => item.name.toLowerCase() !== "home")
+];
+---
+
+<nav aria-label="Breadcrumb" class={`flex items-center min-w-0 max-w-full ${className}`}>
+  <ol role="list" class="flex flex-nowrap items-center gap-1.5 text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 min-w-0 max-w-full">
+    {allItems.map((item, index) => {
+      const isLast = index === allItems.length - 1;
+      const isFirst = index === 0;
+
+      return (
+        <li class:list={[
+          'inline-flex items-center gap-1.5 whitespace-nowrap',
+          isLast ? 'min-w-0 flex-1 sm:flex-initial' : 'shrink-0'
+        ]}>
+          {index > 0 && (
+            <svg class="size-3.5 shrink-0 text-gray-400 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          )}
+
+          {isLast || !item.href ? (
+            <span class="text-gray-900 dark:text-gray-100 font-semibold truncate max-w-[170px] sm:max-w-md block min-w-0" aria-current="page">
+              {item.name}
+            </span>
+          ) : (
+            <a
+              href={item.href}
+              class="hover:text-amber-600 dark:hover:text-amber-400 transition-colors inline-flex items-center gap-1.5"
+            >
+              {isFirst && (
+                <svg class="size-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                </svg>
+              )}
+              <span>{item.name}</span>
+            </a>
+          )}
+        </li>
+      );
+    })}
+  </ol>
+</nav>
+

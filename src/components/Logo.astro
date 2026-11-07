@@ -1,0 +1,91 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { themeConfig } from '../theme.config';
+
+interface Props extends Omit<HTMLAttributes<'svg'>, 'class'> {
+  class?: string;
+  text?: string;
+}
+
+const {
+  class: className = 'h-16 w-auto',
+  text = themeConfig.logo.text,
+  ...rest
+} = Astro.props;
+
+const ariaLabel = themeConfig.logo.ariaLabel || themeConfig.site.title || text;
+const fontSize = themeConfig.logo.fontSize ?? 14;
+const letterSpacing = themeConfig.logo.letterSpacing ?? '0.22em';
+const showCompass = themeConfig.logo.showCompass ?? true;
+const compassAngle = themeConfig.logo.compassAngle ?? 42;
+
+// Dynamically size the SVG viewBox & underline segments to fit any wordmark length.
+// For an 11-character wordmark ("ED STUURMAN"), width evaluates to 180 (center X = 100).
+const svgWidth = Math.max(100, Math.round(text.length * 14 + 26));
+const startX = 10;
+const centerX = startX + svgWidth / 2;
+const compassGap = showCompass ? 8.5 : 0;
+const lineSegmentWidth = Math.max(20, svgWidth / 2 - compassGap);
+const rightLineX = centerX + compassGap;
+---
+<svg
+  viewBox={`${startX} 0 ${svgWidth} 64`}
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  class={`logo-svg overflow-visible text-slate-900 dark:text-white transition-colors duration-200 ${className}`}
+  role="img"
+  aria-label={ariaLabel}
+  {...rest}
+>
+  <!-- Wordmark: Optically aligned baseline matching navigation links (Y=37) -->
+  <text
+    x={centerX}
+    y="37"
+    text-anchor="middle"
+    fill="currentColor"
+    class="select-none"
+    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+    font-size={fontSize}
+    font-weight="400"
+    letter-spacing={letterSpacing}
+  >{text}</text>
+
+  <!-- Left Solid Line: Matching the 2px border height under navigation links -->
+  <rect
+    x={startX}
+    y="62"
+    width={lineSegmentWidth}
+    height="2"
+    fill="currentColor"
+  />
+
+  <!-- Right Solid Line: Matching the 2px border height under navigation links -->
+  <rect
+    x={rightLineX}
+    y="62"
+    width={lineSegmentWidth}
+    height="2"
+    fill="currentColor"
+  />
+
+  {showCompass && (
+    <g transform={`translate(${centerX}, 63) rotate(${compassAngle})`}>
+      <!-- Top-Right Needle: Solid Amber/Orange Triangle pointing up-right -->
+      <polygon
+        points="0,-11 3.2,0 -3.2,0"
+        fill="currentColor"
+        class="brand-accent text-amber-600 dark:text-amber-500"
+      />
+
+      <!-- Bottom-Left Needle: Sleek Outlined Arrowhead pointing down-left -->
+      <polygon
+        points="0,11 -3.2,0 3.2,0"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.25"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+      />
+    </g>
+  )}
+</svg>

@@ -1,0 +1,1033 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AmbientGlow from '../AmbientGlow.astro';
+import SectionNav from '../SectionNav.astro';
+import PaginationControls from '../PaginationControls.astro';
+import { Image, getImage } from 'astro:assets';
+import { getEntry } from 'astro:content';
+import { siteConfig } from '../../site.config';
+import { pictureLogsMap, comparePhotoPathsByDateDesc } from '../../utils/pictureLogs';
+import { GALLERY_PAGE_SIZE } from '../../utils/pagination';
+import { photoImageKeys, photoImageModules } from '../../utils/photoImages';
+
+interface Props {
+  currentPage?: number;
+}
+
+const { currentPage = 1 } = Astro.props;
+
+// Sort photos by publication date descending (newest first, 2026 -> 2016)
+const sortedPaths = [...photoImageKeys].sort(comparePhotoPathsByDateDesc);
+
+// Map every photo ID to its static paginated gallery page for cross-page ?photo=ID deep-links
+const photoToGalleryPage: Record<number, number> = {};
+sortedPaths.forEach((path, idx) => {
+  const filename = path.split('/').pop() ?? '';
+  const photoLog = pictureLogsMap.get(filename);
+  if (photoLog) {
+    photoToGalleryPage[photoLog.id] = Math.floor(idx / GALLERY_PAGE_SIZE) + 1;
+  }
+});
+
+const startIdx = (currentPage - 1) * GALLERY_PAGE_SIZE;
+const pagePaths = sortedPaths.slice(startIdx, startIdx + GALLERY_PAGE_SIZE);
+
+const galleryItems = await Promise.all(
+  pagePaths.map(async (path, index) => {
+    const filename = path.split('/').pop() ?? '';
+    const photoLog = pictureLogsMap.get(filename);
+    const mod = await photoImageModules[path]();
+    const imgMeta = mod.default;
+    const fullWebp = await getImage({ src: imgMeta, format: 'webp' });
+
+    const title = photoLog?.title ?? `Photograph ${startIdx + index + 1}`;
+    const dateFormatted = photoLog?.dateFormatted ?? '2024';
+    const location = photoLog?.location ?? '';
+    const defaultAttribution = `\u00A9 ${siteConfig.author.name} @ ${siteConfig.site.domain}`;
+    const attribution = photoLog?.attribution || defaultAttribution;
+    const photoId = photoLog?.id ?? startIdx + index + 1;
+    const timestamp = photoLog ? new Date(photoLog.pubDate).valueOf() : 0;
+    const aspectRatio = Number((imgMeta.width / imgMeta.height).toFixed(4));
+
+    return {
+      photoId,
+      timestamp,
+      title,
+      dateFormatted,
+      location,
+      attribution,
+      fullSrc: fullWebp.src,
+      imgMeta,
+      aspectRatio,
+      alt: `${title} — ${location} (${dateFormatted})`,
+      loading: (index < 4 ? 'eager' : 'lazy') as 'eager' | 'lazy',
+      fetchpriority: (index < 2 ? 'high' : undefined) as 'high' | undefined,
+    };
+  }),
+);
+
+interface RowCellSpec {
+  grow: number;
+  basis: string;
+  height: string;
+  mx: string;
+  sizeExpr: string;
+}
+
+function computeResponsiveSpecs(
+  aspects: number[],
+  containerWidth: number,
+  targetH: number,
+  viewportExpr: string,
+): RowCellSpec[] {
+  const gap = 8;
+  const specs: RowCellSpec[] = new Array(aspects.length);
+  let rowIndices: number[] = [];
+  let rowAspectSum = 0;
+
+  const commitRow = (indices: number[], sum: number, isOrphan: boolean) => {
+    if (isOrphan && indices.length === 1) {
+      const idx = indices[0];
+      const w = Math.round(aspects[idx] * targetH);
+      specs[idx] = {
+        grow: 0,
+        basis: `${w}px`,
+        height: `${targetH}px`,
+        mx: 'auto',
+        sizeExpr: `${w}px`,
+      };
+      return;
+    }
+    const gapPx = (indices.length - 1) * gap;
+    const sumStr = sum.toFixed(4);
+    const heightExpr = `calc((${viewportExpr} - ${gapPx}px) / ${sumStr})`;
+    for (const idx of indices) {
+      const share = (aspects[idx] / sum).toFixed(5);
+      specs[idx] = {
+        grow: Number(aspects[idx].toFixed(4)),
+        basis: `calc((100% - ${gapPx}px) * ${share} - 0.5px)`,
+        height: heightExpr,
+        mx: '0px',
+        sizeExpr: `calc((${viewportExpr} - ${gapPx}px) * ${share})`,
+      };
+    }
+  };
+
+  for (let i = 0; i < aspects.length; i++) {
+    rowIndices.push(i);
+    rowAspectSum += aspects[i];
+    const remaining = aspects.length - (i + 1);
+    const rowW = rowAspectSum * targetH + (rowIndices.length - 1) * gap;
+
+    if (rowW >= containerWidth) {
+      if (remaining === 1 && rowIndices.length > 2) {
+        const borrowed = rowIndices.pop()!;
+        rowAspectSum -= aspects[borrowed];
+        commitRow(rowIndices, rowAspectSum, false);
+        rowIndices = [borrowed];
+        rowAspectSum = aspects[borrowed];
+      } else {
+        commitRow(rowIndices, rowAspectSum, false);
+        rowIndices = [];
+        rowAspectSum = 0;
+      }
+    }
+  }
+
+  if (rowIndices.length > 0) {
+    commitRow(rowIndices, rowAspectSum, rowIndices.length === 1);
+  }
+
+  return specs;
+}
+
+const itemAspects = galleryItems.map((it) => it.aspectRatio);
+const mobileSpecs = computeResponsiveSpecs(itemAspects, 380, 180, '100vw - 32px');
+const tabletSpecs = computeResponsiveSpecs(itemAspects, 720, 220, '100vw - 48px');
+const desktopSpecs = computeResponsiveSpecs(itemAspects, 1216, 260, 'min(100vw, 1280px) - 64px');
+const galleryCards = galleryItems.map((item, idx) => {
+  const m = mobileSpecs[idx];
+  const t = tabletSpecs[idx];
+  const d = desktopSpecs[idx];
+  const styleVars = [
+    `--photo-aspect:${item.aspectRatio}`,
+    `--m-g:${m.grow}`,
+    `--m-b:${m.basis}`,
+    `--m-h:${m.height}`,
+    `--m-mx:${m.mx}`,
+    `--t-g:${t.grow}`,
+    `--t-b:${t.basis}`,
+    `--t-h:${t.height}`,
+    `--t-mx:${t.mx}`,
+    `--d-g:${d.grow}`,
+    `--d-b:${d.basis}`,
+    `--d-h:${d.height}`,
+    `--d-mx:${d.mx}`,
+  ].join(';');
+  const sizes = `(min-width: 1024px) ${d.sizeExpr}, (min-width: 640px) ${t.sizeExpr}, ${m.sizeExpr}`;
+  const widths = item.aspectRatio > 1.8 ? [220, 320, 420, 560, 720, 840] : [220, 320, 420, 560];
+  return { ...item, styleVars, sizes, widths };
+});
+
+const photoPageEntry = await getEntry('pages', 'photography');
+const photoPageData = photoPageEntry!.data;
+const totalPages = Math.max(1, Math.ceil(sortedPaths.length / GALLERY_PAGE_SIZE));
+const pageTitle =
+  currentPage > 1
+    ? `${photoPageData.pageTitle} (Page ${currentPage})`
+    : photoPageData.pageTitle;
+const description = photoPageData.description;
+const breadcrumbs =
+  currentPage > 1
+    ? [{ name: 'Photography', href: '/photography/' }, { name: `Page ${currentPage}` }]
+    : [{ name: 'Photography' }];
+---
+
+<BaseLayout
+  pageTitle={pageTitle}
+  description={description}
+  image="/og/photography.jpg"
+  imageAlt={`Photography by ${siteConfig.author.name}`}
+  type="gallery"
+  breadcrumbs={breadcrumbs}
+>
+  <!-- Floating Back to Top Button on scroll -->
+  <SectionNav slot="breadcrumb-extra" />
+
+  <section aria-label="Photo gallery" class="relative isolate overflow-hidden py-24 sm:py-32">
+    <AmbientGlow preset="photography" />
+
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <!-- Gallery Controls Header -->
+      <div class="mb-4 flex items-center justify-between sm:mb-6">
+        <div class="flex items-center gap-2 font-mono text-xs text-gray-500 dark:text-gray-400">
+          <span class="inline-flex size-2 rounded-full bg-amber-500/80" aria-hidden="true"></span>
+          <span>
+            {totalPages > 1
+              ? `${startIdx + 1}–${startIdx + pagePaths.length} of ${sortedPaths.length} Photographs`
+              : `${sortedPaths.length} Photographs`}
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label for="photo-sort-select" id="photo-sort-label" class="sr-only">Sort photographs</label>
+          <div class="relative inline-block text-left" id="gallery-sort-dropdown">
+            <button
+              type="button"
+              id="gallery-sort-btn"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-labelledby="photo-sort-label gallery-sort-label"
+              class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700/80 bg-white/80 dark:bg-gray-800/80 py-1.5 pr-2 pl-2.5 text-xs font-medium text-gray-700 dark:text-gray-200 shadow-xs backdrop-blur-sm transition-all hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm focus:ring-1 focus:ring-amber-500/50 focus:outline-none"
+            >
+              <svg class="size-3.5 shrink-0 text-gray-400 dark:text-gray-500" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4.5 13V3m0 0L2 5.5M4.5 3L7 5.5" />
+                <path d="M11.5 3v10m0 0l2.5-2.5m-2.5 2.5L9 10.5" />
+              </svg>
+              <span id="gallery-sort-label" class="min-w-[4.25rem] text-left">Newest first</span>
+              <svg id="gallery-sort-chevron" class="size-3.5 shrink-0 text-gray-400 dark:text-gray-500 transition-transform duration-200" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+              </svg>
+            </button>
+
+            <div
+              id="gallery-sort-menu"
+              role="listbox"
+              aria-labelledby="photo-sort-label"
+              aria-orientation="vertical"
+              class="invisible pointer-events-none absolute top-full right-0 z-40 mt-1.5 w-44 origin-top-right scale-95 transform rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/95 dark:bg-gray-800/95 p-1 opacity-0 shadow-lg ring-1 ring-gray-900/5 dark:ring-white/10 backdrop-blur-md transition-all duration-150"
+            >
+              <button
+                type="button"
+                role="option"
+                data-sort="desc"
+                aria-selected="true"
+                class="sort-option group flex w-full cursor-pointer items-center justify-between rounded-lg bg-amber-50/80 dark:bg-gray-700/60 px-2.5 py-2 text-xs font-semibold text-amber-700 dark:text-amber-500 transition-colors"
+              >
+                <span>Newest first</span>
+                <svg class="check-icon size-3.5 text-amber-600 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                role="option"
+                data-sort="asc"
+                aria-selected="false"
+                class="sort-option group flex w-full cursor-pointer items-center justify-between rounded-lg px-2.5 py-2 text-xs font-normal text-gray-600 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700/60 hover:text-gray-900 dark:hover:text-white"
+              >
+                <span>Oldest first</span>
+                <svg class="check-icon hidden size-3.5 text-amber-600 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                </svg>
+              </button>
+            </div>
+
+            <select id="photo-sort-select" class="sr-only" tabindex="-1" aria-hidden="true">
+              <option value="desc">Newest first</option>
+              <option value="asc">Oldest first</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Justified Aspect-Ratio Photo Grid -->
+      <div id="photo-gallery-grid" class="photo-justified-grid">
+        {galleryCards.map((item) => (
+          <a
+            href={item.fullSrc}
+            class="gallery-photo-card border-beam-card group"
+            style={item.styleVars}
+            data-photo-id={item.photoId}
+            data-photo-date={item.timestamp}
+            data-photo-title={item.title}
+            data-photo-date-label={item.dateFormatted}
+            data-photo-attribution={item.attribution}
+            data-photo-alt={item.alt}
+            aria-label={`Open ${item.title} (${item.dateFormatted}) in lightbox`}
+          >
+            <Image
+              src={item.imgMeta}
+              alt={item.alt}
+              widths={item.widths}
+              sizes={item.sizes}
+              quality={60}
+              loading={item.loading}
+              fetchpriority={item.fetchpriority}
+              inferSize
+              layout="constrained"
+              class="gallery-photo-thumb"
+            />
+          </a>
+        ))}
+      </div>
+
+      <PaginationControls
+        currentPage={currentPage}
+        totalItems={sortedPaths.length}
+        pageSize={GALLERY_PAGE_SIZE}
+        basePath="/photography"
+        itemLabel="photographs"
+        ariaLabel="Photo gallery pagination"
+        class="mt-10"
+      />
+    </div>
+  </section>
+
+  <!-- Zero-Dependency Accessible Lightbox Viewer -->
+  <div
+    id="photo-lightbox"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Photograph lightbox viewer"
+    hidden
+    class="fixed inset-0 z-50 hidden flex-col bg-[#0a0a0e]/95 text-white backdrop-blur-md select-none"
+  >
+    <!-- Top Toolbar -->
+    <div class="flex shrink-0 items-center justify-between px-4 py-3 sm:px-6 bg-gray-900/60 border-b border-white/10">
+      <div id="lightbox-counter" class="font-mono text-xs sm:text-sm text-gray-300">
+        1 / 1
+      </div>
+
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <button
+          type="button"
+          id="lightbox-fs-btn"
+          aria-label="Toggle fullscreen"
+          title="Toggle fullscreen"
+          class="hidden sm:inline-flex size-9 cursor-pointer items-center justify-center rounded-lg bg-white/5 text-gray-300 hover:bg-white/15 hover:text-white focus-visible:outline-2 focus-visible:outline-amber-500 transition"
+        >
+          <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+            <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+            <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+            <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          id="lightbox-thumbs-btn"
+          aria-label="Toggle thumbnail strip"
+          title="Toggle thumbnails"
+          class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg bg-white/5 text-gray-300 hover:bg-white/15 hover:text-white focus-visible:outline-2 focus-visible:outline-amber-500 transition"
+        >
+          <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" />
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          id="lightbox-close-btn"
+          aria-label="Close lightbox"
+          title="Close (Esc)"
+          class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg bg-white/10 text-gray-200 hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-amber-500 transition"
+        >
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Center Stage -->
+    <div id="lightbox-stage" class="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden px-2 py-3 sm:px-14 sm:py-4">
+      <button
+        type="button"
+        id="lightbox-prev-btn"
+        aria-label="Previous photograph"
+        class="absolute left-2 sm:left-4 z-20 inline-flex size-10 sm:size-11 cursor-pointer items-center justify-center rounded-full bg-gray-900/75 text-gray-200 ring-1 ring-white/15 backdrop-blur-sm hover:bg-gray-800 hover:text-white focus-visible:outline-2 focus-visible:outline-amber-500 transition"
+      >
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+
+      <a
+        id="lightbox-img-link"
+        href="/photography/1/"
+        class="group relative inline-flex max-h-full max-w-full items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-lg cursor-zoom-in"
+        aria-label="View full details and field notes"
+        title="View full detail page"
+      >
+        <img
+          id="lightbox-img"
+          src=""
+          alt=""
+          decoding="async"
+          class="max-h-full max-w-full rounded-lg object-contain shadow-2xl transition-transform duration-200 ease-out group-hover:scale-[1.008] cursor-zoom-in"
+        />
+      </a>
+
+      <button
+        type="button"
+        id="lightbox-next-btn"
+        aria-label="Next photograph"
+        class="absolute right-2 sm:right-4 z-20 inline-flex size-10 sm:size-11 cursor-pointer items-center justify-center rounded-full bg-gray-900/75 text-gray-200 ring-1 ring-white/15 backdrop-blur-sm hover:bg-gray-800 hover:text-white focus-visible:outline-2 focus-visible:outline-amber-500 transition"
+      >
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Caption Bar: Floating Frosted Glass Island -->
+    <div class="shrink-0 px-4 py-2.5 sm:py-3 flex justify-center select-text">
+      <div class="inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded-2xl border border-white/10 bg-gray-950/80 px-5 sm:px-6 py-2 shadow-2xl backdrop-blur-md">
+        <div class="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
+          <span id="lightbox-title" class="text-xs sm:text-sm font-semibold tracking-wide text-white"></span>
+          <span class="text-xs text-gray-500 select-none" aria-hidden="true">&bull;</span>
+          <span id="lightbox-date" class="text-xs text-gray-400"></span>
+          <span class="text-xs text-gray-500 select-none" aria-hidden="true">&bull;</span>
+          <span id="lightbox-copy" class="text-xs text-gray-500 font-mono text-[11px]">{galleryItems[0]?.attribution ?? `\u00A9 ${siteConfig.author.name} @ ${siteConfig.site.domain}`}</span>
+        </div>
+        <div class="flex items-center sm:border-l sm:border-white/10 sm:pl-3.5">
+          <a
+            id="lightbox-permalink"
+            href="/photography/1/"
+            class="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-xs font-medium text-gray-300 hover:bg-white/15 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 transition-colors"
+            aria-label="View full details and field notes"
+            title="View full details and field notes"
+          >
+            <span>Full Detail View</span>
+            <span class="text-gray-400 select-none" aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scrollable Thumbnail Filmstrip -->
+    <div
+      id="lightbox-thumbs-bar"
+      class="shrink-0 border-t border-white/10 bg-[#0a0a0e]/95 px-3 py-2.5 overflow-x-auto"
+    >
+      <div id="lightbox-thumbs-list" class="mx-auto flex w-max items-center gap-2"></div>
+    </div>
+  </div>
+
+  <script type="application/json" id="photo-pages-data" set:html={JSON.stringify(photoToGalleryPage)} />
+
+  <script>
+    function setupPhotographyGallery() {
+      const gridMaybe = document.getElementById('photo-gallery-grid');
+      const modalEl = document.getElementById('photo-lightbox');
+      if (!gridMaybe || !modalEl || gridMaybe.dataset.galleryBound === 'true') return;
+      const gridEl: HTMLElement = gridMaybe;
+      gridEl.dataset.galleryBound = 'true';
+
+      let photoToGalleryPage: Record<number, number> = {};
+      try {
+        const raw = document.getElementById('photo-pages-data')?.textContent;
+        if (raw) photoToGalleryPage = JSON.parse(raw);
+      } catch {
+        // Ignore malformed JSON fallback
+      }
+
+      const stageEl = document.getElementById('lightbox-stage');
+      const stageImg = document.getElementById('lightbox-img') as HTMLImageElement | null;
+      const stageImgLink = document.getElementById('lightbox-img-link') as HTMLAnchorElement | null;
+      const counterEl = document.getElementById('lightbox-counter');
+      const titleEl = document.getElementById('lightbox-title');
+      const dateEl = document.getElementById('lightbox-date');
+      const copyEl = document.getElementById('lightbox-copy');
+      const permalinkEl = document.getElementById('lightbox-permalink') as HTMLAnchorElement | null;
+      const thumbsBarEl = document.getElementById('lightbox-thumbs-bar');
+      const thumbsListEl = document.getElementById('lightbox-thumbs-list');
+      const closeBtn = document.getElementById('lightbox-close-btn');
+      const prevBtn = document.getElementById('lightbox-prev-btn');
+      const nextBtn = document.getElementById('lightbox-next-btn');
+      const fsBtn = document.getElementById('lightbox-fs-btn');
+      const thumbsBtn = document.getElementById('lightbox-thumbs-btn');
+
+      let activeIndex = -1;
+      let lastTriggerEl: HTMLElement | null = null;
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let isSwiping = false;
+
+      const getOrderedCards = () =>
+        Array.from(gridEl.querySelectorAll<HTMLAnchorElement>('.gallery-photo-card'));
+
+      function syncUrlPhotoParam(photoId: number | null) {
+        const url = new URL(window.location.href);
+        if (photoId !== null) {
+          url.searchParams.set('photo', String(photoId));
+        } else {
+          url.searchParams.delete('photo');
+          if (url.hash.startsWith('#photo-')) url.hash = '';
+        }
+        window.history.replaceState({}, '', url.toString());
+      }
+
+      function rebuildThumbStrip() {
+        if (!thumbsListEl) return;
+        thumbsListEl.innerHTML = '';
+        const cards = getOrderedCards();
+        cards.forEach((card, idx) => {
+          const thumbImg = card.querySelector('img');
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.dataset.thumbIdx = String(idx);
+          btn.setAttribute('aria-label', `View ${card.dataset.photoTitle || `photo ${idx + 1}`}`);
+          btn.className =
+            'lightbox-thumb-btn relative h-12 w-16 shrink-0 cursor-pointer overflow-hidden rounded-md border-2 border-transparent opacity-55 transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-amber-500';
+          if (thumbImg) {
+            const mini = document.createElement('img');
+            mini.src = thumbImg.currentSrc || thumbImg.src;
+            mini.alt = '';
+            mini.loading = 'lazy';
+            mini.decoding = 'async';
+            mini.className = 'h-full w-full object-cover';
+            btn.appendChild(mini);
+          }
+          btn.addEventListener('click', () => showSlide(idx));
+          thumbsListEl.appendChild(btn);
+        });
+      }
+
+      function highlightActiveThumb(index: number) {
+        if (!thumbsListEl) return;
+        const buttons = thumbsListEl.querySelectorAll<HTMLButtonElement>('.lightbox-thumb-btn');
+        buttons.forEach((btn, idx) => {
+          const active = idx === index;
+          btn.classList.toggle('border-amber-500', active);
+          btn.classList.toggle('opacity-100', active);
+          btn.classList.toggle('border-transparent', !active);
+          btn.classList.toggle('opacity-55', !active);
+          if (active) {
+            btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          }
+        });
+      }
+
+      function preloadAdjacent(cards: HTMLAnchorElement[], index: number) {
+        if (cards.length <= 1) return;
+        for (const offset of [-1, 1]) {
+          const neighbor = cards[(index + offset + cards.length) % cards.length];
+          const href = neighbor?.getAttribute('href');
+          if (href) {
+            const preload = new window.Image();
+            preload.src = href;
+          }
+        }
+      }
+
+      function showSlide(index: number, syncHistory = true) {
+        const cards = getOrderedCards();
+        if (!cards.length || !stageImg) return;
+
+        const normalized = ((index % cards.length) + cards.length) % cards.length;
+        activeIndex = normalized;
+
+        const card = cards[normalized];
+        const fullSrc = card.getAttribute('href') || '';
+        const title = card.dataset.photoTitle || '';
+        const dateLabel = card.dataset.photoDateLabel || '';
+        const attribution = card.dataset.photoAttribution || '';
+        const alt = card.dataset.photoAlt || title;
+        const photoId = Number(card.dataset.photoId || 0);
+
+        stageImg.src = fullSrc;
+        stageImg.alt = alt;
+        if (counterEl) counterEl.textContent = `${normalized + 1} / ${cards.length}`;
+        if (titleEl) titleEl.textContent = title;
+        if (dateEl) dateEl.textContent = dateLabel;
+        if (copyEl && attribution) copyEl.textContent = attribution;
+        if (photoId > 0) {
+          const detailUrl = `/photography/${photoId}/`;
+          const detailLabel = title ? `View full details and field notes for ${title}` : 'View full details and field notes for this photograph';
+          if (permalinkEl) {
+            permalinkEl.href = detailUrl;
+            permalinkEl.setAttribute('aria-label', detailLabel);
+            permalinkEl.setAttribute('title', detailLabel);
+          }
+          if (stageImgLink) {
+            stageImgLink.href = detailUrl;
+            stageImgLink.setAttribute('aria-label', detailLabel);
+            stageImgLink.setAttribute('title', detailLabel);
+          }
+        }
+
+        highlightActiveThumb(normalized);
+        preloadAdjacent(cards, normalized);
+
+        if (syncHistory && photoId > 0) {
+          syncUrlPhotoParam(photoId);
+        }
+      }
+
+      function openLightbox(index: number, triggerEl: HTMLElement | null = null, syncHistory = true) {
+        if (!modalEl) return;
+        lastTriggerEl = triggerEl;
+        if (thumbsListEl && thumbsListEl.childElementCount === 0) {
+          rebuildThumbStrip();
+        }
+        modalEl.hidden = false;
+        modalEl.classList.remove('hidden');
+        modalEl.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        showSlide(index, syncHistory);
+        closeBtn?.focus();
+      }
+
+      function closeLightbox() {
+        if (!modalEl || modalEl.hidden) return;
+        modalEl.hidden = true;
+        modalEl.classList.add('hidden');
+        modalEl.classList.remove('flex');
+        document.body.style.overflow = '';
+        activeIndex = -1;
+        syncUrlPhotoParam(null);
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+        lastTriggerEl?.focus();
+      }
+
+      gridEl.addEventListener('click', (event) => {
+        const target = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>('.gallery-photo-card');
+        if (!target) return;
+        event.preventDefault();
+        const cards = getOrderedCards();
+        const idx = cards.indexOf(target);
+        if (idx >= 0) openLightbox(idx, target);
+      });
+
+      closeBtn?.addEventListener('click', closeLightbox);
+      prevBtn?.addEventListener('click', () => showSlide(activeIndex - 1));
+      nextBtn?.addEventListener('click', () => showSlide(activeIndex + 1));
+      thumbsBtn?.addEventListener('click', () => {
+        thumbsBarEl?.classList.toggle('hidden');
+      });
+      fsBtn?.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          modalEl.requestFullscreen?.().catch(() => {});
+        } else {
+          document.exitFullscreen?.().catch(() => {});
+        }
+      });
+
+      stageEl?.addEventListener('click', (e) => {
+        if (e.target === stageEl) closeLightbox();
+      });
+
+      stageEl?.addEventListener(
+        'touchmove',
+        (e) => {
+          if (e.touches.length !== 1) return;
+          const dx = Math.abs(e.touches[0].clientX - touchStartX);
+          const dy = Math.abs(e.touches[0].clientY - touchStartY);
+          if (dx > 10 || dy > 10) {
+            isSwiping = true;
+          }
+        },
+        { passive: true },
+      );
+
+      stageEl?.addEventListener(
+        'touchstart',
+        (e) => {
+          if (e.touches.length !== 1) return;
+          isSwiping = false;
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+        },
+        { passive: true },
+      );
+
+      stageEl?.addEventListener(
+        'touchend',
+        (e) => {
+          if (e.changedTouches.length !== 1) return;
+          const dx = e.changedTouches[0].clientX - touchStartX;
+          const dy = e.changedTouches[0].clientY - touchStartY;
+          if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+            if (dx < 0) showSlide(activeIndex + 1);
+            else showSlide(activeIndex - 1);
+          }
+        },
+        { passive: true },
+      );
+
+      stageImgLink?.addEventListener('click', (e) => {
+        if (isSwiping) {
+          e.preventDefault();
+          e.stopPropagation();
+          isSwiping = false;
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (!modalEl || modalEl.hidden) return;
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          closeLightbox();
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          showSlide(activeIndex - 1);
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          showSlide(activeIndex + 1);
+        }
+      });
+
+      // Sorting logic
+      function applySort(order: 'desc' | 'asc') {
+        const cards = getOrderedCards();
+        cards.sort((a, b) => {
+          const timeA = Number(a.dataset.photoDate || 0);
+          const timeB = Number(b.dataset.photoDate || 0);
+          const idA = Number(a.dataset.photoId || 0);
+          const idB = Number(b.dataset.photoId || 0);
+          if (order === 'desc') {
+            return timeB !== timeA ? timeB - timeA : idB - idA;
+          }
+          return timeA !== timeB ? timeA - timeB : idA - idB;
+        });
+        cards.forEach((card) => gridEl.appendChild(card));
+        if (thumbsListEl && thumbsListEl.childElementCount > 0) {
+          rebuildThumbStrip();
+        }
+        layoutSmartFlex();
+      }
+
+      // Dynamic Aspect-Aware Smart Flex Layout
+      let lastGridWidth = Number(gridEl.dataset.laidOutWidth) || 0;
+      function layoutSmartFlex() {
+        if (!gridEl) return;
+        const containerWidth = gridEl.clientWidth;
+        if (!containerWidth) return;
+        lastGridWidth = containerWidth;
+
+        const cards = Array.from(gridEl.querySelectorAll<HTMLElement>('.gallery-photo-card'));
+        if (cards.length === 0) return;
+
+        const gap = 8; // 0.5rem = 8px
+        const targetH = containerWidth >= 1024 ? 260 : (containerWidth >= 640 ? 220 : 180);
+
+        const items = cards.map((c) => ({
+          el: c,
+          aspect: Number(c.style.getPropertyValue('--photo-aspect')) || 1.5,
+        }));
+
+        let currentRow: typeof items = [];
+        let currentAspectSum = 0;
+
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          currentRow.push(item);
+          currentAspectSum += item.aspect;
+
+          const remaining = items.length - (i + 1);
+          const rowWAtTarget = currentAspectSum * targetH + (currentRow.length - 1) * gap;
+
+          if (rowWAtTarget >= containerWidth) {
+            // Lookahead: if exactly 1 item would be left over for the final row,
+            // borrow 1 item from this row so the final two rows each have at least 2 items
+            if (remaining === 1 && currentRow.length > 2) {
+              const borrowed = currentRow.pop()!;
+              currentAspectSum -= borrowed.aspect;
+              const h = Math.round((containerWidth - (currentRow.length - 1) * gap) / currentAspectSum);
+              applyRow(currentRow, h, containerWidth, gap);
+              currentRow = [borrowed];
+              currentAspectSum = borrowed.aspect;
+            } else {
+              const h = Math.round((containerWidth - (currentRow.length - 1) * gap) / currentAspectSum);
+              applyRow(currentRow, h, containerWidth, gap);
+              currentRow = [];
+              currentAspectSum = 0;
+            }
+          }
+        }
+
+        // Final row
+        if (currentRow.length > 0) {
+          if (currentRow.length === 1) {
+            // Lone orphan: center it with its authentic aspect ratio
+            const item = currentRow[0];
+            const w = Math.round(item.aspect * targetH);
+            item.el.style.width = `${w}px`;
+            item.el.style.height = `${targetH}px`;
+            item.el.style.flex = `0 0 ${w}px`;
+            item.el.style.marginLeft = 'auto';
+            item.el.style.marginRight = 'auto';
+          } else {
+            // 2 or more items: fill row 100% flush proportionally without cropping
+            const h = Math.round((containerWidth - (currentRow.length - 1) * gap) / currentAspectSum);
+            applyRow(currentRow, h, containerWidth, gap);
+          }
+        }
+
+        function applyRow(rowItems: typeof items, rowHeight: number, totalW: number, rowGap: number) {
+          let allocated = 0;
+          rowItems.forEach((it, idx) => {
+            let itemW: number;
+            if (idx === rowItems.length - 1) {
+              itemW = totalW - allocated - (rowItems.length - 1) * rowGap;
+            } else {
+              itemW = Math.round(it.aspect * rowHeight);
+              allocated += itemW;
+            }
+            it.el.style.width = `${itemW}px`;
+            it.el.style.height = `${rowHeight}px`;
+            it.el.style.flex = `0 0 ${itemW}px`;
+            it.el.style.marginLeft = '';
+            it.el.style.marginRight = '';
+          });
+        }
+      }
+
+      // Initial layout is pre-computed at build time via responsive CSS variables (--m-*, --t-*, --d-*)
+      // so initial render has 0.000 CLS. `layoutSmartFlex()` only runs after user re-sorting.
+      let isSorted = false;
+      const origApplySort = applySort;
+      function applySortAndTrack(order: 'desc' | 'asc') {
+        isSorted = true;
+        origApplySort(order);
+      }
+      if (typeof ResizeObserver !== 'undefined' && gridEl) {
+        const ro = new ResizeObserver((entries) => {
+          if (!isSorted) return;
+          const w = Math.round(entries[0]?.contentRect.width || 0);
+          if (w > 0 && Math.abs(w - lastGridWidth) > 1) {
+            layoutSmartFlex();
+          }
+        });
+        ro.observe(gridEl);
+      }
+
+      const dropdownEl = document.getElementById('gallery-sort-dropdown');
+      const sortBtn = document.getElementById('gallery-sort-btn');
+      const sortMenu = document.getElementById('gallery-sort-menu');
+      const sortChevron = document.getElementById('gallery-sort-chevron');
+      const sortLabel = document.getElementById('gallery-sort-label');
+      const sortSelect = document.getElementById('photo-sort-select') as HTMLSelectElement | null;
+      const optionBtns = document.querySelectorAll<HTMLButtonElement>('.sort-option');
+
+      if (dropdownEl && sortBtn && sortMenu) {
+        let menuOpen = false;
+        const setMenuOpen = (open: boolean) => {
+          menuOpen = open;
+          sortBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          sortMenu.classList.toggle('opacity-0', !open);
+          sortMenu.classList.toggle('scale-95', !open);
+          sortMenu.classList.toggle('pointer-events-none', !open);
+          sortMenu.classList.toggle('invisible', !open);
+          sortMenu.classList.toggle('opacity-100', open);
+          sortMenu.classList.toggle('scale-100', open);
+          sortMenu.classList.toggle('pointer-events-auto', open);
+          sortMenu.classList.toggle('visible', open);
+          sortChevron?.classList.toggle('rotate-180', open);
+        };
+
+        const setSortOrder = (order: 'desc' | 'asc', updateHistory = true) => {
+          if (sortLabel) sortLabel.textContent = order === 'asc' ? 'Oldest first' : 'Newest first';
+          if (sortSelect) sortSelect.value = order;
+
+          optionBtns.forEach((btn) => {
+            const match = btn.dataset.sort === order;
+            btn.setAttribute('aria-selected', match ? 'true' : 'false');
+            btn.querySelector('.check-icon')?.classList.toggle('hidden', !match);
+            btn.classList.toggle('font-semibold', match);
+            btn.classList.toggle('text-amber-700', match);
+            btn.classList.toggle('dark:text-amber-500', match);
+            btn.classList.toggle('bg-amber-50/80', match);
+            btn.classList.toggle('dark:bg-gray-700/60', match);
+            btn.classList.toggle('font-normal', !match);
+            btn.classList.toggle('text-gray-600', !match);
+            btn.classList.toggle('dark:text-gray-400', !match);
+          });
+
+          applySortAndTrack(order);
+
+          if (updateHistory) {
+            const url = new URL(window.location.href);
+            if (order === 'asc') url.searchParams.set('sort', 'asc');
+            else url.searchParams.delete('sort');
+            window.history.replaceState({}, '', url.toString());
+          }
+        };
+
+        sortBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setMenuOpen(!menuOpen);
+        });
+
+        optionBtns.forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const nextOrder = btn.dataset.sort === 'asc' ? 'asc' : 'desc';
+            setSortOrder(nextOrder, true);
+            setMenuOpen(false);
+            sortBtn.focus();
+          });
+        });
+
+        document.addEventListener('click', (e) => {
+          if (menuOpen && !dropdownEl.contains(e.target as Node)) setMenuOpen(false);
+        });
+
+        dropdownEl.addEventListener('keydown', (e: KeyboardEvent) => {
+          if (e.key === 'Escape') {
+            setMenuOpen(false);
+            sortBtn.focus();
+          } else if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && !menuOpen) {
+            setMenuOpen(true);
+          }
+        });
+
+        if (new URLSearchParams(window.location.search).get('sort') === 'asc') {
+          setSortOrder('asc', false);
+        }
+      }
+
+      // Deep-link opener (?photo=ID or #photo-ID)
+      function checkPhotoDeepLink() {
+        const params = new URLSearchParams(window.location.search);
+        const hash = window.location.hash;
+        const rawId =
+          params.get('photo') || (hash.startsWith('#photo-') ? hash.slice('#photo-'.length) : null);
+        if (!rawId) return;
+        const targetId = parseInt(rawId, 10);
+        if (Number.isNaN(targetId)) return;
+
+        const cards = getOrderedCards();
+        const matchIdx = cards.findIndex((c) => Number(c.dataset.photoId) === targetId);
+        if (matchIdx >= 0) {
+          openLightbox(matchIdx, cards[matchIdx], false);
+          return;
+        }
+
+        const destPage = photoToGalleryPage[targetId];
+        if (destPage) {
+          const destPath = destPage <= 1 ? '/photography/' : `/photography/page/${destPage}/`;
+          if (window.location.pathname !== destPath) {
+            window.location.replace(`${destPath}?photo=${targetId}`);
+          }
+        }
+      }
+
+      checkPhotoDeepLink();
+      window.addEventListener('popstate', checkPhotoDeepLink);
+    }
+
+    setupPhotographyGallery();
+  </script>
+
+  <style is:global>
+    .photo-justified-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .gallery-photo-card {
+      display: block;
+      flex: var(--m-g, 1) 1 var(--m-b, 45%);
+      height: var(--m-h, 160px);
+      margin-inline: var(--m-mx, 0px);
+      border-radius: 1rem;
+      overflow: hidden;
+      background-color: rgb(243 244 246);
+      box-shadow:
+        inset 0 0 0 1px rgb(17 24 39 / 0.05),
+        0 4px 6px -1px rgb(0 0 0 / 0.05),
+        0 2px 4px -2px rgb(0 0 0 / 0.05);
+    }
+
+    @media (min-width: 640px) {
+      .gallery-photo-card {
+        flex: var(--t-g, 1) 1 var(--t-b, 30%);
+        height: var(--t-h, 200px);
+        margin-inline: var(--t-mx, 0px);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .gallery-photo-card {
+        flex: var(--d-g, 1) 1 var(--d-b, 22%);
+        height: var(--d-h, 240px);
+        margin-inline: var(--d-mx, 0px);
+      }
+    }
+
+    :where(.dark, .dark *) .gallery-photo-card {
+      background-color: rgb(31 41 55);
+      box-shadow:
+        inset 0 0 0 1px rgb(255 255 255 / 0.1),
+        0 4px 6px -1px rgb(0 0 0 / 0.25);
+    }
+
+    .gallery-photo-card:hover {
+      box-shadow:
+        0 10px 15px -3px rgb(0 0 0 / 0.12),
+        0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    .gallery-photo-card .gallery-photo-thumb {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 1rem;
+      vertical-align: bottom;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-photo-card:hover .gallery-photo-thumb {
+      transform: scale(1.02);
+    }
+
+    #lightbox-img-link,
+    #lightbox-img {
+      cursor: zoom-in;
+      cursor: -webkit-zoom-in;
+    }
+  </style>
+</BaseLayout>

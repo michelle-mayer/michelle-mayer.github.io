@@ -1,0 +1,6 @@
+---
+import TagsIndexView from '../../components/pages/TagsIndexView.astro';
+import { isFeatureEnabled } from '../../utils/features';
+---
+
+{isFeatureEnabled('tags') && <TagsIndexView />}

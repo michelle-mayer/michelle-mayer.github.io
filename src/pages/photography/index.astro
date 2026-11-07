@@ -1,0 +1,6 @@
+---
+import PhotographyView from '../../components/pages/PhotographyView.astro';
+import { isFeatureEnabled } from '../../utils/features';
+---
+
+{isFeatureEnabled('photography') && <PhotographyView currentPage={1} />}

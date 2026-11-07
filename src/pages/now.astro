@@ -1,0 +1,6 @@
+---
+import NowView from '../components/pages/NowView.astro';
+import { isFeatureEnabled } from '../utils/features';
+---
+
+{isFeatureEnabled('now') && <NowView />}

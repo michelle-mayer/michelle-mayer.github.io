@@ -1,0 +1,115 @@
+---
+/**
+ * Loads the technical acronym tooltip enhancer (`src/scripts/tech-tooltips.ts`)
+ * and tooltip bubble styles.
+ * Include on any page that renders `<abbr>` tooltips (Markdown via
+ * `rehype-tech-tooltips.mjs` or `Tooltip.astro`). Astro de-duplicates it per page.
+ * Keep this the only importer so the module bundles as a self-contained script.
+ */
+---
+
+<script>
+  import '../../scripts/tech-tooltips';
+</script>
+
+<style is:global>
+  .tech-tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+    vertical-align: baseline;
+  }
+
+  .tech-tooltip-trigger {
+    border-bottom: 1.5px dotted rgba(245, 158, 11, 0.6);
+    cursor: help;
+    text-decoration: none;
+    outline: none;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .tech-tooltip-trigger:focus-visible {
+    outline: 2px solid rgba(245, 158, 11, 0.7);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  .tech-tooltip-bubble {
+    --tooltip-x-offset: -50%;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    translate: 0 0 !important;
+    transform: translateX(var(--tooltip-x-offset)) translateY(4px) scale(0.96);
+    transition: opacity 0.15s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.15s;
+  }
+
+  html:not(.dark) .tech-tooltip-bubble {
+    background-color: rgba(255, 255, 255, 0.97) !important;
+    color: #111827 !important;
+    box-shadow:
+      0 20px 25px -5px rgba(17, 24, 39, 0.12),
+      0 8px 10px -6px rgba(17, 24, 39, 0.08),
+      0 0 0 1px rgba(217, 119, 6, 0.22) !important;
+  }
+
+  html:not(.dark) .tech-tooltip-bubble > span:first-child {
+    border-bottom-color: rgba(229, 231, 235, 0.9) !important;
+  }
+
+  html:not(.dark) .tech-tooltip-bubble > span:first-child > span:first-child > span:first-child {
+    color: #d97706 !important;
+  }
+
+  html:not(.dark) .tech-tooltip-bubble > span:first-child > span:first-child > span:nth-child(2) {
+    color: #1f2937 !important;
+  }
+
+  html:not(.dark) .tech-tooltip-bubble > span:first-child > span:nth-child(2) {
+    background-color: #fffbeb !important;
+    color: #b45309 !important;
+    box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.25) !important;
+  }
+
+  html:not(.dark) .tech-tooltip-bubble > span:nth-child(2) {
+    color: #4b5563 !important;
+  }
+
+  html:not(.dark) .tech-tooltip-bubble .tech-tooltip-arrow {
+    border-top-color: rgba(255, 255, 255, 0.97) !important;
+  }
+
+  .tech-tooltip-wrapper:hover .tech-tooltip-bubble,
+  .tech-tooltip-wrapper:focus-within .tech-tooltip-bubble,
+  .tech-tooltip-bubble.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(var(--tooltip-x-offset)) translateY(0) scale(1);
+  }
+
+  .tech-tooltip-bubble.is-flipped {
+    bottom: auto;
+    top: calc(100% + 0.5rem);
+    transform: translateX(var(--tooltip-x-offset)) translateY(-4px) scale(0.96);
+  }
+
+  .tech-tooltip-wrapper:hover .tech-tooltip-bubble.is-flipped,
+  .tech-tooltip-wrapper:focus-within .tech-tooltip-bubble.is-flipped,
+  .tech-tooltip-bubble.is-flipped.is-active {
+    transform: translateX(var(--tooltip-x-offset)) translateY(0) scale(1);
+  }
+
+  .tech-tooltip-bubble.is-flipped .tech-tooltip-arrow {
+    top: auto;
+    bottom: 100%;
+    margin-top: 0;
+    margin-bottom: -1px;
+    border-top-color: transparent !important;
+    border-bottom-color: rgba(255, 255, 255, 0.97) !important;
+  }
+
+  .dark .tech-tooltip-bubble.is-flipped .tech-tooltip-arrow {
+    border-top-color: transparent !important;
+    border-bottom-color: rgba(17, 24, 39, 0.98) !important;
+  }
+</style>

@@ -1,0 +1,385 @@
+---
+/**
+ * Loads the Mermaid diagram click-to-expand zoom viewer (`src/scripts/mermaid-zoom.ts`)
+ * and Mermaid diagram/lightbox styles.
+ * Include on pages that render Markdown containing Mermaid diagrams.
+ * Keep this the only importer so the module bundles as a self-contained script.
+ */
+---
+
+<script>
+  import '../../scripts/mermaid-zoom';
+</script>
+
+<style is:global>
+  :root {
+    --mermaid-node-bg: #ffffff;
+    --mermaid-node-border: #f59e0b;
+    --mermaid-cluster-bg: #ffffff;
+    --mermaid-cluster-border: #d1d5db;
+    --mermaid-text: #111827;
+    --mermaid-line: #f59e0b;
+    --mermaid-edge-bg: #ffffff;
+    --mermaid-edge-border: #e5e7eb;
+  }
+
+  .dark {
+    --mermaid-node-bg: #1f2937;
+    --mermaid-node-border: #f59e0b;
+    --mermaid-cluster-bg: #111827;
+    --mermaid-cluster-border: rgba(255, 255, 255, 0.25);
+    --mermaid-text: #f3f4f6;
+    --mermaid-line: #f59e0b;
+    --mermaid-edge-bg: #1f2937;
+    --mermaid-edge-border: rgba(255, 255, 255, 0.15);
+  }
+
+  .prose svg.flowchart,
+  svg.flowchart {
+    margin: 2rem auto !important;
+    padding: 0.5rem !important;
+    display: block;
+    overflow: visible;
+    fill: var(--mermaid-text) !important;
+  }
+
+  svg.flowchart .node rect,
+  svg.flowchart .node circle,
+  svg.flowchart .node ellipse,
+  svg.flowchart .node polygon,
+  svg.flowchart .node path {
+    fill: var(--mermaid-node-bg) !important;
+    stroke: var(--mermaid-node-border) !important;
+    rx: 8px;
+    ry: 8px;
+    transition: fill 0.2s ease, stroke 0.2s ease;
+  }
+
+  svg.flowchart .cluster rect {
+    fill: var(--mermaid-cluster-bg) !important;
+    stroke: var(--mermaid-cluster-border) !important;
+    rx: 12px;
+    ry: 12px;
+    transition: fill 0.2s ease, stroke 0.2s ease;
+  }
+
+  svg.flowchart foreignObject,
+  svg[id^="mermaid-"] foreignObject {
+    overflow: visible !important;
+  }
+
+  svg.flowchart foreignObject > div,
+  svg[id^="mermaid-"] foreignObject > div {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  svg.flowchart .mermaid-br,
+  svg[id^="mermaid-"] .mermaid-br {
+    display: block !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  svg.flowchart br + br,
+  svg[id^="mermaid-"] br + br {
+    display: none !important;
+  }
+
+  svg.flowchart .label,
+  svg.flowchart .label text,
+  svg.flowchart span,
+  svg.flowchart .cluster-label text,
+  svg.flowchart .cluster-label span,
+  svg.flowchart .cluster text,
+  svg.flowchart .cluster span,
+  svg.flowchart .flowchartTitleText,
+  .prose svg.flowchart p,
+  svg.flowchart foreignObject p,
+  svg.flowchart foreignObject div,
+  svg.flowchart foreignObject span {
+    margin: 0 !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+    color: var(--mermaid-text) !important;
+    fill: var(--mermaid-text) !important;
+    transition: color 0.2s ease, fill 0.2s ease;
+  }
+
+  svg.flowchart .edgePaths path,
+  svg.flowchart .flowchart-link {
+    fill: none !important;
+    stroke: var(--mermaid-line) !important;
+  }
+
+  svg.flowchart .marker,
+  svg.flowchart .marker path,
+  svg.flowchart .marker circle,
+  svg.flowchart .arrowheadPath {
+    fill: var(--mermaid-line) !important;
+    stroke: var(--mermaid-line) !important;
+  }
+
+  svg.flowchart .edgeLabel,
+  svg.flowchart .edgeLabel p,
+  svg.flowchart .labelBkg {
+    background-color: transparent !important;
+    color: var(--mermaid-text) !important;
+  }
+
+  svg.flowchart .edgeLabel span.edgeLabel:not(:empty) {
+    display: inline-block;
+    padding: 3px 8px !important;
+    border-radius: 6px;
+    background-color: var(--mermaid-edge-bg) !important;
+    border: 1px solid var(--mermaid-edge-border);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .mermaid-diagram-wrapper {
+    position: relative;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    padding: 2.25rem 0.75rem 0.75rem;
+    border-radius: 0.875rem;
+    border: 1px solid rgba(156, 163, 175, 0.25);
+    background-color: rgba(249, 250, 251, 0.55);
+    cursor: zoom-in;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  :where(.dark, .dark *) .mermaid-diagram-wrapper {
+    border-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(17, 24, 39, 0.45);
+  }
+
+  .mermaid-diagram-wrapper:hover {
+    border-color: rgba(245, 158, 11, 0.45);
+    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+  }
+
+  .mermaid-diagram-wrapper svg.flowchart,
+  .mermaid-diagram-wrapper svg[id^="mermaid-"] {
+    margin: 0 auto !important;
+  }
+
+  .mermaid-diagram-toolbar {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    user-select: none;
+  }
+
+  .mermaid-expand-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: 1.75rem;
+    padding: 0 0.55rem;
+    border-radius: 0.375rem;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: rgb(75, 85, 99);
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(209, 213, 219, 0.9);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+  }
+
+  :where(.dark, .dark *) .mermaid-expand-btn {
+    color: rgb(209, 213, 219);
+    background-color: rgba(17, 24, 39, 0.85);
+    border-color: rgba(55, 65, 81, 0.8);
+  }
+
+  .mermaid-expand-btn:hover {
+    color: rgb(217, 119, 6);
+    border-color: rgba(245, 158, 11, 0.65);
+    background-color: rgb(255, 255, 255);
+  }
+
+  :where(.dark, .dark *) .mermaid-expand-btn:hover {
+    color: rgb(251, 191, 36);
+    border-color: rgba(245, 158, 11, 0.65);
+    background-color: rgba(31, 41, 55, 0.95);
+  }
+
+  .mermaid-expand-btn:focus-visible {
+    outline: 2px solid rgba(245, 158, 11, 0.6);
+    outline-offset: 1px;
+  }
+
+  .mermaid-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.18s ease, visibility 0.18s ease;
+  }
+
+  :where(.dark, .dark *) .mermaid-lightbox {
+    background-color: rgba(3, 7, 18, 0.94);
+  }
+
+  .mermaid-lightbox.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .mermaid-lightbox-header {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    left: 1rem;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.625rem;
+    pointer-events: none;
+  }
+
+  .mermaid-lightbox-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 0.625rem;
+    background-color: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(209, 213, 219, 0.9);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    pointer-events: auto;
+  }
+
+  :where(.dark, .dark *) .mermaid-lightbox-controls {
+    background-color: rgba(17, 24, 39, 0.92);
+    border-color: rgba(55, 65, 81, 0.85);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .mermaid-ctrl-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.125rem;
+    height: 2.125rem;
+    padding: 0 0.5rem;
+    border-radius: 0.425rem;
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: rgb(55, 65, 81);
+    background-color: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.15s ease;
+  }
+
+  :where(.dark, .dark *) .mermaid-ctrl-btn {
+    color: rgb(229, 231, 235);
+  }
+
+  .mermaid-ctrl-btn:hover {
+    color: rgb(217, 119, 6);
+    background-color: rgba(243, 244, 246, 0.9);
+  }
+
+  :where(.dark, .dark *) .mermaid-ctrl-btn:hover {
+    color: rgb(251, 191, 36);
+    background-color: rgba(31, 41, 55, 0.9);
+  }
+
+  .mermaid-close-btn {
+    background-color: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(209, 213, 219, 0.9);
+    border-radius: 0.625rem;
+    width: 2.625rem;
+    height: 2.625rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  :where(.dark, .dark *) .mermaid-close-btn {
+    background-color: rgba(17, 24, 39, 0.92);
+    border-color: rgba(55, 65, 81, 0.85);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .mermaid-zoom-readout {
+    min-width: 3.5rem;
+  }
+
+  .mermaid-lightbox-stage {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .mermaid-lightbox-stage.is-dragging {
+    cursor: grabbing;
+  }
+
+  .mermaid-lightbox-canvas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+    will-change: transform;
+  }
+
+  .mermaid-lightbox-canvas svg {
+    margin: 0 !important;
+    max-width: none !important;
+    display: block;
+    overflow: visible;
+  }
+
+  .mermaid-lightbox-hint {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgb(107, 114, 128);
+    background-color: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(229, 231, 235, 0.9);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  :where(.dark, .dark *) .mermaid-lightbox-hint {
+    color: rgb(156, 163, 175);
+    background-color: rgba(17, 24, 39, 0.88);
+    border-color: rgba(55, 65, 81, 0.8);
+  }
+</style>

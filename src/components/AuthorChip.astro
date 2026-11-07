@@ -1,0 +1,66 @@
+---
+import { Image } from 'astro:assets';
+import { authorAvatarImage as authorImage } from '../utils/authorImages';
+import { themeConfig } from '../theme.config';
+import { isFeatureEnabled } from '../utils/features';
+
+interface Props {
+  author?: string;
+  loading?: 'eager' | 'lazy';
+  class?: string;
+}
+
+const {
+  author = themeConfig.author.name,
+  loading = 'lazy',
+  class: className = 'mt-6',
+} = Astro.props;
+const showAbout = isFeatureEnabled('about');
+---
+
+<div class:list={['relative flex items-center', className]}>
+  {showAbout ? (
+    <a
+      href="/about/"
+      class="group/author inline-flex items-center gap-x-3 rounded-lg px-2 py-1.5 -ml-2 text-left hover:bg-gray-100/70 dark:hover:bg-gray-800/60 transition-colors"
+      aria-label={`About ${author}`}
+    >
+      <Image
+        src={authorImage}
+        alt={author}
+        width={72}
+        height={72}
+        loading={loading}
+        class="size-8 rounded-lg object-cover ring-1 ring-amber-600/30 group-hover/author:ring-amber-600 transition shadow-xs"
+      />
+      <div class="text-xs">
+        <p class="font-semibold text-gray-900 dark:text-white group-hover/author:text-amber-600 dark:group-hover/author:text-amber-400 transition">
+          {author}
+        </p>
+        <p class="text-[11px] text-gray-500 dark:text-gray-400">
+          {themeConfig.author.tagline}
+        </p>
+      </div>
+    </a>
+  ) : (
+    <div class="inline-flex items-center gap-x-3 rounded-lg px-2 py-1.5 -ml-2 text-left">
+      <Image
+        src={authorImage}
+        alt={author}
+        width={72}
+        height={72}
+        loading={loading}
+        class="size-8 rounded-lg object-cover ring-1 ring-amber-600/30 shadow-xs"
+      />
+      <div class="text-xs">
+        <p class="font-semibold text-gray-900 dark:text-white">
+          {author}
+        </p>
+        <p class="text-[11px] text-gray-500 dark:text-gray-400">
+          {themeConfig.author.tagline}
+        </p>
+      </div>
+    </div>
+  )}
+</div>
+

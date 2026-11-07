@@ -1,0 +1,190 @@
+---
+import { slugify } from '../utils/slugify';
+import { tagHref, isHardLinkedTag } from '../utils/tagHref';
+import { experiences } from '../data/experiences';
+import { getTagTaxonomy } from '../utils/tagTaxonomy';
+import { isFeatureEnabled, isUrlEnabled } from '../utils/features';
+
+const { contentTagSlugs } = await getTagTaxonomy();
+const tagsEnabled = isFeatureEnabled('tags');
+---
+
+<section id="experience" class="scroll-mt-16 relative isolate py-20 sm:py-28 bg-gray-50/70 dark:bg-gray-800/30 border-y border-gray-200/70 dark:border-gray-800 transition-colors">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mx-auto max-w-2xl text-center mb-16 sm:mb-20">
+      <p class="text-base/7 font-semibold text-amber-700 dark:text-amber-500">Career Journey</p>
+      <h2 class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 dark:text-white sm:text-5xl">Work Experience</h2>
+      <p class="mt-4 text-base/7 text-gray-600 dark:text-gray-300">
+        Roles, projects, and experience along the way.
+      </p>
+    </div>
+
+    <!-- Timeline Container -->
+    <div class="relative mx-auto max-w-7xl">
+      <!-- Continuous vertical spine line (desktop) -->
+      <div 
+        class="hidden lg:block absolute left-[12.5rem] top-4 bottom-4 w-0.5 bg-gradient-to-b from-amber-500 via-amber-400/60 to-gray-300 dark:via-amber-500/40 dark:to-gray-700" 
+        aria-hidden="true"
+      ></div>
+
+      <!-- Continuous vertical spine line (mobile & tablet) -->
+      <div 
+        class="lg:hidden absolute left-4 sm:left-6 top-3 bottom-3 w-0.5 bg-gradient-to-b from-amber-500 via-amber-400/60 to-gray-300 dark:via-amber-500/40 dark:to-gray-700" 
+        aria-hidden="true"
+      ></div>
+
+      <div class="space-y-12 sm:space-y-16">
+        {experiences.map((exp) => (
+          <div class="relative grid grid-cols-1 lg:grid-cols-[11rem_3rem_1fr] items-start gap-y-3">
+            
+            <!-- Left Column: Striking Year Marker & Period (Desktop) -->
+            <div class="hidden lg:flex flex-col items-end text-right pr-4 pt-1">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-amber-100 text-amber-800 dark:bg-gray-800 dark:text-amber-500 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/30 shadow-xs">
+                {exp.year}
+              </span>
+              <span class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">
+                {exp.period}
+              </span>
+              {exp.duration && (
+                <span class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-medium">
+                  {exp.duration}
+                </span>
+              )}
+              {exp.isCurrent && (
+                <span class="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                  <span class="relative flex size-2">
+                    <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
+                  </span>
+                  Present Role
+                </span>
+              )}
+            </div>
+
+            <!-- Center Spine Node (Desktop) -->
+            <div class="hidden lg:flex justify-center pt-2 relative">
+              <div class="relative flex items-center justify-center">
+                {exp.isCurrent ? (
+                  <div class="relative flex size-5 items-center justify-center">
+                    <span class="absolute inline-flex size-5 animate-ping rounded-full bg-amber-400 opacity-60"></span>
+                    <span class="size-3.5 rounded-full bg-amber-600 dark:bg-amber-500 ring-4 ring-white dark:ring-gray-900 shadow-md"></span>
+                  </div>
+                ) : (
+                  <div class="size-3.5 rounded-full bg-amber-600 dark:bg-amber-500 ring-4 ring-white dark:ring-gray-900 shadow-xs"></div>
+                )}
+              </div>
+            </div>
+
+            <!-- Mobile Year & Node Row -->
+            <div class="lg:hidden flex items-center gap-3 pl-10 sm:pl-14 relative">
+              <!-- Mobile Node -->
+              <div class="absolute left-4 sm:left-6 -translate-x-1/2 flex items-center justify-center">
+                {exp.isCurrent ? (
+                  <div class="relative flex size-4 items-center justify-center">
+                    <span class="absolute inline-flex size-4 animate-ping rounded-full bg-amber-400 opacity-60"></span>
+                    <span class="size-3 rounded-full bg-amber-600 dark:bg-amber-500 ring-4 ring-white dark:ring-gray-900"></span>
+                  </div>
+                ) : (
+                  <div class="size-3 rounded-full bg-amber-600 dark:bg-amber-500 ring-4 ring-white dark:ring-gray-900"></div>
+                )}
+              </div>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-amber-100 text-amber-800 dark:bg-gray-800 dark:text-amber-500 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/30">
+                {exp.year}
+              </span>
+              <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                {exp.period} {exp.duration ? `(${exp.duration})` : ""}
+              </span>
+              {exp.isCurrent && (
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                  <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                  Current
+                </span>
+              )}
+            </div>
+
+            <!-- Experience Card (Right on desktop, indented on mobile) -->
+            <div class="lg:pl-0 pl-10 sm:pl-14">
+              <div class="rounded-2xl p-6 sm:p-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-md ring-1 ring-gray-900/5 dark:ring-white/10 transition-colors">
+                
+                <!-- Card Header -->
+                <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-4 pb-4 border-b border-gray-100 dark:border-gray-700/60">
+                  <div>
+                    <h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                      {exp.role}
+                    </h3>
+                    <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+                      <span class="font-semibold text-amber-700 dark:text-amber-400">
+                        {exp.company}
+                      </span>
+                      <span class="text-gray-300 dark:text-gray-600" aria-hidden="true">•</span>
+                      <span class="inline-flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                        <svg class="size-3.5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                        </svg>
+                        {exp.location}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Internal Progression note if present -->
+                {exp.progression && (
+                  <p class="mt-3 text-xs font-medium text-amber-700 dark:text-amber-500 bg-amber-50/80 dark:bg-gray-700/60 px-3 py-1.5 rounded-lg ring-1 ring-inset ring-amber-600/15 dark:ring-amber-500/30">
+                    {exp.progression}
+                  </p>
+                )}
+
+                <!-- Highlights Bullet List -->
+                <ul role="list" class="mt-4 space-y-2.5 text-sm/6 text-gray-600 dark:text-gray-300">
+                  {exp.highlights.map((item) => (
+                    <li class="flex items-start gap-2.5">
+                      <svg class="size-4 shrink-0 mt-1 text-amber-600 dark:text-amber-500" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                        <circle cx="8" cy="8" r="3" />
+                      </svg>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <!-- Skills / Tags -->
+                {exp.skills.length > 0 && (
+                  <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700/60 flex flex-wrap items-center gap-1.5">
+                    {exp.skills.map((skill) => {
+                      const tagSlug = slugify(skill);
+                      const candidateHref = tagHref(tagSlug);
+                      const linkHref = isUrlEnabled(candidateHref)
+                        ? candidateHref
+                        : (tagsEnabled ? `/tags/${tagSlug.toLowerCase()}/` : null);
+                      const hasContent =
+                        contentTagSlugs.has(tagSlug) ||
+                        (isHardLinkedTag(tagSlug) && isUrlEnabled(candidateHref));
+                      const badgeClass = hasContent
+                        ? "inline-flex items-center rounded-md bg-amber-50 dark:bg-gray-700/60 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-500 ring-1 ring-inset ring-amber-600/30 dark:ring-amber-500/30 hover:bg-amber-100 dark:hover:bg-gray-700 dark:hover:text-amber-400 transition-colors"
+                        : "inline-flex items-center rounded-md bg-gray-100 dark:bg-gray-700/50 px-2.5 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors";
+                      return linkHref ? (
+                        <a 
+                          href={linkHref}
+                          class={badgeClass}
+                          title={hasContent ? `View articles and logs tagged #${skill}` : `View experience tagged #${skill}`}
+                        >
+                          #{skill}
+                        </a>
+                      ) : (
+                        <span class={badgeClass}>
+                          #{skill}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

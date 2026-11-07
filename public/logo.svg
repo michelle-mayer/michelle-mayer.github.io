@@ -1,0 +1,73 @@
+<svg
+  viewBox="0 0 200 64"
+  width="200"
+  height="64"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label="My Site"
+  class="logo-svg"
+  style="color: #0f172a;"
+>
+  <style>
+    .logo-svg {
+      color: #0f172a;
+    }
+    .brand-accent {
+      color: #d97706;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .logo-svg {
+        color: #ffffff;
+      }
+      .brand-accent {
+        color: #f59e0b;
+      }
+    }
+  </style>
+
+  <!-- Wordmark -->
+  <text
+    x="100"
+    y="37"
+    text-anchor="middle"
+    fill="currentColor"
+    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+    font-size="14"
+    font-weight="400"
+    letter-spacing="0.22em"
+  >MY SITE</text>
+
+  <!-- Left Tapered Line -->
+  <path
+    d="M 10 63 L 91.5 61.9 L 91.5 64.1 Z"
+    fill="currentColor"
+  />
+
+  <!-- Right Tapered Line -->
+  <path
+    d="M 108.5 61.9 L 190 63 L 108.5 64.1 Z"
+    fill="currentColor"
+  />
+
+  <!-- Compass Needle centered at (100, 63) -->
+  <g transform="translate(100, 63) rotate(42)">
+    <!-- Top-Right Needle: Solid Amber Triangle -->
+    <polygon
+      points="0,-11 3.2,0 -3.2,0"
+      fill="currentColor"
+      class="brand-accent"
+    />
+
+    <!-- Bottom-Left Needle: Outlined Triangle -->
+    <polygon
+      points="0,11 -3.2,0 3.2,0"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.25"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+    />
+  </g>
+</svg>

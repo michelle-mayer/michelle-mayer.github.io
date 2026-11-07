@@ -1,0 +1,6 @@
+---
+import BlogIndexView from '../../components/pages/BlogIndexView.astro';
+import { isFeatureEnabled } from '../../utils/features';
+---
+
+{isFeatureEnabled('blog') && <BlogIndexView currentPage={1} />}

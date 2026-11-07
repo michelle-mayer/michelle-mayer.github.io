@@ -1,0 +1,86 @@
+---
+import { getTechTerm, type TechTerm } from '../data/techTerms';
+import TechTooltipsScript from './scripts/TechTooltipsScript.astro';
+
+interface Props {
+  term?: string;
+  definition?: string;
+  name?: string;
+  category?: string;
+  class?: string;
+}
+
+const {
+  term: propTerm,
+  definition: propDefinition,
+  name: propName,
+  category: propCategory,
+  class: className = '',
+} = Astro.props;
+
+// Render slot content if provided, or default to term
+const slotContent = await Astro.slots.render('default');
+const cleanSlotText = slotContent ? slotContent.replace(/<[^>]*>/g, '').trim() : '';
+
+const termKey = propTerm || cleanSlotText;
+const dictionaryEntry: TechTerm | undefined = getTechTerm(termKey);
+
+const termDisplay = cleanSlotText || propTerm || dictionaryEntry?.term || '';
+const fullName = propName || dictionaryEntry?.name || termDisplay;
+const definitionText = propDefinition || dictionaryEntry?.definition || (propName ? `${termDisplay} (${propName})` : termDisplay);
+const category = propCategory || dictionaryEntry?.category;
+
+// Progressive enhancement fallback string for native title
+const fallbackTitle = fullName && fullName !== termDisplay
+  ? `${termDisplay} — ${fullName}: ${definitionText}`
+  : `${termDisplay}: ${definitionText}`;
+
+const tooltipId = `tech-tip-${Math.random().toString(36).substring(2, 9)}`;
+---
+
+<span class:list={['tech-tooltip-wrapper relative inline-block', className]}>
+  <abbr
+    class="tech-tooltip-trigger not-prose cursor-help border-b border-dotted border-amber-500/60 dark:border-amber-400/60 hover:border-amber-600 dark:hover:border-amber-300 hover:text-amber-700 dark:hover:text-amber-300 transition-colors font-medium no-underline"
+    aria-describedby={tooltipId}
+    title={fallbackTitle}
+    data-tooltip-id={tooltipId}
+    data-term={termDisplay}
+  >
+    {slotContent ? <Fragment set:html={slotContent} /> : termDisplay}
+  </abbr>
+
+  <span
+    id={tooltipId}
+    role="tooltip"
+    class="tech-tooltip-bubble pointer-events-none opacity-0 invisible absolute bottom-full left-1/2 mb-2 z-50 w-72 sm:w-80 max-w-[calc(100vw-2rem)] p-3 rounded-lg bg-white/95 dark:bg-gray-900/98 text-gray-900 dark:text-gray-100 shadow-xl shadow-gray-900/10 dark:shadow-2xl ring-1 ring-gray-900/10 dark:ring-amber-500/25 backdrop-blur-md transition-all duration-150 ease-out text-left select-none"
+  >
+    <!-- Header: Acronym, expansion name and category badge -->
+    <span class="flex items-center justify-between gap-2 pb-1.5 border-b border-gray-200/80 dark:border-gray-700/80">
+      <span class="inline-flex items-baseline gap-1.5 min-w-0">
+        <span class="font-mono text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide shrink-0">
+          {termDisplay}
+        </span>
+        {fullName && fullName !== termDisplay && (
+          <span class="text-xs font-medium text-gray-800 dark:text-gray-200 truncate">
+            {fullName}
+          </span>
+        )}
+      </span>
+      {category && (
+        <span class="text-[9px] font-mono uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-amber-50 dark:bg-gray-800 text-amber-700 dark:text-amber-300/90 ring-1 ring-amber-500/20 dark:ring-white/10 shrink-0">
+          {category}
+        </span>
+      )}
+    </span>
+
+    <!-- Definition Body -->
+    <span class="block mt-1.5 text-xs/relaxed text-gray-600 dark:text-gray-300 font-normal">
+      {definitionText}
+    </span>
+
+    <!-- Downward caret arrow pointing to the term -->
+    <span class="tech-tooltip-arrow absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-white/95 dark:border-t-gray-900/98 pointer-events-none" aria-hidden="true"></span>
+  </span>
+</span>
+
+<TechTooltipsScript />

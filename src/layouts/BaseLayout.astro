@@ -1,0 +1,97 @@
+---
+import Head from '../components/Head.astro';
+import Navigation from '../components/Navigation.astro';
+import Footer from '../components/Footer.astro';
+import Breadcrumbs, { type BreadcrumbItem } from '../components/Breadcrumbs.astro';
+import type { ComponentProps } from 'astro/types';
+import { siteConfig } from '../site.config';
+import { themeConfig } from '../theme.config';
+
+export type Props = ComponentProps<typeof Head> & {
+  breadcrumbs?: BreadcrumbItem[];
+  showBreadcrumbs?: boolean;
+};
+
+const navLabelBySegment = new Map<string, string>([
+  ['tags', 'Tags'],
+  ...themeConfig.navigation.items
+    .map((item) => [item.href.replace(/^\/|\/$/g, ''), item.label] as const)
+    .filter(([seg]) => seg.length > 0),
+]);
+
+const props = Astro.props;
+const pathname = Astro.url.pathname;
+const cleanPath = pathname.replace(/^\/|\/$/g, "");
+const isHome = cleanPath === "";
+const is404 = cleanPath === "404" || pathname.startsWith("/404");
+const showBreadcrumbs = props.showBreadcrumbs !== undefined ? props.showBreadcrumbs : (!isHome && !is404);
+const hasBreadcrumbExtra = Astro.slots.has('breadcrumb-extra');
+const showSubBar = showBreadcrumbs || hasBreadcrumbExtra;
+
+let breadcrumbsList: BreadcrumbItem[] =
+  showBreadcrumbs && props.breadcrumbs ? [...props.breadcrumbs] : [];
+
+if (showBreadcrumbs && breadcrumbsList.length === 0) {
+  const segments = cleanPath.split("/").filter(Boolean);
+
+  if (segments.length === 1) {
+    const seg = segments[0];
+    const name = navLabelBySegment.get(seg) ?? (props.pageTitle || seg);
+    breadcrumbsList = [{ name }];
+  } else if (segments[0] === "blog" && segments.length >= 2) {
+    const escapedTitle = siteConfig.site.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const suffixPattern = new RegExp(` - ${escapedTitle}$| — ${escapedTitle}.*$`);
+    const cleanTitle = props.pageTitle ? props.pageTitle.replace(suffixPattern, "").trim() : "Article";
+    breadcrumbsList = [{ name: navLabelBySegment.get("blog") ?? "Blog", href: "/blog/" }, { name: cleanTitle }];
+  } else if (segments[0] === "tags" && segments.length >= 2) {
+    const tagName = props.section || segments[1];
+    breadcrumbsList = [{ name: navLabelBySegment.get("tags") ?? "Tags", href: "/tags/" }, { name: `#${tagName}` }];
+  }
+}
+const htmlLang = (siteConfig.site.language || 'en').replace(
+  /^([a-z]{2,3})-([a-z]{2})$/i,
+  (_, lang: string, region: string) => `${lang.toLowerCase()}-${region.toUpperCase()}`,
+);
+---
+
+<!DOCTYPE html>
+<html lang={htmlLang}>
+  <head>
+    <Head {...props} breadcrumbs={breadcrumbsList} />
+  </head>
+  <body class="bg-white text-gray-900 antialiased dark:bg-gray-900 dark:text-gray-100 min-h-screen flex flex-col transition-colors duration-200">
+    <svg aria-hidden="true" class="hidden">
+      <symbol id="i-briefcase" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0"/></symbol>
+      <symbol id="i-camera" viewBox="0 0 24 20" fill="currentColor"><path d="M1 5.25A2.25 2.25 0 0 1 3.25 3h2.382a2.25 2.25 0 0 0 1.95-1.125l.436-.654A2.25 2.25 0 0 1 10.068 0h3.864a2.25 2.25 0 0 1 2.05 1.221l.436.654A2.25 2.25 0 0 0 18.368 3h2.382A2.25 2.25 0 0 1 23 5.25v12.5A2.25 2.25 0 0 1 20.75 20H3.25A2.25 2.25 0 0 1 1 17.75V5.25ZM12 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0-2a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/></symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v4.518Z"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="m9.69 18.933.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.355 7.588a13.43 13.43 0 0 0 3.031 2.198l.018.008.006.003.002.001ZM10 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd"/></symbol>
+      <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></symbol>
+    </svg>
+    <div class="flex-1 flex flex-col">
+      <Navigation />
+      {showSubBar && (
+        <aside aria-label={showBreadcrumbs ? "Breadcrumb navigation" : "Sub-navigation"} class="border-b border-gray-200/70 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/40 transition-colors">
+          <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-h-11 sm:h-11 py-1.5 sm:py-0 flex flex-wrap sm:flex-nowrap items-center justify-between gap-x-4 gap-y-2 min-w-0">
+            {showBreadcrumbs ? (
+              <Breadcrumbs items={breadcrumbsList} />
+            ) : (
+              <div aria-hidden="true" />
+            )}
+            <slot name="breadcrumb-extra" />
+          </div>
+        </aside>
+      )}
+      <main class="flex-1">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+    <script>
+      // Global enhancement only. Feature scripts load from the components that need them
+      // (see `src/components/scripts/`, `SectionNav.astro`), so pages ship only the JS they use.
+      import '../scripts/border-beam';
+    </script>
+  </body>
+</html>

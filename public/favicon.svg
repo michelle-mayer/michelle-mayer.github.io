@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <style>
+    :root {
+      --brand-stroke: #0f172a;
+      --brand-accent: #d97706;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --brand-stroke: #ffffff;
+        --brand-accent: #f59e0b;
+      }
+    }
+    .brand-line {
+      fill: var(--brand-stroke);
+    }
+    .brand-needle-base {
+      stroke: var(--brand-stroke);
+    }
+    .brand-needle-accent {
+      fill: var(--brand-accent);
+    }
+  </style>
+
+  <!-- Left Tapered Horizon Line -->
+  <path d="M 1 16 L 11 15.2 L 11 16.8 Z" class="brand-line" />
+
+  <!-- Right Tapered Horizon Line -->
+  <path d="M 21 15.2 L 31 16 L 21 16.8 Z" class="brand-line" />
+
+  <!-- Hero Compass Rhombus Needle centered at (16, 16) rotated 42deg -->
+  <g transform="translate(16, 16) rotate(42)">
+    <!-- Top-Right Needle: Solid Amber/Orange Triangle -->
+    <polygon points="0,-13.5 4.5,0 -4.5,0" class="brand-needle-accent" />
+
+    <!-- Bottom-Left Needle: Sleek Outlined Arrowhead -->
+    <polygon
+      points="0,13.5 -4.5,0 4.5,0"
+      fill="none"
+      class="brand-needle-base"
+      stroke-width="2.2"
+      stroke-linejoin="round"
+      stroke-linecap="round"
+    />
+  </g>
+</svg>

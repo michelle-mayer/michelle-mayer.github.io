@@ -1,0 +1,60 @@
+---
+import { experienceTagSlugs } from '../data/experiences';
+import { slugify } from '../utils/slugify';
+import { tagHref, isHardLinkedTag } from '../utils/tagHref';
+import { isFeatureEnabled, isUrlEnabled } from '../utils/features';
+
+interface Props {
+	tags: string[];
+	showLabel?: boolean;
+	limit?: number;
+	singleLine?: boolean;
+}
+
+const { tags = [], showLabel = false, limit, singleLine = false } = Astro.props;
+const displayTags = limit ? tags.slice(0, limit) : tags;
+const tagsEnabled = isFeatureEnabled('tags');
+const showAbout = isFeatureEnabled('about');
+---
+
+<div class:list={[
+	"tag-list not-prose items-center min-w-0",
+	singleLine ? "flex flex-nowrap gap-1.5 overflow-hidden" : "flex flex-wrap gap-1.5"
+]}>
+	{showLabel && <span class="tag-label text-xs font-semibold text-gray-700 dark:text-gray-300 mr-1 shrink-0">Tags:</span>}
+	{displayTags.map((tag) => {
+		const tagSlug = slugify(tag);
+		const candidateHref = tagHref(tagSlug);
+		const linkHref = isUrlEnabled(candidateHref)
+			? candidateHref
+			: (tagsEnabled ? `/tags/${tagSlug.toLowerCase()}/` : null);
+		const hasExperience =
+			(showAbout && experienceTagSlugs.has(tagSlug)) ||
+			(isHardLinkedTag(tagSlug) && isUrlEnabled(candidateHref));
+		const cleanTag = tag.replace(/^#/, '');
+		const classes = [
+			hasExperience ? "tag-pill-exp" : "tag-pill",
+			singleLine && "min-w-0 shrink max-w-full"
+		];
+		return linkHref ? (
+			<a
+				href={linkHref}
+				class:list={classes}
+			>
+				{singleLine ? (
+					<span class="truncate block min-w-0">#{cleanTag}</span>
+				) : (
+					`#${cleanTag}`
+				)}
+			</a>
+		) : (
+			<span class:list={classes}>
+				{singleLine ? (
+					<span class="truncate block min-w-0">#{cleanTag}</span>
+				) : (
+					`#${cleanTag}`
+				)}
+			</span>
+		);
+	})}
+</div>

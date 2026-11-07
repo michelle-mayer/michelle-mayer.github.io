@@ -1,0 +1,6 @@
+---
+import AboutView from '../components/pages/AboutView.astro';
+import { isFeatureEnabled } from '../utils/features';
+---
+
+{isFeatureEnabled('about') && <AboutView />}

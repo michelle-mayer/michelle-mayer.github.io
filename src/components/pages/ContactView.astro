@@ -1,0 +1,173 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AmbientGlow from '../AmbientGlow.astro';
+import SectionNav from '../SectionNav.astro';
+import ContactForm from '../ContactForm.astro';
+import { getEntry, render } from 'astro:content';
+import { siteConfig } from '../../site.config';
+import { isContactFormEnabled } from '../../utils/features';
+
+const showContactForm = isContactFormEnabled();
+
+const contactEntry = await getEntry('pages', 'contact');
+const { Content } = await render(contactEntry!);
+const contactData = contactEntry!.data;
+const pageTitle = contactData.pageTitle;
+const description = contactData.description;
+---
+
+<BaseLayout
+  pageTitle={pageTitle}
+  description={description}
+  image="/og/contact.jpg"
+  imageAlt={pageTitle}
+  breadcrumbs={[{ name: 'Contact' }]}
+>
+  <SectionNav slot="breadcrumb-extra" />
+
+  <div class="relative isolate overflow-hidden py-24 sm:py-32">
+    <AmbientGlow preset="contact" />
+
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class:list={[
+        'grid grid-cols-1 items-start gap-x-12 gap-y-12',
+        showContactForm ? 'lg:grid-cols-2' : 'mx-auto max-w-2xl',
+      ]}>
+        
+        <!-- Left: Contact Information & Direct Channels -->
+        <div class="w-full space-y-8">
+          <div class="rounded-2xl p-8 sm:p-10 shadow-lg ring-1 ring-gray-900/5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm dark:ring-white/10 space-y-6">
+            <div>
+              <p class="text-base/7 font-semibold text-amber-700 dark:text-amber-500">{contactData.eyebrow ?? 'Contact'}</p>
+              <h1 class="mt-2 text-4xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-5xl">{contactData.heading ?? 'Let’s connect'}</h1>
+            </div>
+
+            <div class="text-base/7 text-gray-600 dark:text-gray-300 space-y-4">
+              <Content />
+            </div>
+
+            <dl class="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-700/60 text-sm">
+              <div class="flex items-center gap-3">
+                <dt class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 dark:bg-gray-700/60 text-amber-600 dark:text-amber-500 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/30">
+                  <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                  </svg>
+                </dt>
+                <dd>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">Direct Email</p>
+                  <a href={`mailto:${siteConfig.author.email}`} class="font-semibold text-gray-900 dark:text-white hover:text-amber-600 dark:hover:text-amber-400 transition">
+                    {siteConfig.author.email}
+                  </a>
+                </dd>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <dt class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 dark:bg-gray-700/60 text-amber-600 dark:text-amber-500 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/30">
+                  <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                  </svg>
+                </dt>
+                <dd>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">{contactData.locationLabel ?? 'Location'}</p>
+                  <p class="font-semibold text-gray-900 dark:text-white">
+                    {siteConfig.author.location} {contactData.locationSubtext && <span class="font-normal text-xs text-gray-500 dark:text-gray-400">{contactData.locationSubtext}</span>}
+                  </p>
+                </dd>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <dt class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 dark:bg-gray-700/60 text-amber-600 dark:text-amber-500 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/30">
+                  <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                  </svg>
+                </dt>
+                <dd>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">{contactData.responseLabel ?? 'Expected Response Time'}</p>
+                  <p class="font-semibold text-gray-900 dark:text-white">
+                    {contactData.responseValue ?? 'Within 24–48 hours'}
+                  </p>
+                </dd>
+              </div>
+            </dl>
+
+            <div class="pt-4 border-t border-gray-100 dark:border-gray-700/60">
+              <p class="text-xs font-semibold tracking-wider uppercase text-gray-500 dark:text-gray-400 mb-3">{contactData.socialsHeading ?? 'Elsewhere on the web'}</p>
+              <div class="flex flex-wrap gap-2.5">
+                {siteConfig.socials.linkedin && (
+                  <a
+                    href={siteConfig.socials.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="group inline-flex items-center gap-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:text-gray-900 dark:hover:text-white hover:ring-gray-300 dark:hover:ring-gray-600 transition"
+                  >
+                    <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-[#0a66c2] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.69 1.69 0 0 0 1.69-1.69 1.7 1.7 0 0 0-1.69-1.7 1.7 1.7 0 0 0-1.7 1.7 1.69 1.69 0 0 0 1.7 1.69m1.4 9.74v-8.37H5.06v8.37h2.8Z"/>
+                    </svg>
+                    <span>LinkedIn</span>
+                    <span aria-hidden="true" class="text-gray-400 dark:text-gray-500 transition-colors group-hover:text-gray-600 dark:group-hover:text-gray-300">&nearr;</span>
+                  </a>
+                )}
+                {siteConfig.socials.github && (
+                  <a
+                    href={siteConfig.socials.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="group inline-flex items-center gap-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:text-gray-900 dark:hover:text-white hover:ring-gray-300 dark:hover:ring-gray-600 transition"
+                  >
+                    <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-gray-900 dark:group-hover:text-white shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z" />
+                    </svg>
+                    <span>GitHub</span>
+                    <span aria-hidden="true" class="text-gray-400 dark:text-gray-500 transition-colors group-hover:text-gray-600 dark:group-hover:text-gray-300">&nearr;</span>
+                  </a>
+                )}
+                {siteConfig.socials.gitlab && (
+                  <a
+                    href={siteConfig.socials.gitlab}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="group inline-flex items-center gap-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:text-gray-900 dark:hover:text-white hover:ring-gray-300 dark:hover:ring-gray-600 transition"
+                  >
+                    <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-[#fc6d26] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M23.955 13.587l-1.342-4.135-2.664-8.189c-.135-.423-.73-.423-.867 0L16.418 9.45H7.582L4.919 1.263C4.783.84 4.185.84 4.05 1.26L1.386 9.449.044 13.587c-.121.375.014.789.331 1.023L12 23.054l11.625-8.443c.318-.235.453-.647.33-1.024Z"/>
+                    </svg>
+                    <span>GitLab</span>
+                    <span aria-hidden="true" class="text-gray-400 dark:text-gray-500 transition-colors group-hover:text-gray-600 dark:group-hover:text-gray-300">&nearr;</span>
+                  </a>
+                )}
+                {siteConfig.socials.instagram && (
+                  <a
+                    href={siteConfig.socials.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="group inline-flex items-center gap-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-200 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:text-gray-900 dark:hover:text-white hover:ring-gray-300 dark:hover:ring-gray-600 transition"
+                  >
+                    <svg class="size-4 text-gray-400 dark:text-gray-500 transition-colors group-hover:text-[#E4405F] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                    </svg>
+                    <span>Instagram</span>
+                    <span aria-hidden="true" class="text-gray-400 dark:text-gray-500 transition-colors group-hover:text-gray-600 dark:group-hover:text-gray-300">&nearr;</span>
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Interactive Formspree Form -->
+        {showContactForm && (
+          <div class="w-full">
+            <ContactForm 
+              title={contactData.formTitle ?? 'Send a message'}
+              subtitle={contactData.formSubtitle ?? 'Fill out the form below and it will be delivered directly to my inbox.'}
+            />
+          </div>
+        )}
+
+      </div>
+    </div>
+  </div>
+</BaseLayout>

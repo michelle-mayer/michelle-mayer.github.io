@@ -1,0 +1,156 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AmbientGlow from '../AmbientGlow.astro';
+import SectionNav from '../SectionNav.astro';
+import { getEntry } from 'astro:content';
+import { getTagTaxonomy } from '../../utils/tagTaxonomy';
+import { tagHref, isHardLinkedTag } from '../../utils/tagHref';
+import { isFeatureEnabled, isUrlEnabled } from '../../utils/features';
+
+const showPhotography = isFeatureEnabled('photography');
+const showAbout = isFeatureEnabled('about');
+const { sortedTags, photoTags } = await getTagTaxonomy();
+const tagsPageEntry = await getEntry('pages', 'tags');
+const tagsPageData = tagsPageEntry!.data;
+
+const pageTitle = tagsPageData.pageTitle;
+const description = tagsPageData.description;
+
+function resolveTagHref(slug: string): string {
+  const candidate = tagHref(slug);
+  return isUrlEnabled(candidate) ? candidate : `/tags/${slug.toLowerCase()}/`;
+}
+---
+
+<BaseLayout
+  pageTitle={pageTitle}
+  description={description}
+  image="/og/tags.jpg"
+  breadcrumbs={[{ name: 'Tags' }]}
+>
+  <SectionNav slot="breadcrumb-extra" />
+
+  <section class="relative isolate overflow-hidden py-24 sm:py-32">
+    <AmbientGlow preset="tags-index" />
+
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="mx-auto max-w-5xl mb-12 sm:mb-16">
+        <p class="text-base/7 font-semibold text-amber-700 dark:text-amber-500">{tagsPageData.eyebrow ?? 'Topics & Taxonomy'}</p>
+        <h1 class="mt-2 text-4xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-5xl">{tagsPageData.heading ?? 'Tags'}</h1>
+        <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">
+          {tagsPageData.subtitle}
+        </p>
+      </div>
+
+      <!-- Engineering & Career Topics Section -->
+      <div class="mx-auto max-w-5xl">
+        <div class="mb-6 flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-gray-200/70 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400">
+          <div class="flex items-center gap-2">
+            <span class="size-2 rounded-full bg-amber-600"></span>
+            <span class="font-semibold text-sm text-gray-900 dark:text-white">Engineering & Career Topics</span>
+            <span class="font-mono text-xs text-gray-500 dark:text-gray-400">({sortedTags.length})</span>
+          </div>
+          <div class="flex items-center gap-3">
+            {showAbout && (
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 dark:bg-gray-800 text-amber-700 dark:text-amber-500 ring-1 ring-inset ring-amber-600/30 dark:ring-amber-500/30 font-semibold">
+                <svg class="size-3.5 text-amber-600 dark:text-amber-500" aria-hidden="true">
+                  <use href="#i-briefcase" />
+                </svg>
+                <span>Career experience</span>
+              </span>
+            )}
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 ring-1 ring-inset ring-gray-200 dark:ring-gray-700 font-medium">
+              <span>Articles & logs</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2.5">
+          {
+            sortedTags.map((tag) => {
+              const hasExpHighlight = showAbout && (tag.hasExperience || isHardLinkedTag(tag.slug));
+              return (
+                <a 
+                  href={resolveTagHref(tag.slug)} 
+                  class={`group inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs sm:text-sm transition-all duration-150 ${
+                    hasExpHighlight
+                      ? 'bg-amber-50 dark:bg-gray-800 text-amber-700 dark:text-amber-500 font-semibold ring-1 ring-inset ring-amber-600/30 dark:ring-amber-500/30 hover:bg-amber-100 dark:hover:bg-gray-700 dark:hover:text-amber-400'
+                      : 'bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 font-medium ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                  title={
+                    hasExpHighlight
+                      ? `#${tag.name}: ${tag.expCount} ${tag.expCount === 1 ? 'career role' : 'career roles'}${tag.blogCount > 0 ? ` • ${tag.blogCount} ${tag.blogCount === 1 ? 'article' : 'articles'}` : ''}${tag.logCount > 0 ? ` • ${tag.logCount} ${tag.logCount === 1 ? 'log' : 'logs'}` : ''}${tag.photoCount > 0 ? ` • ${tag.photoCount} ${tag.photoCount === 1 ? 'photo' : 'photo rolls'}` : ''}`
+                      : (tag.blogCount > 0 
+                          ? `#${tag.name}: ${tag.blogCount} ${tag.blogCount === 1 ? 'article' : 'articles'}${tag.logCount > 0 ? ` • ${tag.logCount} ${tag.logCount === 1 ? 'log' : 'logs'}` : ''}${tag.photoCount > 0 ? ` • ${tag.photoCount} ${tag.photoCount === 1 ? 'photo' : 'photo rolls'}` : ''}`
+                          : (tag.logCount > 0 
+                              ? `#${tag.name}: ${tag.logCount} ${tag.logCount === 1 ? 'log update' : 'log updates'}${tag.photoCount > 0 ? ` • ${tag.photoCount} ${tag.photoCount === 1 ? 'photo' : 'photo rolls'}` : ''}`
+                              : `#${tag.name}: ${tag.photoCount} ${tag.photoCount === 1 ? 'photo' : 'photo rolls'}`
+                            )
+                        )
+                  }
+                >
+                  {hasExpHighlight && (
+                    <svg class="tag-exp-icon" aria-label="Has career experience"><use href="#i-briefcase" /></svg>
+                  )}
+                  <span>#{tag.name}</span>
+                  <span class={`inline-flex items-center justify-center rounded px-1.5 py-0.5 text-xs font-mono font-medium transition-colors ${
+                    hasExpHighlight
+                      ? 'bg-amber-100 dark:bg-gray-700 text-amber-800 dark:text-amber-400 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/30'
+                      : 'bg-gray-200/80 dark:bg-gray-600/60 text-gray-700 dark:text-gray-300 ring-1 ring-inset ring-gray-300 dark:ring-gray-600'
+                  }`}>
+                    {tag.count}
+                  </span>
+                </a>
+              );
+            })
+          }
+        </div>
+      </div>
+
+      <!-- Dedicated Photography Section -->
+      {showPhotography && photoTags.length > 0 && (
+        <div class="mx-auto max-w-5xl mt-16 pt-12 border-t border-gray-200/80 dark:border-gray-800">
+          <div class="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-200/70 dark:border-gray-800">
+            <div class="flex items-center gap-3">
+              <div class="flex size-9 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 ring-1 ring-inset ring-gray-200 dark:ring-gray-700">
+                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                  <circle cx="12" cy="13" r="3"/>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-2xl">
+                  Photography Topics
+                </h2>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  Topics from the photographs and stories in the gallery.
+                </p>
+              </div>
+            </div>
+            <span class="text-xs font-mono text-gray-500 dark:text-gray-400">
+              {photoTags.length} photography topics
+            </span>
+          </div>
+
+          <div class="flex flex-wrap gap-2.5">
+            {
+              photoTags.map((tag) => (
+                <a 
+                  href={resolveTagHref(tag.slug)} 
+                  class="group inline-flex items-center gap-2 rounded-md bg-gray-100 dark:bg-gray-800/80 px-3 py-1.5 text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-medium ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-150"
+                  title={`#${tag.name}: ${tag.count} ${tag.count === 1 ? 'photo' : 'photo rolls'}`}
+                >
+                  <svg class="tag-cam-icon" aria-hidden="true"><use href="#i-camera" /></svg>
+                  <span>#{tag.name}</span>
+                  <span class="inline-flex items-center justify-center rounded px-1.5 py-0.5 text-xs font-mono font-medium bg-gray-200/80 dark:bg-gray-700 text-gray-700 dark:text-gray-300 ring-1 ring-inset ring-gray-300 dark:ring-gray-600">
+                    {tag.count}
+                  </span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,132 @@
+---
+/**
+ * Loads the click-to-play YouTube facade handler (`src/scripts/youtube-embed.ts`)
+ * and YouTube facade styles.
+ * Include on pages that render `.youtube-embed` figures (Markdown via
+ * `remark-youtube.mjs` or `VideoCardPoster.astro`). Astro de-duplicates it per page.
+ * Keep this the only importer so the module bundles as a self-contained script.
+ */
+---
+
+<script>
+  import '../../scripts/youtube-embed';
+</script>
+
+<style is:global>
+  .youtube-embed {
+    position: relative;
+    margin: 2rem 0;
+    max-width: 100%;
+  }
+
+  .youtube-embed-btn {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    background: #000;
+    cursor: pointer;
+    box-shadow: 0 0 0 1px rgb(17 24 39 / 0.08), 0 10px 30px -12px rgb(0 0 0 / 0.4);
+  }
+
+  .dark .youtube-embed-btn {
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1), 0 10px 30px -12px rgb(0 0 0 / 0.6);
+  }
+
+  .youtube-embed-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin: 0;
+    transition: transform 0.4s ease, opacity 0.2s ease;
+  }
+
+  .youtube-embed-btn:hover img,
+  .youtube-embed-btn:focus-visible img {
+    transform: scale(1.03);
+    opacity: 0.92;
+  }
+
+  .youtube-embed-btn:focus-visible {
+    outline: 2px solid #fbbf24;
+    outline-offset: 3px;
+  }
+
+  .youtube-embed-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 68px;
+    height: 48px;
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s ease;
+    filter: drop-shadow(0 4px 14px rgb(0 0 0 / 0.45));
+  }
+
+  .youtube-embed-icon-bg {
+    fill: #212121;
+    fill-opacity: 0.85;
+    transition: fill 0.2s ease, fill-opacity 0.2s ease;
+  }
+
+  .youtube-embed-btn:hover .youtube-embed-icon,
+  .youtube-embed-btn:focus-visible .youtube-embed-icon {
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  .youtube-embed-btn:hover .youtube-embed-icon-bg,
+  .youtube-embed-btn:focus-visible .youtube-embed-icon-bg {
+    fill: #f59e0b;
+    fill-opacity: 1;
+  }
+
+  .youtube-embed iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 0.75rem;
+    background: #000;
+  }
+
+  .youtube-embed figcaption {
+    margin-top: 0.6rem;
+    font-size: 0.875rem;
+    text-align: center;
+    color: rgb(107 114 128);
+  }
+
+  .dark .youtube-embed figcaption {
+    color: rgb(156 163 175);
+  }
+
+  .youtube-card-embed {
+    margin: 0;
+  }
+
+  .youtube-card-embed .youtube-embed-btn,
+  .youtube-card-embed iframe {
+    height: 100%;
+    width: 100%;
+    aspect-ratio: auto;
+    border-radius: 0.75rem;
+  }
+
+  .youtube-poster-embed {
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .youtube-poster-embed .youtube-embed-btn,
+  .youtube-poster-embed iframe {
+    height: 100%;
+    width: 100%;
+    aspect-ratio: auto;
+    border-radius: 0;
+  }
+</style>

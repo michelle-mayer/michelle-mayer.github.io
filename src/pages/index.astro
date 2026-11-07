@@ -1,0 +1,22 @@
+---
+import HomeView from '../components/pages/HomeView.astro';
+import BlogIndexView from '../components/pages/BlogIndexView.astro';
+import AboutView from '../components/pages/AboutView.astro';
+import NowView from '../components/pages/NowView.astro';
+import PhotographyView from '../components/pages/PhotographyView.astro';
+import LogIndexView from '../components/pages/LogIndexView.astro';
+import TagsIndexView from '../components/pages/TagsIndexView.astro';
+import ContactView from '../components/pages/ContactView.astro';
+import { getEffectiveHomePage } from '../utils/features';
+
+const homePage = getEffectiveHomePage();
+---
+
+{homePage === 'home' && <HomeView />}
+{homePage === 'blog' && <BlogIndexView currentPage={1} />}
+{homePage === 'about' && <AboutView />}
+{homePage === 'now' && <NowView />}
+{homePage === 'photography' && <PhotographyView currentPage={1} />}
+{homePage === 'log' && <LogIndexView filter="all" currentPage={1} />}
+{homePage === 'tags' && <TagsIndexView />}
+{homePage === 'contact' && <ContactView />}
