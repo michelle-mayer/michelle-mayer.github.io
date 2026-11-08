@@ -1,0 +1,77 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import VideoCardPoster from './VideoCardPoster.astro';
+import type { PostVideoInfo } from '../utils/postVideo';
+import { BLOG_CATEGORY_DETAILS, blogCategoryHref } from '../utils/blogCategories';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  video?: PostVideoInfo | null;
+  loading?: 'eager' | 'lazy';
+  aspectClass?: string;
+  badgeLabel?: string;
+  playButtonSize?: 'sm' | 'md' | 'lg';
+}
+
+const {
+  post,
+  video,
+  loading = 'lazy',
+  aspectClass = 'aspect-video',
+  badgeLabel = 'Video Article',
+  playButtonSize = 'md',
+} = Astro.props;
+const { category, heroImage, heroImageAlt, title } = post.data;
+const details = BLOG_CATEGORY_DETAILS[category];
+---
+
+<div
+  class:list={['blog-card-media relative w-full shrink-0 overflow-hidden', aspectClass]}
+  data-blog-cover={heroImage ? 'image' : video ? 'video' : 'color'}
+  data-blog-category={category}
+>
+  {heroImage ? (
+    <Image
+      src={heroImage}
+      alt={heroImageAlt ?? title}
+      width={960}
+      height={540}
+      widths={[480, 960]}
+      sizes="(min-width: 1024px) 600px, (min-width: 640px) 50vw, 90vw"
+      fit="cover"
+      format="webp"
+      loading={loading}
+      class="pointer-events-none absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+    />
+  ) : video ? (
+    <VideoCardPoster
+      videoId={video.videoId}
+      title={video.title}
+      thumbUrl={video.thumbUrl}
+      badgeLabel={badgeLabel}
+      playButtonSize={playButtonSize}
+      aspectClass="h-full"
+      class="absolute inset-0 h-full"
+    />
+  ) : (
+    <div class:list={['pointer-events-none absolute inset-0', details.coverClass]} aria-hidden="true">
+      <div
+        class="absolute inset-0 opacity-20"
+        style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 24px 24px;"
+      ></div>
+      <div class="absolute -left-12 -top-16 size-64 rounded-full bg-white/10"></div>
+      <div class="absolute -bottom-20 left-16 size-64 rounded-full border border-white/15"></div>
+      <svg class="absolute bottom-6 right-7 size-20 text-white/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+        <path d={details.iconPath} />
+      </svg>
+    </div>
+  )}
+  <a
+    href={blogCategoryHref(category)}
+    class="absolute right-3 top-3 z-30 rounded-full bg-gray-950/80 px-3 py-1 text-xs font-semibold text-white shadow-xs ring-1 ring-white/25 backdrop-blur-md transition hover:bg-gray-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+    aria-label={`Browse ${details.label} posts`}
+  >
+    {details.label}
+  </a>
+</div>

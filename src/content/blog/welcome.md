@@ -2,6 +2,7 @@
 title: "Welcome to my site"
 description: "A placeholder for your first blog post."
 pubDate: "2026-11-06"
+category: "personal"
 tags: ["site"]
 ---
 

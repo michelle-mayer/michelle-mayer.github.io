@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import BlogIndexView from '../../../../components/pages/BlogIndexView.astro';
+import { BLOG_CATEGORIES, type BlogCategory } from '../../../../utils/blogCategories';
+import { OLDER_BLOGS_PAGE_SIZE } from '../../../../utils/pagination';
+import { isFeatureEnabled } from '../../../../utils/features';
+
+export async function getStaticPaths() {
+  if (!isFeatureEnabled('blog')) {
+    return [];
+  }
+  const posts = await getCollection('blog');
+  return BLOG_CATEGORIES.flatMap((category) => {
+    const count = posts.filter((post) => post.data.category === category).length;
+    const totalPages = Math.max(1, Math.ceil(Math.max(0, count - 3) / OLDER_BLOGS_PAGE_SIZE));
+    return Array.from({ length: totalPages }, (_, index) => ({
+      params: { category, path: index === 0 ? undefined : `page/${index + 1}` },
+      props: { category, currentPage: index + 1 },
+    }));
+  });
+}
+
+interface Props {
+  category: BlogCategory;
+  currentPage: number;
+}
+
+const { category, currentPage } = Astro.props;
+---
+
+<BlogIndexView category={category} currentPage={currentPage} />

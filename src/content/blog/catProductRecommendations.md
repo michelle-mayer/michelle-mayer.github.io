@@ -2,6 +2,7 @@
 title: "[Draft] Cat products I swear by"
 description: "My go-to cat products, how I use them, and the honest pros, cons, caveats, and costs."
 pubDate: "2026-11-08"
+category: "personal"
 tags: ["cats", "productRecommendation", "tips", "personalHobbies"]
 ---
 

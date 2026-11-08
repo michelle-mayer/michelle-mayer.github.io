@@ -2,6 +2,7 @@
 title: "[Draft] We Can't Automate Our Way Out of Burnout"
 description: "Why mental health, trust, and team culture belong in tech's AI strategy, not on its list of things to deprioritize."
 pubDate: "2026-11-08"
+category: "tech"
 tags: ["tech", "ai", "mentalHealth", "teamCulture"]
 ---
 

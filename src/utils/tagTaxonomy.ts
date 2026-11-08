@@ -217,6 +217,8 @@ const TAG_TEMPLATE_DIGEST = (() => {
     'src/layouts/BaseLayout.astro',
     'src/components/Footer.astro',
     'src/components/TagList.astro',
+    'src/components/BlogCardMedia.astro',
+    'src/utils/blogCategories.ts',
     'src/styles/global.css',
     'src/theme.config.ts',
   ]) {
@@ -246,6 +248,9 @@ export function computeTagCacheKey(slug: string, data: TagArchiveData): string {
     hash.update(String(post.data?.updatedDate?.valueOf() || ''));
     hash.update(post.data?.title || '');
     hash.update(post.data?.description || '');
+    hash.update(post.data.category);
+    hash.update(post.data.heroImage ? JSON.stringify(post.data.heroImage) : '');
+    hash.update(post.data.heroImageAlt || '');
   }
 
   for (const log of data.logs || []) {
@@ -268,5 +273,4 @@ export function computeTagCacheKey(slug: string, data: TagArchiveData): string {
 
   return hash.digest('hex');
 }
-
 

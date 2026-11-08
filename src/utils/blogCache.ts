@@ -9,6 +9,7 @@ const BLOG_TEMPLATE_DIGEST = (() => {
     'src/layouts/BaseLayout.astro',
     'src/components/Footer.astro',
     'src/theme.config.ts',
+    'src/utils/blogCategories.ts',
     'src/data/techTerms.ts',
     'src/plugins/rehype-tech-tooltips.mjs',
     'src/components/SectionNav.astro',
@@ -52,10 +53,12 @@ export function computeBlogCacheKey(
   hash.update(post.body || '');
   hash.update(post.data.title || '');
   hash.update(post.data.description || '');
+  hash.update(post.data.category);
   hash.update(String(post.data.pubDate?.valueOf() || ''));
   hash.update(String(post.data.updatedDate?.valueOf() || ''));
   hash.update((post.data.tags || []).join(','));
   hash.update(post.data.heroImage ? JSON.stringify(post.data.heroImage) : '');
+  hash.update(post.data.heroImageAlt || '');
   hash.update(
     JSON.stringify([
       post.data.showSections ?? null,
@@ -68,4 +71,3 @@ export function computeBlogCacheKey(
   hash.update(prevPost ? `${prevPost.id}:${prevPost.title}` : 'none');
   return hash.digest('hex');
 }
-

@@ -3,6 +3,7 @@ import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 import { siteConfig } from './site.config';
 import { parseSiteDate } from './utils/dates';
+import { BLOG_CATEGORIES } from './utils/blogCategories';
 
 /** Date field pinned to `siteConfig.site.timeZone` when the frontmatter value has no UTC offset. */
 const siteDate = () => z.preprocess((value) => parseSiteDate(value), z.date());
@@ -42,6 +43,7 @@ const blog = defineCollection({
 			// Transform string to Date object
 			pubDate: siteDate(),
 			updatedDate: siteDate().optional(),
+			category: z.enum(BLOG_CATEGORIES),
 			heroImage: image().optional(),
 			heroImageAlt: z.string().optional(),
 			author: z.string().optional().default(siteConfig.author.name),

@@ -11,7 +11,7 @@ import { siteConfig } from '../../site.config';
 import { themeConfig } from '../../theme.config';
 import FormattedDate from '../FormattedDate.astro';
 import TagList from '../TagList.astro';
-import VideoCardPoster from '../VideoCardPoster.astro';
+import BlogCardMedia from '../BlogCardMedia.astro';
 import { getReadingTime } from '../../utils/readingTime';
 import { getFirstVideoEmbed } from '../../utils/postVideo';
 import { getFirstParagraph } from '../../utils/postExcerpt';
@@ -42,7 +42,7 @@ const featuredBlogPosts = showBlog
     )
   : [];
 
-const hasVideoInFeatured = featuredBlogPosts.some(({ video }) => Boolean(video));
+const hasVideoInFeatured = featuredBlogPosts.some(({ post, video }) => Boolean(video) && !post.data.heroImage);
 
 const rawLogEntries = showLog ? await getCollection('log') : [];
 const changelogEntries = showLog ? await getChangelogEntries() : [];
@@ -338,15 +338,7 @@ const homeSections = [
                       ? "ring-1 ring-amber-500/30 dark:ring-amber-500/30"
                       : "ring-1 ring-gray-900/5 dark:ring-white/10"
                   ]}>
-                    {video && (
-                      <VideoCardPoster
-                        videoId={video.videoId}
-                        title={video.title}
-                        thumbUrl={video.thumbUrl}
-                        badgeLabel="Video Article"
-                        playButtonSize="md"
-                      />
-                    )}
+                    <BlogCardMedia post={post} video={video} />
                     <div class="flex flex-1 flex-col justify-between p-6">
                       <div>
                         <h3 class="text-lg/6 font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
@@ -355,7 +347,7 @@ const homeSections = [
                             {post.data.title}
                           </a>
                         </h3>
-                        {!video && (
+                        {(!video || post.data.heroImage) && (
                           <p class:list={[
                             'mt-4 text-sm/6 text-gray-600 dark:text-gray-300',
                             hasVideoInFeatured ? 'line-clamp-6 lg:line-clamp-7' : 'line-clamp-3',

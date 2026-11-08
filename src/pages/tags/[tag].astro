@@ -12,6 +12,7 @@ import { getTagTaxonomy, computeTagCacheKey } from '../../utils/tagTaxonomy';
 import { getLogAnchorPageMap, getGalleryPhotoHref } from '../../utils/logTimeline';
 import { getPaginatedHref } from '../../utils/pagination';
 import TagList from '../../components/TagList.astro';
+import BlogCardMedia from '../../components/BlogCardMedia.astro';
 import { Image } from 'astro:assets';
 import { siteConfig } from '../../site.config';
 import { loadPhotoImage } from '../../utils/photoImages';
@@ -178,7 +179,9 @@ const breakdownText = breakdownParts.join(' • ');
               {posts.map((post) => {
                 const postHasVideo = hasVideoEmbed(post.body);
                 return (
-                <article class="border-beam-card group relative rounded-2xl p-6 sm:p-7 shadow-md hover:shadow-xl ring-1 ring-gray-900/5 dark:ring-white/10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-200">
+                <article class="border-beam-card group relative overflow-hidden rounded-2xl shadow-md hover:shadow-xl ring-1 ring-gray-900/5 dark:ring-white/10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm transition-all duration-200">
+                  <BlogCardMedia post={post} />
+                  <div class="p-6 sm:p-7">
                   <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
                     <PostDateMeta
                       pubDate={post.data.pubDate}
@@ -235,6 +238,7 @@ const breakdownText = breakdownParts.join(' • ');
                       })}
                     </div>
                   )}
+                  </div>
                 </article>
                 );
               })}

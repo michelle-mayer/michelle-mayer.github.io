@@ -45,6 +45,30 @@ frontmatter. Duplicate those files to add content, or replace them with your own
 Each photograph needs a unique numeric `id` and a `filename` matching its image.
 Empty career history and recommendations are hidden on About.
 
+### Blog categories and cover images
+
+Every blog post needs one `category`: `tech`, `research`, or `personal`. Keep
+`tags` for more specific topics; a Tech post might have `aiSafety` and `teamCulture`
+tags. Category filters live on `/blog/`, with shareable category pages such as
+`/blog/category/tech/`. The homepage continues to mix all categories by date.
+
+Cover images are optional. Save your image under `src/images/` and add its path
+relative to the post, plus descriptive alt text, to the Markdown frontmatter:
+
+```yaml
+category: "tech"
+heroImage: "../../images/my-cover.jpg"
+heroImageAlt: "Describe what the cover image shows."
+```
+
+Replace `my-cover.jpg` with a real image before adding these fields. Cards crop
+covers to a widescreen frame, so keep the important subject near the center.
+Homepage and blog archive cards use the cover image first, an embedded video's
+thumbnail next, or a category-colored cover when neither exists. Tag-result cards
+use an image or category color; videos keep their existing Watch link instead of
+a player.
+No cover image is required to publish a post.
+
 Before publishing v1:
 
 - Replace `My Site`, `Your name`, `Add your role`, `Your location`, and
