@@ -45,6 +45,37 @@ frontmatter. Duplicate those files to add content, or replace them with your own
 Each photograph needs a unique numeric `id` and a `filename` matching its image.
 Empty career history and recommendations are hidden on About.
 
+### About interests and career timeline
+
+Edit the interest chips in the frontmatter of [about.md](./src/content/pages/about.md):
+
+```yaml
+interestsHeading: "Currently curious about"
+interests:
+  - "AI red teaming"
+  - "Deepfake prevention"
+  - "Ethical AI"
+  - "C2PA"
+  - "Mental health in tech"
+```
+
+These are interests, not claims about professional experience or links to tag
+archives. Omit `interests` or use `interests: []` to hide the card.
+Keep the Markdown body to a short introduction, hobbies, and a contact link;
+the photo, chips, and timeline provide the rest of the profile. The optional
+FAQ section appears only when `faq.groups` contains questions.
+
+The About layout already renders the career timeline below the Markdown.
+There is no need to import a TypeScript or Astro component into `about.md`.
+Edit the `experiences` array in [experiences.ts](./src/data/experiences.ts), keeping
+the newest milestone first. Replace bracketed dates and names before publishing.
+The current short version includes Microsoft, graduation, and a combined entry
+for two summer internships; duplicate the internship entry if you want to split it.
+`year` is the compact timeline label, and `period` holds the fuller dates.
+`location`, `duration`, and `progression` are optional; leave `highlights` and
+`skills` as empty arrays for a minimal snapshot. Set `isCurrent: true` only for
+the current role. An empty `experiences` array hides the timeline.
+
 ### Blog categories and cover images
 
 Every blog post needs one `category`: `tech`, `research`, or `personal`. Keep

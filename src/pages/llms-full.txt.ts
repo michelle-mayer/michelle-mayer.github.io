@@ -54,8 +54,8 @@ export async function GET(context: APIContext) {
     const lines = [
       `### ${exp.role} — ${exp.company}`,
       `- Period: ${exp.period}${exp.duration ? ` (${exp.duration})` : ''}`,
-      `- Location: ${exp.location}`,
     ];
+    if (exp.location) lines.push(`- Location: ${exp.location}`);
     if (exp.progression) lines.push(`- ${exp.progression}`);
     if (exp.skills.length > 0) lines.push(`- Skills: ${exp.skills.join(', ')}`);
     lines.push('', ...exp.highlights.map((h) => `- ${h}`));

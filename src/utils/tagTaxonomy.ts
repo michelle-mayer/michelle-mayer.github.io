@@ -269,8 +269,8 @@ export function computeTagCacheKey(slug: string, data: TagArchiveData): string {
     hash.update(exp.year || exp.period || "");
     hash.update(exp.role || '');
     hash.update(exp.company || '');
+    hash.update(exp.location || '');
   }
 
   return hash.digest('hex');
 }
-

@@ -9,15 +9,11 @@ const { contentTagSlugs } = await getTagTaxonomy();
 const tagsEnabled = isFeatureEnabled('tags');
 ---
 
-<section id="experience" class="scroll-mt-16 relative isolate py-20 sm:py-28 bg-gray-50/70 dark:bg-gray-800/30 border-y border-gray-200/70 dark:border-gray-800 transition-colors">
+<section id="experience" class="scroll-mt-16 relative isolate py-12 sm:py-16 bg-gray-50/70 dark:bg-gray-800/30 border-y border-gray-200/70 dark:border-gray-800 transition-colors">
   <div class="mx-auto max-w-7xl px-6 lg:px-8">
     <!-- Header -->
-    <div class="mx-auto max-w-2xl text-center mb-16 sm:mb-20">
-      <p class="text-base/7 font-semibold text-amber-700 dark:text-amber-500">Career Journey</p>
-      <h2 class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 dark:text-white sm:text-5xl">Work Experience</h2>
-      <p class="mt-4 text-base/7 text-gray-600 dark:text-gray-300">
-        Roles, projects, and experience along the way.
-      </p>
+    <div class="mx-auto max-w-2xl text-center mb-8 sm:mb-10">
+      <h2 class="text-3xl font-semibold tracking-tight text-pretty text-gray-900 dark:text-white sm:text-4xl">Career snapshot</h2>
     </div>
 
     <!-- Timeline Container -->
@@ -34,7 +30,7 @@ const tagsEnabled = isFeatureEnabled('tags');
         aria-hidden="true"
       ></div>
 
-      <div class="space-y-12 sm:space-y-16">
+      <div class="space-y-6 sm:space-y-8">
         {experiences.map((exp) => (
           <div class="relative grid grid-cols-1 lg:grid-cols-[11rem_3rem_1fr] items-start gap-y-3">
             
@@ -105,10 +101,13 @@ const tagsEnabled = isFeatureEnabled('tags');
 
             <!-- Experience Card (Right on desktop, indented on mobile) -->
             <div class="lg:pl-0 pl-10 sm:pl-14">
-              <div class="rounded-2xl p-6 sm:p-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-md ring-1 ring-gray-900/5 dark:ring-white/10 transition-colors">
+              <div class="rounded-2xl p-5 sm:p-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-md ring-1 ring-gray-900/5 dark:ring-white/10 transition-colors">
                 
                 <!-- Card Header -->
-                <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-4 pb-4 border-b border-gray-100 dark:border-gray-700/60">
+                <div class:list={[
+                  'flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-4',
+                  (exp.progression || exp.highlights.length > 0 || exp.skills.length > 0) && 'pb-4 border-b border-gray-100 dark:border-gray-700/60',
+                ]}>
                   <div>
                     <h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                       {exp.role}
@@ -117,6 +116,8 @@ const tagsEnabled = isFeatureEnabled('tags');
                       <span class="font-semibold text-amber-700 dark:text-amber-400">
                         {exp.company}
                       </span>
+                      {exp.location && (
+                      <>
                       <span class="text-gray-300 dark:text-gray-600" aria-hidden="true">•</span>
                       <span class="inline-flex items-center gap-1 text-gray-500 dark:text-gray-400">
                         <svg class="size-3.5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
@@ -125,6 +126,8 @@ const tagsEnabled = isFeatureEnabled('tags');
                         </svg>
                         {exp.location}
                       </span>
+                      </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -137,6 +140,7 @@ const tagsEnabled = isFeatureEnabled('tags');
                 )}
 
                 <!-- Highlights Bullet List -->
+                {exp.highlights.length > 0 && (
                 <ul role="list" class="mt-4 space-y-2.5 text-sm/6 text-gray-600 dark:text-gray-300">
                   {exp.highlights.map((item) => (
                     <li class="flex items-start gap-2.5">
@@ -147,6 +151,7 @@ const tagsEnabled = isFeatureEnabled('tags');
                     </li>
                   ))}
                 </ul>
+                )}
 
                 <!-- Skills / Tags -->
                 {exp.skills.length > 0 && (

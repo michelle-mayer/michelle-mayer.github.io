@@ -1,21 +1,20 @@
 ---
-pageTitle: "My Site - About"
-description: "A place for your own background and interests."
-heading: "About me"
+pageTitle: "About Michelle"
+description: "A creative, people-minded software engineer exploring AI safety, ethics, mental health, and life beyond the keyboard."
+heading: "Soft heart. Curious mind. Engineer."
 greeting: "Hi! I'm Michelle."
+interestsHeading: "Currently curious about"
+interests:
+  - "AI red teaming"
+  - "Deepfake prevention"
+  - "Ethical AI"
+  - "C2PA"
+  - "Mental health in tech"
 languages: []
-faq:
-  eyebrow: "About this site"
-  heading: "How it is built"
-  subtitle: "A small, independent personal website."
-  groups:
-    - title: "Template credit"
-      description: "The starting point for this site's design."
-      items:
-        - question: "What is this site based on?"
-          answerHtml: '<p>Based on <a href="https://github.com/edstuurman/the-navigator" class="underline">The Navigator</a>, an Astro and Tailwind CSS theme by Ed Stuurman. This site is developed independently and is configured for GitHub Pages.</p>'
 ---
 
-A software engineer with a passion for ethics, safety, and mental health. 
+I'm a creative, soft-hearted software engineer at Microsoft who wants to make
+the world a little better. Outside work, I'm a cat person, a reader, and someone
+who loves making room for creativity.
 
-Welcome to my headspace! 
+I'm looking for my next software engineering role. [Let's talk](/contact/).

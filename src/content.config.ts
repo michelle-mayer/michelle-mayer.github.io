@@ -138,6 +138,8 @@ const pages = defineCollection({
 
 		// About page (`about.md`) structured fields
 		greeting: z.string().optional(),
+		interestsHeading: z.string().optional(),
+		interests: z.array(z.string().trim().min(1)).optional(),
 		languagesHeading: z.string().optional(),
 		languages: z
 			.array(
