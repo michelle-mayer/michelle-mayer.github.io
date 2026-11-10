@@ -68,9 +68,9 @@ FAQ section appears only when `faq.groups` contains questions.
 The About layout already renders the career timeline below the Markdown.
 There is no need to import a TypeScript or Astro component into `about.md`.
 Edit the `experiences` array in [experiences.ts](./src/data/experiences.ts), keeping
-the newest milestone first. Replace bracketed dates and names before publishing.
-The current short version includes Microsoft, graduation, and a combined entry
-for two summer internships; duplicate the internship entry if you want to split it.
+the newest milestone first. Use a separate entry for each role or promotion.
+Roles, promotions, education, internships, and research all appear on the same
+timeline.
 `year` is the compact timeline label, and `period` holds the fuller dates.
 `location`, `duration`, and `progression` are optional; leave `highlights` and
 `skills` as empty arrays for a minimal snapshot. Set `isCurrent: true` only for
