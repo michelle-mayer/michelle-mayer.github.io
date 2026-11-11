@@ -91,9 +91,9 @@ const aboutSections = [
   <AmbientGlow preset="about" />
 
   <div class="mx-auto max-w-7xl px-6 lg:px-8">
-    <div class="grid grid-cols-1 items-start gap-8 md:grid-cols-2 lg:gap-12">
-      <div class="w-full">
-        <div class="rounded-2xl p-6 sm:p-8 shadow-lg ring-1 ring-gray-900/5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm dark:ring-white/10 space-y-5">
+    <div class="grid grid-cols-1 items-stretch gap-6 md:grid-cols-[minmax(0,1fr)_20rem]">
+      <div class="min-w-0">
+        <div class="flex h-full flex-col justify-center gap-5 rounded-2xl p-6 sm:p-8 shadow-lg ring-1 ring-gray-900/5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm dark:ring-white/10">
           <h2 class="text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-4xl">{aboutData.heading}</h2>
           <p class="text-xl/8 font-medium text-gray-900 dark:text-white">{aboutData.greeting}</p>
           <div class="prose dark:prose-invert max-w-none text-base/7 text-gray-600 dark:text-gray-300">
@@ -101,23 +101,24 @@ const aboutSections = [
           </div>
         </div>
       </div>
-      <div class="mx-auto flex w-full max-w-xs flex-col items-center space-y-3 md:ml-auto md:mr-0">
-        <div class="relative w-full max-w-48 rounded-2xl shadow-lg ring-1 ring-gray-900/5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm dark:ring-white/10 overflow-hidden">
+      <div class="flex min-w-0 flex-col gap-4">
+        <div class="flex flex-1 flex-col justify-center overflow-hidden rounded-2xl bg-white/80 p-5 shadow-lg ring-1 ring-gray-900/5 backdrop-blur-sm dark:bg-gray-800/80 dark:ring-white/10">
+        <div class="mx-auto w-full max-w-48">
           <Picture
             src={Headshot}
             formats={['avif', 'webp']}
             widths={[320, 480, 640, 714]}
-            sizes="(min-width: 640px) 512px, 90vw"
+            sizes="192px"
             quality={75}
-            alt={siteConfig.author.name}
+            alt={siteConfig.author.aboutImageAlt ?? siteConfig.author.name}
             loading="eager"
             fetchpriority="high"
-            class="aspect-square w-full rounded-2xl bg-gray-50 dark:bg-gray-700 object-cover"
+            class="aspect-square w-full rounded-xl object-contain"
           />
         </div>
 
         {interests.length > 0 && (
-          <section id="interests" aria-labelledby="about-interests-heading" class="scroll-mt-24 w-full max-w-xs rounded-2xl bg-white/80 p-4 shadow-lg ring-1 ring-gray-900/5 backdrop-blur-sm dark:bg-gray-800/80 dark:ring-white/10 sm:p-5">
+          <section id="interests" aria-labelledby="about-interests-heading" class="scroll-mt-24 mt-4 w-full border-t border-gray-200/70 pt-4 dark:border-gray-700/70">
             <h3 id="about-interests-heading" class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
               {aboutData.interestsHeading ?? 'Interests'}
             </h3>
@@ -134,6 +135,7 @@ const aboutSections = [
             </ul>
           </section>
         )}
+        </div>
 
         <!-- Languages Card -->
         {languages.length > 0 && (

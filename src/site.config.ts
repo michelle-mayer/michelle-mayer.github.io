@@ -39,6 +39,8 @@ export interface SiteIdentityConfig {
     avatar: string;
     /** Image in `src/images/` used for the `/about/` portrait (can be the same as `avatar` or a separate file) */
     aboutImage?: string;
+    /** Accessible description of the About image (defaults to the author name) */
+    aboutImageAlt?: string;
     /** Short subtitle shown beneath the author name in AuthorChip */
     tagline: string;
     /** Formal role title used in Schema.org Person / ProfilePage */
@@ -84,7 +86,8 @@ export const siteConfig: SiteIdentityConfig = {
   author: {
     name: 'Your name',
     avatar: 'author.jpg',
-    aboutImage: 'author.jpg',
+    aboutImage: 'animated-cat-using-laptop-cartoon-feline-computer-vector-51510285.avif',
+    aboutImageAlt: 'An illustrated calico cat using a laptop',
     tagline: 'A personal site in progress',
     jobTitle: 'Add your role',
     bio: 'Replace this placeholder with your own short bio.',
