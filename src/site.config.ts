@@ -86,7 +86,7 @@ export const siteConfig: SiteIdentityConfig = {
   author: {
     name: 'Your name',
     avatar: 'author.jpg',
-    aboutImage: 'animated-cat-using-laptop-cartoon-feline-computer-vector-51510285.avif',
+    aboutImage: 'cat-laptop-transparent.png',
     aboutImageAlt: 'An illustrated calico cat using a laptop',
     tagline: 'A personal site in progress',
     jobTitle: 'Add your role',

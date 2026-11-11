@@ -51,6 +51,10 @@ Empty career history and recommendations are hidden on About.
 
 ### About interests and career timeline
 
+The About image is selected by `author.aboutImage` in
+[src/site.config.ts](./src/site.config.ts), with `aboutImageAlt` for its description.
+The cat illustration uses a transparent PNG with smooth edges in both themes, without a glow.
+
 Edit the interest chips in the frontmatter of [about.md](./src/content/pages/about.md):
 
 ```yaml
