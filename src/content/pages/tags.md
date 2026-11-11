@@ -1,7 +1,7 @@
 ---
 pageTitle: "My Site - Tags"
-description: "Explore posts, updates, and photos by topic."
+description: "Explore articles and ideas by topic."
 eyebrow: "Topics"
 heading: "Tags"
-subtitle: "Related writing, updates, and photographs in one place."
+subtitle: "Related writing and ideas in one place."
 ---

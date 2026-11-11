@@ -70,7 +70,7 @@ export const siteConfig: SiteIdentityConfig = {
     domain: 'michelle-mayer.github.io',
     title: 'My Site',
     description:
-      'A personal website for writing, photography, and updates. Based on The Navigator theme by Ed Stuurman.',
+      'Writing on technology, AI safety, and life beyond the keyboard. Based on The Navigator theme by Ed Stuurman.',
     locale: 'en_US',
     language: 'en-us',
     timeZone: 'UTC',

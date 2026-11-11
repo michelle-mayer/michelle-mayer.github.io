@@ -1,11 +1,11 @@
 ---
 pageTitle: "My Site"
-description: "A personal website for writing, photography, and updates. Based on The Navigator theme by Ed Stuurman."
+description: "Writing on technology, AI safety, and life beyond the keyboard. Based on The Navigator theme by Ed Stuurman."
 intro:
   eyebrow: "Welcome"
   heading: "Your name"
   leftColumn: "Replace this introduction with a few words about yourself and what you want to share."
-  rightColumn: "This is the first version of my personal site. Explore the writing, photography, and updates below."
+  rightColumn: "Explore my writing on tech, AI safety, and life beyond the keyboard."
   ctaLabel: "About me"
   ctaHref: "/about/"
 blogSection:

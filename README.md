@@ -4,7 +4,11 @@ An independent personal-site starter for
 [michelle-mayer.github.io](https://michelle-mayer.github.io), built with Astro
 and Tailwind CSS.
 
-Home, About, Blog, Now, Photography, Activity Log, Contact, and Tags are enabled.
+Home, About, Blog, Now, Contact, and Tags are enabled.
+Photography and Activity Log are disabled across navigation, homepage sections,
+routes, tags, and feeds. Their source content is retained; set
+`features.photography` or `features.log` to `true` in
+[src/theme.config.ts](./src/theme.config.ts) to restore them.
 The initial content and images are placeholders, not a finished personal profile.
 Contact forms and analytics are disabled.
 
@@ -104,7 +108,8 @@ Before publishing v1:
 
 - Replace `My Site`, `Your name`, `Add your role`, `Your location`, and
   `hello@example.com` with intentional public information.
-- Replace the placeholder portrait, gallery image, and sample writing.
+- Replace the placeholder portrait and sample writing; replace the gallery image
+  if you re-enable Photography.
 - Choose your timezone; the starter uses UTC without guessing your location.
 - Review navigation, mobile layout, light/dark themes, contact links, and metadata.
 - Keep the theme credit in the site description.
