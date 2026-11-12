@@ -42,6 +42,7 @@ Chromium is used to render Mermaid diagrams at build time, not by site visitors.
 | Profile picture | [src/images/author.jpg](./src/images/author.jpg) |
 | Career history and approved recommendations | [src/data/](./src/data/) |
 | Tooltip terms (initially just Astro and Markdown) | [src/data/techTerms.ts](./src/data/techTerms.ts) |
+| Homepage typing-cat animation | [src/ascii/typingCat.ts](./src/ascii/typingCat.ts) |
 | Site release notes, also displayed in the activity log | [CHANGELOG.md](./CHANGELOG.md) |
 
 The welcome post, first log note, and photo placeholder demonstrate the required
@@ -83,6 +84,18 @@ timeline.
 `location`, `duration`, and `progression` are optional; leave `highlights` and
 `skills` as empty arrays for a minimal snapshot. Set `isCurrent: true` only for
 the current role. An empty `experiences` array hides the timeline.
+
+### Homepage typing cat
+
+The cat typing "hello world" beside the homepage introduction is a custom
+[ascii.rest](https://ascii.rest/) piece. Its drawing and timing live in
+[src/ascii/typingCat.ts](./src/ascii/typingCat.ts); every frame must stay exactly
+`meta.cols` by `meta.rows` characters. [TypingCat.astro](./src/components/TypingCat.astro)
+renders the resting frame into the HTML, then plays it with `mount()`.
+
+The animation loops only while it is on screen and the tab is visible. Visitors who
+prefer reduced motion see the still frame; the corner button pauses or plays it for
+everyone.
 
 ### Blog categories and cover images
 
@@ -167,3 +180,6 @@ This project started from a one-time source snapshot and is developed independen
 The theme's layouts, components, and utilities are retained; demo content and
 AWS/GitLab deployment configuration are replaced for this personal site.
 Credit is also included in the site's global description and footer.
+
+The homepage animation is played by [ascii.rest](https://github.com/bas3line/ascii)
+(MIT license); the typing-cat drawing itself is original to this site.

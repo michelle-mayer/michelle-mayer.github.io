@@ -1,0 +1,118 @@
+---
+import typingCat from '../ascii/typingCat';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+// The resting frame ships in the HTML, so the cat shows before (or without) JavaScript.
+const stillFrame = typingCat()(0);
+const label = 'ASCII art of a cat typing hello world on a laptop';
+---
+
+<figure class:list={['typing-cat relative m-0', className]} data-typing-cat>
+  <pre
+    role="img"
+    aria-label={label}
+    class="typing-cat-art text-gray-600 dark:text-gray-300"
+    data-typing-cat-art
+  >{stillFrame}</pre>
+  <button
+    type="button"
+    hidden
+    data-typing-cat-toggle
+    aria-label="Pause animation"
+    title="Pause animation"
+    class="absolute bottom-0 right-0 inline-flex size-8 items-center justify-center rounded-full bg-white/80 text-gray-500 ring-1 ring-gray-900/10 transition-colors hover:text-amber-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:bg-gray-800/80 dark:text-gray-400 dark:ring-white/15 dark:hover:text-amber-400 cursor-pointer"
+  >
+    <span data-icon="pause" class="inline-flex">
+      <svg class="size-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+        <rect x="3.5" y="2.5" width="3" height="11" rx="1" />
+        <rect x="9.5" y="2.5" width="3" height="11" rx="1" />
+      </svg>
+    </span>
+    <span data-icon="play" hidden class="inline-flex">
+      <svg class="size-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+        <path d="M4.5 2.9a1 1 0 0 1 1.52-.85l7.2 4.6a1 1 0 0 1 0 1.7l-7.2 4.6a1 1 0 0 1-1.52-.85V2.9Z" />
+      </svg>
+    </span>
+  </button>
+</figure>
+
+<style>
+  .typing-cat {
+    container-type: inline-size;
+  }
+
+  /* 64 columns at ~0.6em per character: scale to fit the container, capped at 10px. */
+  .typing-cat-art {
+    margin: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+    font-size: min(10px, calc(100cqw / 39));
+    line-height: 1.15;
+    letter-spacing: 0;
+    white-space: pre;
+    font-variant-ligatures: none;
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  import { mount } from 'ascii.rest';
+  import * as typingCat from '../ascii/typingCat';
+
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+  for (const root of document.querySelectorAll<HTMLElement>('[data-typing-cat]')) {
+    const art = root.querySelector<HTMLElement>('[data-typing-cat-art]');
+    const toggle = root.querySelector<HTMLButtonElement>('[data-typing-cat-toggle]');
+    if (!art || !toggle) continue;
+
+    const stillFrame = art.textContent ?? '';
+    const pauseIcon = toggle.querySelector<HTMLElement>('[data-icon="pause"]');
+    const playIcon = toggle.querySelector<HTMLElement>('[data-icon="play"]');
+    let stop: (() => void) | null = null;
+    // Set once the visitor presses the button; their choice wins over the system setting.
+    let choice: 'play' | 'pause' | null = null;
+
+    const render = () => {
+      const label = stop ? 'Pause animation' : 'Play animation';
+      toggle.setAttribute('aria-label', label);
+      toggle.title = label;
+      pauseIcon?.toggleAttribute('hidden', !stop);
+      playIcon?.toggleAttribute('hidden', Boolean(stop));
+    };
+
+    const play = (motion: boolean) => {
+      stop?.();
+      stop = mount(art, typingCat, { motion });
+      render();
+    };
+
+    const pause = (rest: boolean) => {
+      stop?.();
+      stop = null;
+      if (rest) art.textContent = stillFrame;
+      render();
+    };
+
+    const sync = () => {
+      if (choice === 'pause') pause(false);
+      else if (choice === 'play') play(true);
+      else if (reducedMotion.matches) pause(true);
+      else play(false);
+    };
+
+    toggle.addEventListener('click', () => {
+      choice = stop ? 'pause' : 'play';
+      sync();
+    });
+    reducedMotion.addEventListener('change', () => {
+      if (!choice) sync();
+    });
+    toggle.hidden = false;
+    sync();
+  }
+</script>
