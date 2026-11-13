@@ -91,8 +91,8 @@ export const siteConfig: SiteIdentityConfig = {
     tagline: 'A personal site in progress',
     jobTitle: 'Software Engineer',
     bio: 'A creative, people-minded software engineer exploring AI safety, ethics, mental health, and life beyond the keyboard.',
-    location: 'Your location',
-    email: 'hello@example.com',
+    location: 'Charlotte, NC',
+    email: 'Michelle.Mayer43@gmail.com',
     knowsAbout: [],
   },
 
