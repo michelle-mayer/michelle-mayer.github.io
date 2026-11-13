@@ -1,0 +1,53 @@
+---
+import notFoundGhost from '../ascii/notFound';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+// The resting frame ships in the HTML; AsciiToggle plays it, like the homepage cat.
+const stillFrame = notFoundGhost()(0);
+const label = 'ASCII art of a little ghost floating beneath a big 404';
+---
+
+<figure class:list={['not-found-ghost m-0', className]}>
+  <pre
+    role="img"
+    aria-label={label}
+    class="not-found-ghost-art text-accent-500 dark:text-accent-300"
+    data-ascii-piece="not-found"
+  >{stillFrame}</pre>
+</figure>
+
+<style>
+  .not-found-ghost {
+    container-type: inline-size;
+  }
+
+  /* The block glyphs it is drawn with, for systems whose monospace font lacks them (as on
+     Android): a 3 KB cut of JetBrains Mono from ascii.rest, fetched only where needed. */
+  @font-face {
+    font-family: 'ascii.rest mono';
+    src: url('/fonts/ascii-rest-mono.woff2') format('woff2');
+    unicode-range: U+00B0, U+00B7, U+2022, U+2500-259F, U+25CF;
+    font-display: swap;
+  }
+
+  /* 45 columns at ~0.6em per character: scale to fit the container, capped at 12px. */
+  .not-found-ghost-art {
+    width: fit-content;
+    margin: 0 auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', 'ascii.rest mono', monospace;
+    font-size: min(12px, calc(100cqw / 27));
+    /* Tight enough that the block letters and ghost read as solid shapes; the hairline
+       stroke closes the seams anti-aliasing leaves between neighbouring blocks. */
+    line-height: 1.05;
+    -webkit-text-stroke: 0.5px currentColor;
+    letter-spacing: 0;
+    white-space: pre;
+    font-variant-ligatures: none;
+    overflow: hidden;
+  }
+</style>

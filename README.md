@@ -48,7 +48,7 @@ Chromium is used to render Mermaid diagrams at build time, not by site visitors.
 | Profile picture | [src/images/author.jpg](./src/images/author.jpg) |
 | Career history and approved recommendations | [src/data/](./src/data/) |
 | Tooltip terms (initially just Astro and Markdown) | [src/data/techTerms.ts](./src/data/techTerms.ts) |
-| Homepage ASCII animations (typing cat and typewriter) | [src/ascii/](./src/ascii/) |
+| ASCII animations (homepage typing cat and typewriter, 404 ghost) | [src/ascii/](./src/ascii/) |
 | Site release notes, also displayed in the activity log | [CHANGELOG.md](./CHANGELOG.md) |
 
 The welcome post, first log note, and photo placeholder demonstrate the required
@@ -149,6 +149,19 @@ with `mount()` and adds one button that pauses or plays them together.
 The animations loop only while they are on screen and the tab is visible.
 Visitors who prefer reduced motion see the still frames until they press play.
 Without JavaScript, the still frames stay and the button is hidden.
+
+### 404 page ghost
+
+The 404 page shows ascii.rest's `not-found` piece: a block-letter 404 with a small
+ghost drifting beneath it. [src/ascii/notFound.ts](./src/ascii/notFound.ts) leaves
+out the piece's own caption, because the page has its own heading, and crops it to
+the drawing. [NotFoundGhost.astro](./src/components/NotFoundGhost.astro) renders it,
+and the same pause/play button plays it.
+
+The art is drawn with block and box-drawing characters. Systems whose monospace
+font lacks them, such as Android, use the 3 KB fallback font in
+[public/fonts/](./public/fonts/), a cut of JetBrains Mono from ascii.rest under the
+SIL Open Font License (`ascii-rest-mono-OFL.txt`). Other systems never download it.
 
 ### Blog categories and cover images
 

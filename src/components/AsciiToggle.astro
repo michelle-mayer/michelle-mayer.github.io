@@ -32,10 +32,11 @@ const { class: className = '' } = Astro.props;
 
 <script>
   import { mount, type Piece } from 'ascii.rest';
+  import * as notFound from '../ascii/notFound';
   import * as tagline from '../ascii/tagline';
   import * as typingCat from '../ascii/typingCat';
 
-  const pieces: Record<string, Piece> = { tagline, 'typing-cat': typingCat };
+  const pieces: Record<string, Piece> = { tagline, 'typing-cat': typingCat, 'not-found': notFound };
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
   // One button plays or pauses every `[data-ascii-piece]` inside its `[data-ascii-group]`.
