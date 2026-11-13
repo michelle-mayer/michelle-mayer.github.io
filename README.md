@@ -203,6 +203,23 @@ use an image or category color; videos keep their existing Watch link instead of
 a player.
 No cover image is required to publish a post.
 
+### Numbered list posts
+
+For a list post, such as
+[lessonsFromMicrosoft.md](./src/content/blog/lessonsFromMicrosoft.md), write each
+item as a `##` heading followed by its description, and add to the frontmatter:
+
+```yaml
+numberedHeadings: true # numbers each ## heading 1, 2, 3… in order
+sectionNav: "h2"       # lists the items in the floating section menu
+```
+
+The numbers come from the headings' order, so reorder the list by moving whole
+items (a heading and everything under it); there is nothing to renumber, and
+links to an item keep working. Every `##` heading gets a number, so end the post
+with plain paragraphs rather than another `##` section, and use `###` for
+subheadings inside an item.
+
 Before publishing v1:
 
 - Replace `Your location`, `hello@example.com`, and the author tagline

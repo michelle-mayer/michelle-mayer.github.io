@@ -33,6 +33,27 @@
   scroll-margin-top: 5rem;
 }
 
+/* Posts with `numberedHeadings: true` number their h2 headings in order, so a list post's
+   sections can be moved around without renumbering them by hand. */
+.numbered-headings {
+  counter-reset: numbered-heading;
+}
+
+.numbered-headings > h2 {
+  counter-increment: numbered-heading;
+}
+
+.numbered-headings > h2::before {
+  content: counter(numbered-heading) '.';
+  margin-right: 0.45em;
+  color: var(--color-accent-600);
+  font-variant-numeric: tabular-nums;
+}
+
+:where(.dark, .dark *) .numbered-headings > h2::before {
+  color: var(--color-accent-400);
+}
+
 /* ==========================================================================
    Ambient Atmospheric Glows (AmbientGlow.astro)
    ========================================================================== */

@@ -54,6 +54,8 @@ const blog = defineCollection({
 			sectionNav: sectionNavSchema.optional(),
 			sectionDepth: sectionDepthSchema.optional(),
 			sections: z.array(customSectionItemSchema).optional(),
+			// Number the post's h2 headings 1, 2, 3… in order, for list posts that may be reordered
+			numberedHeadings: z.boolean().optional(),
 		}),
 });
 

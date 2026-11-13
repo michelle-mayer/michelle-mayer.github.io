@@ -56,14 +56,20 @@ const {
   sectionNav,
   sectionDepth,
   sections: manualSections,
+  numberedHeadings = false,
   hasMermaid = true,
   hasYouTube = true,
 } = Astro.props;
 
+// With `numberedHeadings`, CSS numbers each h2 in order; the section pills carry the same numbers.
+const h2Numbers = new Map(headings.filter((h) => h.depth === 2).map((h, i) => [h.slug, i + 1]));
 const blogSections = resolveBlogSections(
   { showSections, sectionNav, sectionDepth, sections: manualSections },
   headings
-);
+).map((sec) => {
+  const n = numberedHeadings ? h2Numbers.get(sec.id) : undefined;
+  return n ? { ...sec, label: `${n}. ${sec.label}` } : sec;
+});
 
 const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
 ---
@@ -132,7 +138,7 @@ const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
     </header>
 
     <div class="mx-auto mt-10 max-w-3xl px-6 text-base/7 text-gray-700 dark:text-gray-300 lg:px-8">
-      <div class="prose dark:prose-invert max-w-2xl text-gray-600 dark:text-gray-300">
+      <div class:list={['prose dark:prose-invert max-w-2xl text-gray-600 dark:text-gray-300', numberedHeadings && 'numbered-headings']}>
         <slot />
         <div class="not-prose mt-8 border-t border-gray-200 dark:border-gray-800 pt-6">
           <TagList tags={tags} showLabel={true} />
