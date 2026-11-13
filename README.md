@@ -4,11 +4,15 @@ An independent personal-site starter for
 [michelle-mayer.github.io](https://michelle-mayer.github.io), built with Astro
 and Tailwind CSS.
 
-Home, About, Blog, Now, Contact, and Tags are enabled.
+Home, About, Blog, Contact, and Tags are enabled.
 Photography and Activity Log are disabled across navigation, homepage sections,
 routes, tags, and feeds. Their source content is retained; set
 `features.photography` or `features.log` to `true` in
 [src/theme.config.ts](./src/theme.config.ts) to restore them.
+The Now page was deleted and `features.now` is `false`; its reusable view,
+[NowView.astro](./src/components/pages/NowView.astro), is kept. To bring the page
+back, restore `src/pages/now.astro` and `src/content/pages/now.md` from Git history
+and set `features.now` to `true`.
 The initial content and images are placeholders, not a finished personal profile.
 Contact forms and analytics are disabled.
 
@@ -34,7 +38,7 @@ Chromium is used to render Mermaid diagrams at build time, not by site visitors.
 | --- | --- |
 | Site title, description, bio, public email, social links, timezone | [src/site.config.ts](./src/site.config.ts) |
 | Logo wordmark, feature switches, integrations, navigation, footer credit | [src/theme.config.ts](./src/theme.config.ts) |
-| Page introductions and About/Now text | [src/content/pages/](./src/content/pages/) |
+| Page introductions and About text | [src/content/pages/](./src/content/pages/) |
 | Homepage name, typewriter phrases, and introduction | [src/content/pages/home.md](./src/content/pages/home.md) |
 | Accent color scale | [src/styles/global.css](./src/styles/global.css) |
 | Blog posts | [src/content/blog/](./src/content/blog/) |

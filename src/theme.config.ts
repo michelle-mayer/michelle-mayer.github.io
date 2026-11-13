@@ -197,7 +197,7 @@ export const themeMechanics: ThemeMechanicsConfig = {
     defaultHomePage: 'home',
     home: true,
     about: true,
-    now: true,
+    now: false,
     blog: true,
     photography: false,
     log: false,

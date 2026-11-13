@@ -344,11 +344,11 @@ const showSetupGuide = Boolean(
                           </p>
                         )}
                       </div>
-                      <div class="mt-4 flex items-center justify-between gap-3 border-t border-gray-100 dark:border-gray-700/60 pt-3 text-xs">
-                        <div class="relative z-10 min-w-0 flex-1 overflow-hidden">
-                          <TagList tags={post.data.tags} limit={3} singleLine={true} />
+                      <div class="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-gray-100 dark:border-gray-700/60 pt-3 text-xs">
+                        <div class="relative z-10 min-w-0 max-w-full">
+                          <TagList tags={post.data.tags} />
                         </div>
-                        <span class="inline-flex shrink-0 items-center gap-1 text-gray-500 dark:text-gray-400">
+                        <span class="ml-auto inline-flex shrink-0 items-center gap-1 text-gray-500 dark:text-gray-400">
                           <svg class="size-3.5 shrink-0" aria-hidden="true">
                             <use href="#i-clock" />
                           </svg>
@@ -357,7 +357,6 @@ const showSetupGuide = Boolean(
                       </div>
                     </div>
                   </div>
-                  <AuthorChip author={post.data.author} />
                 </article>
               </div>
             );
