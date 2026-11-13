@@ -201,7 +201,7 @@ const breadcrumbs =
       <!-- Gallery Controls Header -->
       <div class="mb-4 flex items-center justify-between sm:mb-6">
         <div class="flex items-center gap-2 font-mono text-xs text-gray-500 dark:text-gray-400">
-          <span class="inline-flex size-2 rounded-full bg-amber-500/80" aria-hidden="true"></span>
+          <span class="inline-flex size-2 rounded-full bg-accent-500/80" aria-hidden="true"></span>
           <span>
             {totalPages > 1
               ? `${startIdx + 1}–${startIdx + pagePaths.length} of ${sortedPaths.length} Photographs`
@@ -218,7 +218,7 @@ const breadcrumbs =
               aria-haspopup="listbox"
               aria-expanded="false"
               aria-labelledby="photo-sort-label gallery-sort-label"
-              class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700/80 bg-white/80 dark:bg-gray-800/80 py-1.5 pr-2 pl-2.5 text-xs font-medium text-gray-700 dark:text-gray-200 shadow-xs backdrop-blur-sm transition-all hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm focus:ring-1 focus:ring-amber-500/50 focus:outline-none"
+              class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700/80 bg-white/80 dark:bg-gray-800/80 py-1.5 pr-2 pl-2.5 text-xs font-medium text-gray-700 dark:text-gray-200 shadow-xs backdrop-blur-sm transition-all hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm focus:ring-1 focus:ring-accent-500/50 focus:outline-none"
             >
               <svg class="size-3.5 shrink-0 text-gray-400 dark:text-gray-500" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M4.5 13V3m0 0L2 5.5M4.5 3L7 5.5" />
@@ -242,10 +242,10 @@ const breadcrumbs =
                 role="option"
                 data-sort="desc"
                 aria-selected="true"
-                class="sort-option group flex w-full cursor-pointer items-center justify-between rounded-lg bg-amber-50/80 dark:bg-gray-700/60 px-2.5 py-2 text-xs font-semibold text-amber-700 dark:text-amber-500 transition-colors"
+                class="sort-option group flex w-full cursor-pointer items-center justify-between rounded-lg bg-accent-50/80 dark:bg-gray-700/60 px-2.5 py-2 text-xs font-semibold text-accent-700 dark:text-accent-500 transition-colors"
               >
                 <span>Newest first</span>
-                <svg class="check-icon size-3.5 text-amber-600 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <svg class="check-icon size-3.5 text-accent-600 dark:text-accent-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
                 </svg>
               </button>
@@ -257,7 +257,7 @@ const breadcrumbs =
                 class="sort-option group flex w-full cursor-pointer items-center justify-between rounded-lg px-2.5 py-2 text-xs font-normal text-gray-600 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700/60 hover:text-gray-900 dark:hover:text-white"
               >
                 <span>Oldest first</span>
-                <svg class="check-icon hidden size-3.5 text-amber-600 dark:text-amber-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <svg class="check-icon hidden size-3.5 text-accent-600 dark:text-accent-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
                 </svg>
               </button>
@@ -335,7 +335,7 @@ const breadcrumbs =
           id="lightbox-fs-btn"
           aria-label="Toggle fullscreen"
           title="Toggle fullscreen"
-          class="hidden sm:inline-flex size-9 cursor-pointer items-center justify-center rounded-lg bg-white/5 text-gray-300 hover:bg-white/15 hover:text-white focus-visible:outline-2 focus-visible:outline-amber-500 transition"
+          class="hidden sm:inline-flex size-9 cursor-pointer items-center justify-center rounded-lg bg-white/5 text-gray-300 hover:bg-white/15 hover:text-white focus-visible:outline-2 focus-visible:outline-accent-500 transition"
         >
           <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M8 3H5a2 2 0 0 0-2 2v3" />
@@ -350,7 +350,7 @@ const breadcrumbs =
           id="lightbox-thumbs-btn"
           aria-label="Toggle thumbnail strip"
           title="Toggle thumbnails"
-          class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg bg-white/5 text-gray-300 hover:bg-white/15 hover:text-white focus-visible:outline-2 focus-visible:outline-amber-500 transition"
+          class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg bg-white/5 text-gray-300 hover:bg-white/15 hover:text-white focus-visible:outline-2 focus-visible:outline-accent-500 transition"
         >
           <svg class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -365,7 +365,7 @@ const breadcrumbs =
           id="lightbox-close-btn"
           aria-label="Close lightbox"
           title="Close (Esc)"
-          class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg bg-white/10 text-gray-200 hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-amber-500 transition"
+          class="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg bg-white/10 text-gray-200 hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-accent-500 transition"
         >
           <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <line x1="6" y1="6" x2="18" y2="18" />
@@ -381,7 +381,7 @@ const breadcrumbs =
         type="button"
         id="lightbox-prev-btn"
         aria-label="Previous photograph"
-        class="absolute left-2 sm:left-4 z-20 inline-flex size-10 sm:size-11 cursor-pointer items-center justify-center rounded-full bg-gray-900/75 text-gray-200 ring-1 ring-white/15 backdrop-blur-sm hover:bg-gray-800 hover:text-white focus-visible:outline-2 focus-visible:outline-amber-500 transition"
+        class="absolute left-2 sm:left-4 z-20 inline-flex size-10 sm:size-11 cursor-pointer items-center justify-center rounded-full bg-gray-900/75 text-gray-200 ring-1 ring-white/15 backdrop-blur-sm hover:bg-gray-800 hover:text-white focus-visible:outline-2 focus-visible:outline-accent-500 transition"
       >
         <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polyline points="15 18 9 12 15 6" />
@@ -391,7 +391,7 @@ const breadcrumbs =
       <a
         id="lightbox-img-link"
         href="/photography/1/"
-        class="group relative inline-flex max-h-full max-w-full items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-lg cursor-zoom-in"
+        class="group relative inline-flex max-h-full max-w-full items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-lg cursor-zoom-in"
         aria-label="View full details and field notes"
         title="View full detail page"
       >
@@ -408,7 +408,7 @@ const breadcrumbs =
         type="button"
         id="lightbox-next-btn"
         aria-label="Next photograph"
-        class="absolute right-2 sm:right-4 z-20 inline-flex size-10 sm:size-11 cursor-pointer items-center justify-center rounded-full bg-gray-900/75 text-gray-200 ring-1 ring-white/15 backdrop-blur-sm hover:bg-gray-800 hover:text-white focus-visible:outline-2 focus-visible:outline-amber-500 transition"
+        class="absolute right-2 sm:right-4 z-20 inline-flex size-10 sm:size-11 cursor-pointer items-center justify-center rounded-full bg-gray-900/75 text-gray-200 ring-1 ring-white/15 backdrop-blur-sm hover:bg-gray-800 hover:text-white focus-visible:outline-2 focus-visible:outline-accent-500 transition"
       >
         <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polyline points="9 18 15 12 9 6" />
@@ -430,7 +430,7 @@ const breadcrumbs =
           <a
             id="lightbox-permalink"
             href="/photography/1/"
-            class="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-xs font-medium text-gray-300 hover:bg-white/15 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 transition-colors"
+            class="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-xs font-medium text-gray-300 hover:bg-white/15 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 transition-colors"
             aria-label="View full details and field notes"
             title="View full details and field notes"
           >
@@ -515,7 +515,7 @@ const breadcrumbs =
           btn.dataset.thumbIdx = String(idx);
           btn.setAttribute('aria-label', `View ${card.dataset.photoTitle || `photo ${idx + 1}`}`);
           btn.className =
-            'lightbox-thumb-btn relative h-12 w-16 shrink-0 cursor-pointer overflow-hidden rounded-md border-2 border-transparent opacity-55 transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-amber-500';
+            'lightbox-thumb-btn relative h-12 w-16 shrink-0 cursor-pointer overflow-hidden rounded-md border-2 border-transparent opacity-55 transition hover:opacity-90 focus-visible:outline-2 focus-visible:outline-accent-500';
           if (thumbImg) {
             const mini = document.createElement('img');
             mini.src = thumbImg.currentSrc || thumbImg.src;
@@ -535,7 +535,7 @@ const breadcrumbs =
         const buttons = thumbsListEl.querySelectorAll<HTMLButtonElement>('.lightbox-thumb-btn');
         buttons.forEach((btn, idx) => {
           const active = idx === index;
-          btn.classList.toggle('border-amber-500', active);
+          btn.classList.toggle('border-accent-500', active);
           btn.classList.toggle('opacity-100', active);
           btn.classList.toggle('border-transparent', !active);
           btn.classList.toggle('opacity-55', !active);
@@ -874,9 +874,9 @@ const breadcrumbs =
             btn.setAttribute('aria-selected', match ? 'true' : 'false');
             btn.querySelector('.check-icon')?.classList.toggle('hidden', !match);
             btn.classList.toggle('font-semibold', match);
-            btn.classList.toggle('text-amber-700', match);
-            btn.classList.toggle('dark:text-amber-500', match);
-            btn.classList.toggle('bg-amber-50/80', match);
+            btn.classList.toggle('text-accent-700', match);
+            btn.classList.toggle('dark:text-accent-500', match);
+            btn.classList.toggle('bg-accent-50/80', match);
             btn.classList.toggle('dark:bg-gray-700/60', match);
             btn.classList.toggle('font-normal', !match);
             btn.classList.toggle('text-gray-600', !match);

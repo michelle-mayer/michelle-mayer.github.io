@@ -46,7 +46,7 @@ export async function GET(context: APIContext) {
   });
 
   const introSummary = homeEntry?.data.intro
-    ? `${homeEntry.data.intro.leftColumn} ${homeEntry.data.intro.rightColumn}`
+    ? homeEntry.data.intro.lead
     : siteConfig.site.description;
   const aboutSummary = aboutEntry?.body?.trim() ?? siteConfig.site.description;
 

@@ -35,7 +35,7 @@ function resolveTagHref(slug: string): string {
 
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="mx-auto max-w-5xl mb-12 sm:mb-16">
-        <p class="text-base/7 font-semibold text-amber-700 dark:text-amber-500">{tagsPageData.eyebrow ?? 'Topics & Taxonomy'}</p>
+        <p class="text-base/7 font-semibold text-accent-700 dark:text-accent-500">{tagsPageData.eyebrow ?? 'Topics & Taxonomy'}</p>
         <h1 class="mt-2 text-4xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-5xl">{tagsPageData.heading ?? 'Tags'}</h1>
         <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">
           {tagsPageData.subtitle}
@@ -46,14 +46,14 @@ function resolveTagHref(slug: string): string {
       <div class="mx-auto max-w-5xl">
         <div class="mb-6 flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-gray-200/70 dark:border-gray-800 text-xs text-gray-500 dark:text-gray-400">
           <div class="flex items-center gap-2">
-            <span class="size-2 rounded-full bg-amber-600"></span>
+            <span class="size-2 rounded-full bg-accent-600"></span>
             <span class="font-semibold text-sm text-gray-900 dark:text-white">Engineering & Career Topics</span>
             <span class="font-mono text-xs text-gray-500 dark:text-gray-400">({sortedTags.length})</span>
           </div>
           <div class="flex items-center gap-3">
             {showAbout && (
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 dark:bg-gray-800 text-amber-700 dark:text-amber-500 ring-1 ring-inset ring-amber-600/30 dark:ring-amber-500/30 font-semibold">
-                <svg class="size-3.5 text-amber-600 dark:text-amber-500" aria-hidden="true">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent-50 dark:bg-gray-800 text-accent-700 dark:text-accent-500 ring-1 ring-inset ring-accent-600/30 dark:ring-accent-500/30 font-semibold">
+                <svg class="size-3.5 text-accent-600 dark:text-accent-500" aria-hidden="true">
                   <use href="#i-briefcase" />
                 </svg>
                 <span>Career experience</span>
@@ -74,7 +74,7 @@ function resolveTagHref(slug: string): string {
                   href={resolveTagHref(tag.slug)} 
                   class={`group inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs sm:text-sm transition-all duration-150 ${
                     hasExpHighlight
-                      ? 'bg-amber-50 dark:bg-gray-800 text-amber-700 dark:text-amber-500 font-semibold ring-1 ring-inset ring-amber-600/30 dark:ring-amber-500/30 hover:bg-amber-100 dark:hover:bg-gray-700 dark:hover:text-amber-400'
+                      ? 'bg-accent-50 dark:bg-gray-800 text-accent-700 dark:text-accent-500 font-semibold ring-1 ring-inset ring-accent-600/30 dark:ring-accent-500/30 hover:bg-accent-100 dark:hover:bg-gray-700 dark:hover:text-accent-400'
                       : 'bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 font-medium ring-1 ring-inset ring-gray-200 dark:ring-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                   title={
@@ -95,7 +95,7 @@ function resolveTagHref(slug: string): string {
                   <span>#{tag.name}</span>
                   <span class={`inline-flex items-center justify-center rounded px-1.5 py-0.5 text-xs font-mono font-medium transition-colors ${
                     hasExpHighlight
-                      ? 'bg-amber-100 dark:bg-gray-700 text-amber-800 dark:text-amber-400 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-500/30'
+                      ? 'bg-accent-100 dark:bg-gray-700 text-accent-800 dark:text-accent-400 ring-1 ring-inset ring-accent-600/20 dark:ring-accent-500/30'
                       : 'bg-gray-200/80 dark:bg-gray-600/60 text-gray-700 dark:text-gray-300 ring-1 ring-inset ring-gray-300 dark:ring-gray-600'
                   }`}>
                     {tag.count}

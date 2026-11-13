@@ -1,11 +1,13 @@
 ---
-pageTitle: "My Site"
+pageTitle: "Michelle Mayer"
 description: "Writing on technology, AI safety, and life beyond the keyboard. Based on The Navigator theme by Ed Stuurman."
 intro:
-  eyebrow: "Welcome"
-  heading: "Your name"
-  leftColumn: "Replace this introduction with a few words about yourself and what you want to share."
-  rightColumn: "Explore my writing on tech, AI safety, and life beyond the keyboard."
+  heading: "Michelle Mayer"
+  taglines:
+    - "Software engineer"
+    - "Creative soul"
+    - "Cat lady"
+  lead: "Explore my writing on tech, AI safety, and life beyond the keyboard."
   ctaLabel: "About me"
   ctaHref: "/about/"
 blogSection:

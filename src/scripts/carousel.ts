@@ -112,10 +112,10 @@ export function initCarousels(): void {
         const indicator = dot.querySelector<HTMLElement>('.carousel-dot-indicator') ?? dot;
         if (isActive) {
           indicator.classList.remove('w-2', 'bg-gray-300', 'dark:bg-gray-700', 'hover:bg-gray-400', 'dark:hover:bg-gray-600', 'group-hover/dot:bg-gray-400', 'dark:group-hover/dot:bg-gray-600');
-          indicator.classList.add('w-6', 'bg-amber-500', 'dark:bg-amber-400', 'shadow-xs');
+          indicator.classList.add('w-6', 'bg-accent-500', 'dark:bg-accent-400', 'shadow-xs');
           dot.setAttribute('aria-current', 'true');
         } else {
-          indicator.classList.remove('w-6', 'bg-amber-500', 'dark:bg-amber-400', 'shadow-xs');
+          indicator.classList.remove('w-6', 'bg-accent-500', 'dark:bg-accent-400', 'shadow-xs');
           indicator.classList.add('w-2', 'bg-gray-300', 'dark:bg-gray-700', 'group-hover/dot:bg-gray-400', 'dark:group-hover/dot:bg-gray-600');
           dot.removeAttribute('aria-current');
         }

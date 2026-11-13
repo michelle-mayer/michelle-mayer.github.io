@@ -125,16 +125,16 @@ function resolveTooltipMeta(termText, nativeTitle, tooltipId) {
       : `${badgeTerm}: ${definition}`;
 
   const bubbleHtml =
-    `<span id="${escapeHtml(tooltipId)}" role="tooltip" class="tech-tooltip-bubble pointer-events-none opacity-0 invisible absolute bottom-full left-1/2 mb-2 z-50 w-72 sm:w-80 max-w-[calc(100vw-2rem)] p-3 rounded-lg bg-white/95 dark:bg-gray-900/98 text-gray-900 dark:text-gray-100 shadow-xl shadow-gray-900/10 dark:shadow-2xl ring-1 ring-gray-900/10 dark:ring-amber-500/25 backdrop-blur-md transition-all duration-150 ease-out text-left select-none">` +
+    `<span id="${escapeHtml(tooltipId)}" role="tooltip" class="tech-tooltip-bubble pointer-events-none opacity-0 invisible absolute bottom-full left-1/2 mb-2 z-50 w-72 sm:w-80 max-w-[calc(100vw-2rem)] p-3 rounded-lg bg-white/95 dark:bg-gray-900/98 text-gray-900 dark:text-gray-100 shadow-xl shadow-gray-900/10 dark:shadow-2xl ring-1 ring-gray-900/10 dark:ring-accent-500/25 backdrop-blur-md transition-all duration-150 ease-out text-left select-none">` +
     `<span class="flex items-center justify-between gap-2 pb-1.5 border-b border-gray-200/80 dark:border-gray-700/80">` +
     `<span class="inline-flex items-baseline gap-1.5 min-w-0">` +
-    `<span class="font-mono text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide shrink-0">${escapeHtml(badgeTerm)}</span>` +
+    `<span class="font-mono text-xs font-bold text-accent-700 dark:text-accent-400 uppercase tracking-wide shrink-0">${escapeHtml(badgeTerm)}</span>` +
     (displayName && displayName !== badgeTerm
       ? `<span class="text-xs font-medium text-gray-800 dark:text-gray-200 truncate">${escapeHtml(displayName)}</span>`
       : '') +
     `</span>` +
     (category
-      ? `<span class="text-[9px] font-mono uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-amber-50 dark:bg-gray-800 text-amber-700 dark:text-amber-300/90 ring-1 ring-amber-500/20 dark:ring-white/10 shrink-0">${escapeHtml(category)}</span>`
+      ? `<span class="text-[9px] font-mono uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-accent-50 dark:bg-gray-800 text-accent-700 dark:text-accent-300/90 ring-1 ring-accent-500/20 dark:ring-white/10 shrink-0">${escapeHtml(category)}</span>`
       : '') +
     `</span>` +
     `<span class="block mt-1.5 text-xs/relaxed text-gray-600 dark:text-gray-300 font-normal">${escapeHtml(definition)}</span>` +
@@ -170,12 +170,12 @@ function createTooltipHastNode(termText, nativeTitle, tooltipId) {
             'cursor-help',
             'border-b',
             'border-dotted',
-            'border-amber-500/60',
-            'dark:border-amber-400/60',
-            'hover:border-amber-600',
-            'dark:hover:border-amber-300',
-            'hover:text-amber-700',
-            'dark:hover:text-amber-300',
+            'border-accent-500/60',
+            'dark:border-accent-400/60',
+            'hover:border-accent-600',
+            'dark:hover:border-accent-300',
+            'hover:text-accent-700',
+            'dark:hover:text-accent-300',
             'transition-colors',
             'font-medium',
             'no-underline',
@@ -205,7 +205,7 @@ function createTooltipHtmlString(termText, nativeTitle, tooltipId) {
   const { fallbackTitle, bubbleHtml } = resolveTooltipMeta(termText, nativeTitle, tooltipId);
   return (
     `<span class="tech-tooltip-wrapper relative inline-block">` +
-    `<abbr class="tech-tooltip-trigger not-prose cursor-help border-b border-dotted border-amber-500/60 dark:border-amber-400/60 hover:border-amber-600 dark:hover:border-amber-300 hover:text-amber-700 dark:hover:text-amber-300 transition-colors font-medium no-underline" aria-describedby="${escapeHtml(tooltipId)}" title="${escapeHtml(fallbackTitle)}" data-tooltip-id="${escapeHtml(tooltipId)}" data-term="${escapeHtml(termText)}">${escapeHtml(termText)}</abbr>` +
+    `<abbr class="tech-tooltip-trigger not-prose cursor-help border-b border-dotted border-accent-500/60 dark:border-accent-400/60 hover:border-accent-600 dark:hover:border-accent-300 hover:text-accent-700 dark:hover:text-accent-300 transition-colors font-medium no-underline" aria-describedby="${escapeHtml(tooltipId)}" title="${escapeHtml(fallbackTitle)}" data-tooltip-id="${escapeHtml(tooltipId)}" data-term="${escapeHtml(termText)}">${escapeHtml(termText)}</abbr>` +
     bubbleHtml +
     `</span>`
   );

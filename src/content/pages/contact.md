@@ -1,5 +1,5 @@
 ---
-pageTitle: "My Site - Contact"
+pageTitle: "Michelle Mayer - Contact"
 description: "Public contact links."
 eyebrow: "Contact"
 heading: "Let's connect"

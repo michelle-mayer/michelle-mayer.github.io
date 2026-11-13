@@ -1,5 +1,5 @@
 ---
-pageTitle: "My Site - Now"
+pageTitle: "Michelle Mayer - Now"
 description: "A snapshot of what I am focused on."
 badge: "Current snapshot"
 lastUpdated: "November 2026"

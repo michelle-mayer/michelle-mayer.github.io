@@ -93,7 +93,7 @@ const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
 
     <header class="mx-auto max-w-3xl px-6 lg:px-8">
       <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-gray-500 dark:text-gray-400">
-        <a href={blogCategoryHref(category)} class="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-600/20 transition hover:bg-amber-100 dark:bg-gray-800 dark:text-amber-400 dark:hover:bg-gray-700">
+        <a href={blogCategoryHref(category)} class="rounded-full bg-accent-50 px-3 py-1 text-xs font-semibold text-accent-800 ring-1 ring-accent-600/20 transition hover:bg-accent-100 dark:bg-gray-800 dark:text-accent-400 dark:hover:bg-gray-700">
           {BLOG_CATEGORY_DETAILS[category].label}
         </a>
         <span class="inline-flex items-center gap-1.5">
@@ -103,12 +103,12 @@ const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
         {updatedDate && (
           <>
             <span class="text-gray-300 dark:text-gray-700" aria-hidden="true">&bull;</span>
-            <span class="inline-flex items-center gap-1.5 font-medium text-amber-700 dark:text-amber-400">
+            <span class="inline-flex items-center gap-1.5 font-medium text-accent-700 dark:text-accent-400">
               <svg class="size-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
               </svg>
               <span>Updated</span>
-              <FormattedDate date={updatedDate} class="inline font-medium text-amber-700 dark:text-amber-400" />
+              <FormattedDate date={updatedDate} class="inline font-medium text-accent-700 dark:text-accent-400" />
             </span>
           </>
         )}
@@ -116,7 +116,7 @@ const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
           <>
             <span class="text-gray-300 dark:text-gray-700" aria-hidden="true">&bull;</span>
             <span class="inline-flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
-              <svg class="size-4 shrink-0 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+              <svg class="size-4 shrink-0 text-accent-600 dark:text-accent-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>
                 <polyline points="12 6 12 12 16 14"/>
               </svg>
@@ -149,13 +149,13 @@ const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
                 class="border-beam-card group flex flex-col justify-between rounded-2xl p-5 sm:p-6 shadow-md ring-1 ring-gray-900/5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm dark:ring-white/10 transition-all duration-200 hover:shadow-lg no-underline text-inherit"
               >
                 <div>
-                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-500 mb-2">
+                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-accent-700 dark:text-accent-500 mb-2">
                     <svg class="size-3.5 transition-transform group-hover:-translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="m15 18-6-6 6-6"/>
                     </svg>
                     <span>Next Article</span>
                   </span>
-                  <h2 class="text-base font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors line-clamp-2">
+                  <h2 class="text-base font-semibold text-gray-900 dark:text-white group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors line-clamp-2">
                     {nextPost.title}
                   </h2>
                 </div>
@@ -173,13 +173,13 @@ const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
                 class={`border-beam-card group flex flex-col justify-between rounded-2xl p-5 sm:p-6 shadow-md ring-1 ring-gray-900/5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm dark:ring-white/10 transition-all duration-200 hover:shadow-lg no-underline text-inherit ${!nextPost ? 'sm:col-start-2' : ''}`}
               >
                 <div class="sm:text-right">
-                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-500 mb-2 sm:self-end">
+                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-accent-700 dark:text-accent-500 mb-2 sm:self-end">
                     <span>Previous Article</span>
                     <svg class="size-3.5 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="m9 18 6-6-6-6"/>
                     </svg>
                   </span>
-                  <h2 class="text-base font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors line-clamp-2">
+                  <h2 class="text-base font-semibold text-gray-900 dark:text-white group-hover:text-accent-600 dark:group-hover:text-accent-400 transition-colors line-clamp-2">
                     {prevPost.title}
                   </h2>
                 </div>
@@ -211,14 +211,14 @@ const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
                 sizes="64px"
                 quality={70}
                 loading="lazy"
-                class="size-16 rounded-full object-cover ring-2 ring-amber-600/30 group-hover:ring-amber-600 transition"
+                class="size-16 rounded-full object-cover ring-2 ring-accent-600/30 group-hover:ring-accent-600 transition"
               />
             </div>
             <div class="space-y-1">
-              <p class="text-xs font-semibold tracking-wider uppercase text-amber-700 dark:text-amber-500">About the author</p>
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition flex items-center gap-1.5">
+              <p class="text-xs font-semibold tracking-wider uppercase text-accent-700 dark:text-accent-500">About the author</p>
+              <h2 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-accent-600 dark:group-hover:text-accent-400 transition flex items-center gap-1.5">
                 <span>{author}</span>
-                <span class="text-amber-600 dark:text-amber-500 text-sm font-normal group-hover:translate-x-1 transition-transform" aria-hidden="true">&rarr;</span>
+                <span class="text-accent-600 dark:text-accent-500 text-sm font-normal group-hover:translate-x-1 transition-transform" aria-hidden="true">&rarr;</span>
               </h2>
               <p class="text-sm/6 text-gray-600 dark:text-gray-300">
                 {themeConfig.author.bio}
@@ -239,11 +239,11 @@ const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
                 sizes="64px"
                 quality={70}
                 loading="lazy"
-                class="size-16 rounded-full object-cover ring-2 ring-amber-600/30"
+                class="size-16 rounded-full object-cover ring-2 ring-accent-600/30"
               />
             </div>
             <div class="space-y-1">
-              <p class="text-xs font-semibold tracking-wider uppercase text-amber-700 dark:text-amber-500">About the author</p>
+              <p class="text-xs font-semibold tracking-wider uppercase text-accent-700 dark:text-accent-500">About the author</p>
               <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                 <span>{author}</span>
               </h2>

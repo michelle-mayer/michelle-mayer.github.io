@@ -1,0 +1,100 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<button
+  type="button"
+  hidden
+  data-ascii-toggle
+  aria-label="Pause animations"
+  title="Pause animations"
+  class:list={[
+    'inline-flex size-8 items-center justify-center rounded-full bg-white/80 text-gray-500 ring-1 ring-gray-900/10 transition-colors hover:text-accent-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600 dark:bg-gray-800/80 dark:text-gray-400 dark:ring-white/15 dark:hover:text-accent-400 cursor-pointer',
+    className,
+  ]}
+>
+  <span data-icon="pause" class="inline-flex">
+    <svg class="size-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+      <rect x="3.5" y="2.5" width="3" height="11" rx="1" />
+      <rect x="9.5" y="2.5" width="3" height="11" rx="1" />
+    </svg>
+  </span>
+  <span data-icon="play" hidden class="inline-flex">
+    <svg class="size-3.5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+      <path d="M4.5 2.9a1 1 0 0 1 1.52-.85l7.2 4.6a1 1 0 0 1 0 1.7l-7.2 4.6a1 1 0 0 1-1.52-.85V2.9Z" />
+    </svg>
+  </span>
+</button>
+
+<script>
+  import { mount, type Piece } from 'ascii.rest';
+  import * as tagline from '../ascii/tagline';
+  import * as typingCat from '../ascii/typingCat';
+
+  const pieces: Record<string, Piece> = { tagline, 'typing-cat': typingCat };
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+  // One button plays or pauses every `[data-ascii-piece]` inside its `[data-ascii-group]`.
+  for (const toggle of document.querySelectorAll<HTMLButtonElement>('[data-ascii-toggle]')) {
+    const group = toggle.closest<HTMLElement>('[data-ascii-group]') ?? document.body;
+    const arts = [...group.querySelectorAll<HTMLElement>('[data-ascii-piece]')].flatMap((el) => {
+      const piece = pieces[el.dataset.asciiPiece ?? ''];
+      if (!piece) return [];
+      return [{ el, piece, options: JSON.parse(el.dataset.asciiOptions ?? '{}'), still: el.textContent ?? '' }];
+    });
+    if (arts.length === 0) continue;
+
+    const pauseIcon = toggle.querySelector<HTMLElement>('[data-icon="pause"]');
+    const playIcon = toggle.querySelector<HTMLElement>('[data-icon="play"]');
+    let stops: Array<() => void> = [];
+    // Set once the visitor presses the button; their choice wins over the system setting.
+    let choice: 'play' | 'pause' | null = null;
+
+    const render = () => {
+      const playing = stops.length > 0;
+      const label = playing ? 'Pause animations' : 'Play animations';
+      toggle.setAttribute('aria-label', label);
+      toggle.title = label;
+      pauseIcon?.toggleAttribute('hidden', !playing);
+      playIcon?.toggleAttribute('hidden', playing);
+    };
+
+    const stopAll = () => {
+      stops.forEach((stop) => stop());
+      stops = [];
+    };
+
+    const play = (motion: boolean) => {
+      stopAll();
+      stops = arts.map(({ el, piece, options }) => mount(el, piece, { ...options, motion }));
+      render();
+    };
+
+    const pause = (rest: boolean) => {
+      stopAll();
+      if (rest) arts.forEach(({ el, still }) => { el.textContent = still; });
+      render();
+    };
+
+    const sync = () => {
+      if (choice === 'pause') pause(false);
+      else if (choice === 'play') play(true);
+      else if (reducedMotion.matches) pause(true);
+      else play(false);
+    };
+
+    toggle.addEventListener('click', () => {
+      choice = stops.length > 0 ? 'pause' : 'play';
+      sync();
+    });
+    reducedMotion.addEventListener('change', () => {
+      if (!choice) sync();
+    });
+    toggle.hidden = false;
+    sync();
+  }
+</script>

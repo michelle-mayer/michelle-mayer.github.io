@@ -31,10 +31,10 @@ export const GET: APIRoute = () => {
             --border-color: #e5e7eb;
             --border-subtle: #f3f4f6;
             --row-hover: #f9fafb;
-            --accent: #d97706;
-            --accent-hover: #b45309;
-            --accent-subtle: #fef3c7;
-            --accent-subtle-text: #92400e;
+            --accent: #775dc5;
+            --accent-hover: #654bad;
+            --accent-subtle: #efecff;
+            --accent-subtle-text: #503c8a;
             --ring: rgba(17, 24, 39, 0.05);
           }
 
@@ -48,10 +48,10 @@ export const GET: APIRoute = () => {
               --border-color: #1f2937;
               --border-subtle: #1e293b;
               --row-hover: rgba(255, 255, 255, 0.03);
-              --accent: #f59e0b;
-              --accent-hover: #fbbf24;
-              --accent-subtle: rgba(245, 158, 11, 0.12);
-              --accent-subtle-text: #fcd34d;
+              --accent: #9c89e6;
+              --accent-hover: #b1a2f2;
+              --accent-subtle: rgba(156, 137, 230, 0.14);
+              --accent-subtle-text: #c9bffc;
               --ring: rgba(255, 255, 255, 0.06);
             }
           }

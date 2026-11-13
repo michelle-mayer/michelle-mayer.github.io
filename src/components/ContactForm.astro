@@ -21,8 +21,8 @@ const contactEmail = themeConfig.author.email;
 <div class="contact-form-container relative w-full rounded-2xl p-6 sm:p-8 shadow-lg ring-1 ring-gray-900/5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm dark:ring-white/10 transition-colors">
   <div class="mb-6">
     <div class="flex items-center gap-2">
-      <span class="inline-flex size-2 rounded-full bg-amber-600 dark:bg-amber-500 animate-pulse"></span>
-      <p class="text-xs font-semibold tracking-wider uppercase text-amber-700 dark:text-amber-500">Contact</p>
+      <span class="inline-flex size-2 rounded-full bg-accent-600 dark:bg-accent-500 animate-pulse"></span>
+      <p class="text-xs font-semibold tracking-wider uppercase text-accent-700 dark:text-accent-500">Contact</p>
     </div>
     <h2 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
       {title}
@@ -68,7 +68,7 @@ const contactEmail = themeConfig.author.email;
     <div class={compact ? "space-y-4" : "grid grid-cols-1 gap-4 sm:grid-cols-2"}>
       <div>
         <label for="name" class="block text-sm font-medium text-gray-900 dark:text-gray-200">
-          Your Name <span class="text-amber-700 dark:text-amber-500">*</span>
+          Your Name <span class="text-accent-700 dark:text-accent-500">*</span>
         </label>
         <input
           type="text"
@@ -76,13 +76,13 @@ const contactEmail = themeConfig.author.email;
           name="name"
           required
           placeholder="Your name"
-          class="mt-1.5 block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900/80 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-600/20 dark:focus:ring-amber-500/20 transition"
+          class="mt-1.5 block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900/80 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-600/20 dark:focus:ring-accent-500/20 transition"
         />
       </div>
 
       <div>
         <label for="email" class="block text-sm font-medium text-gray-900 dark:text-gray-200">
-          Email Address <span class="text-amber-700 dark:text-amber-500">*</span>
+          Email Address <span class="text-accent-700 dark:text-accent-500">*</span>
         </label>
         <input
           type="email"
@@ -90,7 +90,7 @@ const contactEmail = themeConfig.author.email;
           name="email"
           required
           placeholder="you@example.com"
-          class="mt-1.5 block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900/80 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-600/20 dark:focus:ring-amber-500/20 transition"
+          class="mt-1.5 block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900/80 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-600/20 dark:focus:ring-accent-500/20 transition"
         />
       </div>
     </div>
@@ -105,14 +105,14 @@ const contactEmail = themeConfig.author.email;
           id="subject-field"
           name="_subject"
           placeholder="What would you like to discuss?"
-          class="mt-1.5 block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900/80 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-600/20 dark:focus:ring-amber-500/20 transition"
+          class="mt-1.5 block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900/80 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-600/20 dark:focus:ring-accent-500/20 transition"
         />
       </div>
     )}
 
     <div>
       <label for="message" class="block text-sm font-medium text-gray-900 dark:text-gray-200">
-        Message <span class="text-amber-700 dark:text-amber-500">*</span>
+        Message <span class="text-accent-700 dark:text-accent-500">*</span>
       </label>
       <textarea
         id="message"
@@ -120,7 +120,7 @@ const contactEmail = themeConfig.author.email;
         rows={compact ? 3 : 5}
         required
         placeholder="Say hello, share feedback, or ask a question..."
-        class="mt-1.5 block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900/80 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-600/20 dark:focus:ring-amber-500/20 transition resize-y"
+        class="mt-1.5 block w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900/80 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-accent-600 focus:outline-none focus:ring-2 focus:ring-accent-600/20 dark:focus:ring-accent-500/20 transition resize-y"
       ></textarea>
     </div>
 
@@ -131,7 +131,7 @@ const contactEmail = themeConfig.author.email;
 
       <button
         type="submit"
-        class="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-700 px-5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-amber-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 disabled:opacity-60 disabled:cursor-not-allowed transition"
+        class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent-700 px-5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-accent-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600 disabled:opacity-60 disabled:cursor-not-allowed transition"
       >
         <svg class="submit-spinner hidden size-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -159,7 +159,7 @@ const contactEmail = themeConfig.author.email;
     <div class="mt-6">
       <button
         type="button"
-        class="contact-reset-btn inline-flex items-center text-sm font-semibold text-amber-700 hover:text-amber-600 dark:text-amber-500 dark:hover:text-amber-400 transition"
+        class="contact-reset-btn inline-flex items-center text-sm font-semibold text-accent-700 hover:text-accent-600 dark:text-accent-500 dark:hover:text-accent-400 transition"
       >
         Send another message <span aria-hidden="true" class="ml-1">&rarr;</span>
       </button>

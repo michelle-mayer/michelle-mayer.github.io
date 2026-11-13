@@ -31,7 +31,7 @@ export async function getStaticPaths() {
         updatedDate: post.data.updatedDate,
         readingTime: getReadingTime(post.body),
         tags: post.data.tags || [],
-        theme: 'cyan',
+        theme: 'lavender',
       };
       paths.push({
         params: { slug: `blog/${post.id}` },
@@ -52,7 +52,7 @@ export async function getStaticPaths() {
         title: `#${tag}`,
         description: `Explore engineering write-ups, homelab notes, career experience, and photography topics on #${tag} by ${siteConfig.author.name}.`,
         tags: [tag],
-        theme: 'violet',
+        theme: 'lavender',
       };
       paths.push({
         params: { slug: `tags/${tagSlug}` },
@@ -90,7 +90,7 @@ export async function getStaticPaths() {
         siteConfig.site.description,
         defaultTags,
       ),
-      theme: 'amber',
+      theme: 'lavender',
     },
     about: {
       badge: 'Profile & Background',
@@ -100,7 +100,7 @@ export async function getStaticPaths() {
         siteConfig.author.bio,
         defaultTags,
       ),
-      theme: 'indigo',
+      theme: 'lavender',
     },
     now: {
       badge: 'Living Snapshot',
@@ -110,7 +110,7 @@ export async function getStaticPaths() {
         siteConfig.site.description,
         ['Now', ...defaultTags.slice(0, 3)],
       ),
-      theme: 'emerald',
+      theme: 'lavender',
     },
     log: {
       badge: pagesMap.get('log')?.badge || 'Stream • Changelogs, Status-Updates & Photo Rolls',
@@ -120,7 +120,7 @@ export async function getStaticPaths() {
         'A chronological stream of status-updates, site changelogs, and photo rolls.',
         ['Changelogs', 'Status-Updates', 'Photo Rolls'],
       ),
-      theme: 'amber',
+      theme: 'lavender',
     },
     blog: {
       badge: 'Blog',
@@ -130,7 +130,7 @@ export async function getStaticPaths() {
         siteConfig.site.description,
         ['Writing', 'Ideas', 'Updates'],
       ),
-      theme: 'cyan',
+      theme: 'lavender',
     },
     photography: {
       badge: 'Visual Gallery',
@@ -140,7 +140,7 @@ export async function getStaticPaths() {
         `Photography gallery by ${siteConfig.author.name}.`,
         ['Photography', 'Architecture', 'Landscapes'],
       ),
-      theme: 'fuchsia',
+      theme: 'lavender',
     },
     contact: {
       badge: 'Direct Connect',
@@ -150,7 +150,7 @@ export async function getStaticPaths() {
         `Get in touch with ${siteConfig.author.name}.`,
         ['Contact', 'Email'],
       ),
-      theme: 'blue',
+      theme: 'lavender',
     },
     tags: {
       badge: 'Topic Directory',
@@ -160,14 +160,14 @@ export async function getStaticPaths() {
         'Explore articles, status updates, career experience, and photos by technology, location, and theme.',
         ['Topics', 'Tags', 'Index'],
       ),
-      theme: 'violet',
+      theme: 'lavender',
     },
     default: {
       badge: siteConfig.author.jobTitle,
       title: `${siteConfig.author.name} — ${siteConfig.site.domain}`,
       description: siteConfig.site.description,
       tags: defaultTags,
-      theme: 'amber',
+      theme: 'lavender',
     },
   };
 
@@ -197,7 +197,7 @@ export async function getStaticPaths() {
         tags: photo.tags || ['Photography'],
         ctaText: 'View Photo',
         photoFilename: photo.filename,
-        theme: 'fuchsia',
+        theme: 'lavender',
       };
       paths.push({
         params: { slug: `photography/${photo.id}` },

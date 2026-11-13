@@ -1,4 +1,4 @@
-# My Site
+# Michelle Mayer
 
 An independent personal-site starter for
 [michelle-mayer.github.io](https://michelle-mayer.github.io), built with Astro
@@ -33,8 +33,10 @@ Chromium is used to render Mermaid diagrams at build time, not by site visitors.
 | What to edit | Where |
 | --- | --- |
 | Site title, description, bio, public email, social links, timezone | [src/site.config.ts](./src/site.config.ts) |
-| Logo, feature switches, integrations, navigation, footer | [src/theme.config.ts](./src/theme.config.ts) |
+| Logo wordmark, feature switches, integrations, navigation, footer credit | [src/theme.config.ts](./src/theme.config.ts) |
 | Page introductions and About/Now text | [src/content/pages/](./src/content/pages/) |
+| Homepage name, typewriter phrases, and introduction | [src/content/pages/home.md](./src/content/pages/home.md) |
+| Accent color scale | [src/styles/global.css](./src/styles/global.css) |
 | Blog posts | [src/content/blog/](./src/content/blog/) |
 | Short updates | [src/content/log/](./src/content/log/) |
 | Photo metadata and stories | [src/content/photography/](./src/content/photography/) |
@@ -42,13 +44,35 @@ Chromium is used to render Mermaid diagrams at build time, not by site visitors.
 | Profile picture | [src/images/author.jpg](./src/images/author.jpg) |
 | Career history and approved recommendations | [src/data/](./src/data/) |
 | Tooltip terms (initially just Astro and Markdown) | [src/data/techTerms.ts](./src/data/techTerms.ts) |
-| Homepage typing-cat animation | [src/ascii/typingCat.ts](./src/ascii/typingCat.ts) |
+| Homepage ASCII animations (typing cat and typewriter) | [src/ascii/](./src/ascii/) |
 | Site release notes, also displayed in the activity log | [CHANGELOG.md](./CHANGELOG.md) |
 
 The welcome post, first log note, and photo placeholder demonstrate the required
 frontmatter. Duplicate those files to add content, or replace them with your own.
 Each photograph needs a unique numeric `id` and a `filename` matching its image.
 Empty career history and recommendations are hidden on About.
+
+The header and footer wordmark is `logo.text` in
+[src/theme.config.ts](./src/theme.config.ts). The footer links to Contact, each
+profile set in `socials`, and RSS. Set `footer.showThemeAttribution` to `false`
+to hide the theme credit.
+
+### Colors
+
+The accent color is a lavender scale, `--color-accent-50` through
+`--color-accent-950`, in the `@theme` block of
+[global.css](./src/styles/global.css). Components use Tailwind `accent-*`
+utilities, so changing those 11 values retints links, buttons, chips, and
+highlights. Recheck text contrast in both themes after changing them.
+
+A few colors are hex values because they are used outside Tailwind utilities.
+Update them to match a new accent:
+
+- Background glows: `TINTS` in [AmbientGlow.astro](./src/components/AmbientGlow.astro)
+- Category covers: [blogCategories.ts](./src/utils/blogCategories.ts)
+- Social preview images: the `lavender` theme in [generateOgImage.ts](./src/utils/generateOgImage.ts)
+- Sitemap styles: [sitemap-style.xsl.ts](./src/pages/sitemap-style.xsl.ts)
+- Card hover border: `.border-beam-card::before` in [global.css](./src/styles/global.css)
 
 ### About interests and career timeline
 
@@ -85,17 +109,42 @@ timeline.
 `skills` as empty arrays for a minimal snapshot. Set `isCurrent: true` only for
 the current role. An empty `experiences` array hides the timeline.
 
-### Homepage typing cat
+### Homepage introduction and animations
 
-The cat typing "hello world" beside the homepage introduction is a custom
+The homepage card reads its text from `intro` in
+[home.md](./src/content/pages/home.md):
+
+```yaml
+intro:
+  heading: "Michelle Mayer"
+  taglines:
+    - "Software engineer"
+    - "Creative soul"
+    - "Cat lady"
+  lead: "Explore my writing on tech, AI safety, and life beyond the keyboard."
+  ctaLabel: "About me"
+  ctaHref: "/about/"
+```
+
+The typewriter types each phrase in `taglines`, erases it, and moves to the next.
+Keep each phrase to 40 characters or fewer. Screen readers get the full list
+instead of the animation.
+
+The cat typing "hello world" beside the introduction is a custom
 [ascii.rest](https://ascii.rest/) piece. Its drawing and timing live in
 [src/ascii/typingCat.ts](./src/ascii/typingCat.ts); every frame must stay exactly
-`meta.cols` by `meta.rows` characters. [TypingCat.astro](./src/components/TypingCat.astro)
-renders the resting frame into the HTML, then plays it with `mount()`.
+`meta.cols` by `meta.rows` characters. [src/ascii/tagline.ts](./src/ascii/tagline.ts)
+wraps the library's typewriter so the phrases line up with the name; change its
+`SPEED` to make the typing faster or slower.
 
-The animation loops only while it is on screen and the tab is visible. Visitors who
-prefer reduced motion see the still frame; the corner button pauses or plays it for
-everyone.
+[TypingCat.astro](./src/components/TypingCat.astro) and
+[AsciiTagline.astro](./src/components/AsciiTagline.astro) render a still frame
+into the HTML. [AsciiToggle.astro](./src/components/AsciiToggle.astro) plays both
+with `mount()` and adds one button that pauses or plays them together.
+
+The animations loop only while they are on screen and the tab is visible.
+Visitors who prefer reduced motion see the still frames until they press play.
+Without JavaScript, the still frames stay and the button is hidden.
 
 ### Blog categories and cover images
 
@@ -123,8 +172,9 @@ No cover image is required to publish a post.
 
 Before publishing v1:
 
-- Replace `My Site`, `Your name`, `Add your role`, `Your location`, and
-  `hello@example.com` with intentional public information.
+- Replace `Your location`, `hello@example.com`, and the author tagline
+  `A personal site in progress` in [src/site.config.ts](./src/site.config.ts)
+  with intentional public information.
 - Replace the placeholder portrait and sample writing; replace the gallery image
   if you re-enable Photography.
 - Choose your timezone; the starter uses UTC without guessing your location.

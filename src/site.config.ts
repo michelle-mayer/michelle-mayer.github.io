@@ -70,7 +70,7 @@ export const siteConfig: SiteIdentityConfig = {
   site: {
     url: 'https://michelle-mayer.github.io',
     domain: 'michelle-mayer.github.io',
-    title: 'My Site',
+    title: 'Michelle Mayer',
     description:
       'Writing on technology, AI safety, and life beyond the keyboard. Based on The Navigator theme by Ed Stuurman.',
     locale: 'en_US',
@@ -84,13 +84,13 @@ export const siteConfig: SiteIdentityConfig = {
   },
 
   author: {
-    name: 'Your name',
+    name: 'Michelle Mayer',
     avatar: 'author.jpg',
     aboutImage: 'cat-laptop-transparent.png',
     aboutImageAlt: 'An illustrated calico cat using a laptop',
     tagline: 'A personal site in progress',
-    jobTitle: 'Add your role',
-    bio: 'Replace this placeholder with your own short bio.',
+    jobTitle: 'Software Engineer',
+    bio: 'A creative, people-minded software engineer exploring AI safety, ethics, mental health, and life beyond the keyboard.',
     location: 'Your location',
     email: 'hello@example.com',
     knowsAbout: [],
@@ -98,6 +98,7 @@ export const siteConfig: SiteIdentityConfig = {
 
   socials: {
     github: 'https://github.com/michelle-mayer',
+    linkedin: 'https://www.linkedin.com/in/michelle-leigh-mayer/',
   },
 };
 

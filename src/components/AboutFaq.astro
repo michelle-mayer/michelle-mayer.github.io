@@ -47,7 +47,7 @@ function sanitizeAnswerHtml(rawHtml: string): string {
 <section id="faq" aria-labelledby="faq-heading" class="scroll-mt-16 relative isolate py-20 sm:py-28 border-t border-gray-200/70 dark:border-gray-800">
   <div class="mx-auto max-w-7xl px-6 lg:px-8">
     <header class="mx-auto max-w-2xl text-center mb-16 sm:mb-20">
-      <p class="text-base/7 font-semibold text-amber-700 dark:text-amber-500">{faq?.eyebrow ?? 'FAQ'}</p>
+      <p class="text-base/7 font-semibold text-accent-700 dark:text-accent-500">{faq?.eyebrow ?? 'FAQ'}</p>
       <h2 id="faq-heading" class="mt-2 text-4xl font-semibold tracking-tight text-balance text-gray-900 dark:text-white sm:text-5xl">
         {faq?.heading ?? 'Frequently Asked Questions'}
       </h2>
@@ -72,12 +72,12 @@ function sanitizeAnswerHtml(rawHtml: string): string {
           <!-- Group Accordion Items -->
           <div class="lg:col-span-8 space-y-4">
             {group.items.map((item) => (
-              <details class="group rounded-2xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10 transition-all duration-200 hover:ring-amber-500/30 dark:hover:ring-amber-500/30">
+              <details class="group rounded-2xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10 transition-all duration-200 hover:ring-accent-500/30 dark:hover:ring-accent-500/30">
                 <summary class="flex w-full items-center justify-between gap-4 p-5 sm:p-6 text-left font-medium text-gray-900 dark:text-gray-100 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
                   <span class="text-base sm:text-lg font-semibold tracking-tight text-gray-900 dark:text-white">
                     {item.question}
                   </span>
-                  <span class="ml-4 flex size-7 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700/60 text-gray-500 dark:text-gray-400 group-open:bg-amber-100 dark:group-open:bg-gray-700 group-open:text-amber-600 dark:group-open:text-amber-500 transition-colors">
+                  <span class="ml-4 flex size-7 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700/60 text-gray-500 dark:text-gray-400 group-open:bg-accent-100 dark:group-open:bg-gray-700 group-open:text-accent-600 dark:group-open:text-accent-500 transition-colors">
                     <svg class="size-4 shrink-0 transition-transform duration-200 group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                       <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                     </svg>

@@ -69,13 +69,6 @@ export interface FeaturesConfig {
   llms: boolean;
 }
 
-export interface PoweredByLinkConfig {
-  label: string;
-  href: string;
-  icon: 's3' | 'mrap' | 'cloudfront' | 'info';
-  highlight?: boolean;
-}
-
 export interface ThemeMechanicsConfig {
   logo: {
     /** Text wordmark rendered inside the SVG logo (`src/components/Logo.astro`) */
@@ -86,7 +79,7 @@ export interface ThemeMechanicsConfig {
     letterSpacing?: string;
     /** Font size of the SVG wordmark in px (default: 14) */
     fontSize?: number;
-    /** Whether to render the angled compass needle emblem on the underline (default: true) */
+    /** Whether to render the angled compass needle emblem on the underline and beside the brand on social preview images (default: true) */
     showCompass?: boolean;
     /** Rotation angle in degrees for the compass needle (default: 42) */
     compassAngle?: number;
@@ -157,12 +150,6 @@ export interface ThemeMechanicsConfig {
   };
 
   footer: {
-    /** Heading for the site links column in the footer */
-    siteColumnTitle: string;
-    /** Show the "Powered by" infrastructure column in the footer */
-    showPoweredBy: boolean;
-    /** Links displayed under the "Powered by" column in the footer */
-    poweredByLinks: PoweredByLinkConfig[];
     /**
      * Toggle the credit to The Navigator theme by Ed Stuurman in the footer.
      * This is a free theme — feel free to set this to `false`, though it'd be cool to keep that one link!
@@ -175,11 +162,11 @@ export type ThemeConfig = SiteIdentityConfig & ThemeMechanicsConfig;
 
 export const themeMechanics: ThemeMechanicsConfig = {
   logo: {
-    text: 'MY SITE',
+    text: 'MICHELLE MAYER',
     ariaLabel: siteConfig.site.title,
     letterSpacing: '0.22em',
     fontSize: 14,
-    showCompass: true,
+    showCompass: false,
     compassAngle: 42,
   },
 
@@ -229,7 +216,7 @@ export const themeMechanics: ThemeMechanicsConfig = {
   },
 
   openGraph: {
-    brandLabel: 'MY SITE',
+    brandLabel: 'MICHELLE MAYER',
     locationPinLabel: siteConfig.author.location,
   },
 
@@ -239,9 +226,6 @@ export const themeMechanics: ThemeMechanicsConfig = {
   },
 
   footer: {
-    siteColumnTitle: siteConfig.site.domain,
-    showPoweredBy: false,
-    poweredByLinks: [],
     // It's a free theme — set this to `true` if you'd like to display the footer credit!
     showThemeAttribution: true,
   },

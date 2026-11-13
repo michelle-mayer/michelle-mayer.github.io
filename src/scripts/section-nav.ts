@@ -198,11 +198,11 @@ export function initSectionNav() {
       const isActive = id === targetId;
 
       if (isActive) {
-        link.classList.add('bg-amber-100', 'text-amber-900', 'dark:bg-gray-800', 'dark:text-amber-500', 'font-semibold');
+        link.classList.add('bg-accent-100', 'text-accent-900', 'dark:bg-gray-800', 'dark:text-accent-500', 'font-semibold');
         link.classList.remove('text-gray-500', 'text-gray-600', 'dark:text-gray-400', 'font-medium');
         link.setAttribute('aria-current', 'true');
       } else {
-        link.classList.remove('bg-amber-100', 'text-amber-900', 'dark:bg-gray-800', 'dark:text-amber-500', 'font-semibold');
+        link.classList.remove('bg-accent-100', 'text-accent-900', 'dark:bg-gray-800', 'dark:text-accent-500', 'font-semibold');
         link.classList.add('text-gray-600', 'dark:text-gray-400', 'font-medium');
         link.removeAttribute('aria-current');
       }
@@ -229,12 +229,12 @@ export function initSectionNav() {
       const dot = item.querySelector('[data-active-dot]');
 
       if (isActive) {
-        item.classList.add('bg-amber-100', 'text-amber-900', 'dark:bg-gray-800', 'dark:text-amber-500', 'font-semibold');
+        item.classList.add('bg-accent-100', 'text-accent-900', 'dark:bg-gray-800', 'dark:text-accent-500', 'font-semibold');
         item.classList.remove('text-gray-700', 'dark:text-gray-300');
         dot?.classList.remove('hidden');
         dot?.classList.add('inline-block');
       } else {
-        item.classList.remove('bg-amber-100', 'text-amber-900', 'dark:bg-gray-800', 'dark:text-amber-500', 'font-semibold');
+        item.classList.remove('bg-accent-100', 'text-accent-900', 'dark:bg-gray-800', 'dark:text-accent-500', 'font-semibold');
         item.classList.add('text-gray-700', 'dark:text-gray-300');
         dot?.classList.add('hidden');
         dot?.classList.remove('inline-block');

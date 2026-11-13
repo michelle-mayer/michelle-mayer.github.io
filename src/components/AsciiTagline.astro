@@ -1,0 +1,42 @@
+---
+import tagline from '../ascii/tagline';
+
+interface Props {
+  phrases: string[];
+  class?: string;
+}
+
+const { phrases, class: className = '' } = Astro.props;
+
+// First phrase, fully typed: shown before JavaScript runs and for reduced motion.
+const stillFrame = tagline({ phrases })(0);
+---
+
+<div class:list={['ascii-tagline', className]}>
+  <span class="sr-only">{phrases.join(', ')}</span>
+  <pre
+    aria-hidden="true"
+    class="ascii-tagline-text text-accent-700 dark:text-accent-300"
+    data-ascii-piece="tagline"
+    data-ascii-options={JSON.stringify({ phrases })}
+  >{stillFrame}</pre>
+</div>
+
+<style>
+  .ascii-tagline-text {
+    margin: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+    font-size: 1.125rem;
+    line-height: 1.5;
+    letter-spacing: 0;
+    white-space: pre;
+    font-variant-ligatures: none;
+    overflow: hidden;
+  }
+
+  @media (min-width: 640px) {
+    .ascii-tagline-text {
+      font-size: 1.25rem;
+    }
+  }
+</style>

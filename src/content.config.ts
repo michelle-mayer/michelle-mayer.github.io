@@ -106,10 +106,10 @@ const pages = defineCollection({
 		// Homepage (`home.md`) structured fields
 		intro: z
 			.object({
-				eyebrow: z.string(),
 				heading: z.string(),
-				leftColumn: z.string(),
-				rightColumn: z.string(),
+				// Phrases the homepage typewriter types in turn (it trims anything past 40 characters).
+				taglines: z.array(z.string().trim().min(1).max(40)).min(1),
+				lead: z.string(),
 				ctaLabel: z.string(),
 				ctaHref: z.string(),
 			})

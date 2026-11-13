@@ -1,5 +1,5 @@
 ---
-pageTitle: "My Site - Tags"
+pageTitle: "Michelle Mayer - Tags"
 description: "Explore articles and ideas by topic."
 eyebrow: "Topics"
 heading: "Tags"

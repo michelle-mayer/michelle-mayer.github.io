@@ -8,6 +8,8 @@ import { themeConfig } from '../theme.config';
 import { formatSiteDate } from './dates';
 
 export type OgTheme =
+  | 'lavender'
+  | 'sage'
   | 'amber'
   | 'indigo'
   | 'emerald'
@@ -28,6 +30,26 @@ export interface OgThemeColors {
 }
 
 export const OG_THEMES: Record<OgTheme, OgThemeColors> = {
+  lavender: {
+    primary: '#9c89e6',
+    light: '#c9bffc',
+    dark: '#775dc5',
+    glow1: 'rgba(156, 137, 230, 0.28)',
+    glow2: 'rgba(125, 211, 252, 0.12)',
+    badgeBg: 'rgba(156, 137, 230, 0.12)',
+    badgeBorder: 'rgba(156, 137, 230, 0.35)',
+    buttonText: '#0f172a',
+  },
+  sage: {
+    primary: '#6ca37a',
+    light: '#a2c9ae',
+    dark: '#477454',
+    glow1: 'rgba(108, 163, 122, 0.28)',
+    glow2: 'rgba(244, 165, 130, 0.12)',
+    badgeBg: 'rgba(108, 163, 122, 0.12)',
+    badgeBorder: 'rgba(108, 163, 122, 0.35)',
+    buttonText: '#0f172a',
+  },
   amber: {
     primary: '#f59e0b',
     light: '#fbbf24',
@@ -100,22 +122,8 @@ export const OG_THEMES: Record<OgTheme, OgThemeColors> = {
   },
 };
 
-export function resolveOgTheme(
-  theme?: OgTheme,
-  badge?: string,
-  title?: string
-): OgTheme {
-  if (theme && OG_THEMES[theme]) return theme;
-  const b = (badge || '').toLowerCase();
-  const t = (title || '').toLowerCase();
-  if (b.includes('photograph') || b.includes('gallery')) return 'fuchsia';
-  if (b.includes('engineering article') || b.includes('blog') || t.includes('blog')) return 'cyan';
-  if (b.includes('living snapshot') || b.includes('doing now') || t.includes('doing now')) return 'emerald';
-  if (b.includes('profile') || b.includes('about')) return 'indigo';
-  if (b.includes('contact') || b.includes('direct connect')) return 'blue';
-  if (b.includes('topic') || b.includes('taxonomy')) return 'violet';
-  if (b.includes('status-update') || b.includes('changelog') || b.includes('stream')) return 'amber';
-  return 'amber';
+export function resolveOgTheme(theme?: OgTheme): OgTheme {
+  return theme && OG_THEMES[theme] ? theme : 'lavender';
 }
 
 export interface OgImageProps {
@@ -283,7 +291,7 @@ function formatDate(d: Date | string | undefined): string | null {
   return formatSiteDate(dateObj);
 }
 
-function renderMetaIcon(icon: 'calendar' | 'clock' | 'pin' | 'refresh', color = '#f59e0b') {
+function renderMetaIcon(icon: 'calendar' | 'clock' | 'pin' | 'refresh', color = '#9c89e6') {
   if (icon === 'calendar') {
     return {
       type: 'svg',
@@ -421,8 +429,9 @@ function buildOgCardVdom(props: OgImageProps, polaroid?: PolaroidThumbnail | nul
     theme,
   } = props;
 
-  const activeTheme = resolveOgTheme(theme, badge, title);
+  const activeTheme = resolveOgTheme(theme);
   const t = OG_THEMES[activeTheme];
+  const showCompass = themeConfig.logo.showCompass ?? true;
 
   // Responsive font size based on title length
   const titleLen = title.length;
@@ -537,7 +546,7 @@ function buildOgCardVdom(props: OgImageProps, polaroid?: PolaroidThumbnail | nul
                   ],
                 },
               },
-              // Site Brand with compass mark
+              // Site brand, with the compass mark when the site logo shows one
               {
                 type: 'div',
                 props: {
@@ -552,7 +561,7 @@ function buildOgCardVdom(props: OgImageProps, polaroid?: PolaroidThumbnail | nul
                   },
                   children: [
                     // Compass needle icon SVG
-                    {
+                    ...(showCompass ? [{
                       type: 'svg',
                       props: {
                         width: '20',
@@ -579,7 +588,7 @@ function buildOgCardVdom(props: OgImageProps, polaroid?: PolaroidThumbnail | nul
                           },
                         ],
                       },
-                    },
+                    }] : []),
                     themeConfig.openGraph.brandLabel,
                     {
                       type: 'span',
@@ -858,14 +867,21 @@ function ensureCacheDir(): void {
 
 /**
  * Computes a deterministic SHA-256 cache key for an Open Graph card.
- * Incorporates the template layout version, theme, title, description, badge, dates, tags, and CTA.
+ * Incorporates the template layout version, theme, title, description, badge, dates, tags, CTA,
+ * and the site brand details drawn on every card.
  */
 export function computeOgCacheKey(props: OgImageProps): string {
   const cacheKeyPayload = JSON.stringify({
     v: getTemplateDigest(),
     format: 'jpeg-q82',
+    brand: [
+      themeConfig.openGraph.brandLabel,
+      themeConfig.site.domain,
+      themeConfig.openGraph.locationPinLabel ?? null,
+      themeConfig.logo.showCompass ?? true,
+    ],
     title: props.title,
-    theme: resolveOgTheme(props.theme, props.badge, props.title),
+    theme: resolveOgTheme(props.theme),
     description: props.description ?? null,
     badge: props.badge ?? 'Article',
     pubDate: formatDate(props.pubDate),
