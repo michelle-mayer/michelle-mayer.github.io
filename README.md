@@ -48,7 +48,7 @@ Chromium is used to render Mermaid diagrams at build time, not by site visitors.
 | Profile picture | [src/images/author.jpg](./src/images/author.jpg) |
 | Career history and approved recommendations | [src/data/](./src/data/) |
 | Tooltip terms (initially just Astro and Markdown) | [src/data/techTerms.ts](./src/data/techTerms.ts) |
-| ASCII animations (homepage typing cat and typewriter, 404 ghost) | [src/ascii/](./src/ascii/) |
+| ASCII animations (homepage typing cat and typewriter, 404 ghost, Contact latte) | [src/ascii/](./src/ascii/) |
 | Site release notes, also displayed in the activity log | [CHANGELOG.md](./CHANGELOG.md) |
 
 The welcome post, first log note, and photo placeholder demonstrate the required
@@ -162,6 +162,22 @@ The art is drawn with block and box-drawing characters. Systems whose monospace
 font lacks them, such as Android, use the 3 KB fallback font in
 [public/fonts/](./public/fonts/), a cut of JetBrains Mono from ascii.rest under the
 SIL Open Font License (`ascii-rest-mono-OFL.txt`). Other systems never download it.
+
+### Contact page latte
+
+The Contact page shows a steaming latte beside the contact details, and below them
+on phones. [src/ascii/latte.ts](./src/ascii/latte.ts) adapts ascii.rest's `coffee`
+piece, whose MIT notice it keeps: the same shaded cup and curling steam, without
+the saucer, seen from higher up so the foam shows a poured milk heart. Two wisps
+rise from the foam in front of the far rim. [LatteArt.astro](./src/components/LatteArt.astro)
+renders it with the same pause/play button.
+
+Its shading flips with the theme: dark characters on a light page, light ones on a
+dark page. [AsciiToggle.astro](./src/components/AsciiToggle.astro) passes every piece
+the theme from the `dark` class on `<html>`, because `mount()` can't read Tailwind's
+oklch text colors, and redraws a paused piece when the theme changes. The HTML
+carries a still frame for each theme, so the cup is shaded correctly before
+JavaScript runs.
 
 ### Blog categories and cover images
 

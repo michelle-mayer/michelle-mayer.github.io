@@ -9,7 +9,5 @@ responseValue: "Replace the placeholder email before publishing."
 socialsHeading: "Elsewhere on the web"
 ---
 
-Find me on GitHub using the link below.
-
-The email address and location are placeholders. Replace them with details you
-want to make public before publishing your site.
+Don't be a stranger! Want to talk tech, ethics, or share your story? Let's grab a
+coffee (or e-coffee).

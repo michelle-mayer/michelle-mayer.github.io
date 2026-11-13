@@ -31,12 +31,24 @@ const { class: className = '' } = Astro.props;
 </button>
 
 <script>
-  import { mount, type Piece } from 'ascii.rest';
+  import { mount, type Frame, type Piece } from 'ascii.rest';
+  import * as latte from '../ascii/latte';
   import * as notFound from '../ascii/notFound';
   import * as tagline from '../ascii/tagline';
   import * as typingCat from '../ascii/typingCat';
 
-  const pieces: Record<string, Piece> = { tagline, 'typing-cat': typingCat, 'not-found': notFound };
+  // Shaded pieces flip their ramp for dark ink on a light page (`paper`). mount() guesses that from
+  // the text colour's RGB, which Tailwind's oklch colours defeat, so each piece reads the theme instead.
+  const isDark = () => document.documentElement.classList.contains('dark');
+  const themed = (piece: Piece): Piece => ({
+    meta: piece.meta,
+    default: (options) => {
+      const frame = piece.default(options);
+      return (t) => frame(t, { paper: !isDark() });
+    },
+  });
+  const registry: Record<string, Piece> = { tagline, 'typing-cat': typingCat, 'not-found': notFound, latte };
+  const pieces = Object.fromEntries(Object.entries(registry).map(([key, piece]) => [key, themed(piece)]));
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
   // One button plays or pauses every `[data-ascii-piece]` inside its `[data-ascii-group]`.
@@ -45,7 +57,7 @@ const { class: className = '' } = Astro.props;
     const arts = [...group.querySelectorAll<HTMLElement>('[data-ascii-piece]')].flatMap((el) => {
       const piece = pieces[el.dataset.asciiPiece ?? ''];
       if (!piece) return [];
-      return [{ el, piece, options: JSON.parse(el.dataset.asciiOptions ?? '{}'), still: el.textContent ?? '' }];
+      return [{ el, piece, options: JSON.parse(el.dataset.asciiOptions ?? '{}'), frame: undefined as Frame | undefined }];
     });
     if (arts.length === 0) continue;
 
@@ -75,9 +87,17 @@ const { class: className = '' } = Astro.props;
       render();
     };
 
-    const pause = (rest: boolean) => {
+    // Each piece's resting picture (the one it names for reduced motion), shaded for the current theme.
+    const rest = () => {
+      for (const art of arts) {
+        art.frame ??= art.piece.default(art.options);
+        art.el.textContent = art.frame(art.piece.meta.still ?? 0);
+      }
+    };
+
+    const pause = (resting: boolean) => {
       stopAll();
-      if (rest) arts.forEach(({ el, still }) => { el.textContent = still; });
+      if (resting) rest();
       render();
     };
 
@@ -95,6 +115,13 @@ const { class: className = '' } = Astro.props;
     reducedMotion.addEventListener('change', () => {
       if (!choice) sync();
     });
+    // Playing pieces pick up a theme change on their next frame; a still one is redrawn in its new shading.
+    let dark = isDark();
+    new MutationObserver(() => {
+      if (isDark() === dark) return;
+      dark = isDark();
+      if (stops.length === 0) rest();
+    }).observe(document.documentElement, { attributeFilter: ['class'] });
     toggle.hidden = false;
     sync();
   }

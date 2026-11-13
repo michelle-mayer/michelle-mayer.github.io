@@ -1,0 +1,44 @@
+---
+import latte from '../ascii/latte';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+// A still frame for each theme ships in the HTML, so the cup is shaded right before (or without)
+// JavaScript; AsciiToggle replaces them with the animation, drawn for the current theme.
+const frame = latte();
+const lightStill = frame(0, { paper: true });
+const darkStill = frame(0, { paper: false });
+const label = 'ASCII art of a latte with a heart poured in its foam and steam rising from the cup';
+---
+
+<figure class:list={['latte-art m-0', className]}>
+  <pre
+    role="img"
+    aria-label={label}
+    class="latte-art-text text-gray-700 dark:text-gray-200"
+    data-ascii-piece="latte"
+  ><span class="dark:hidden">{lightStill}</span><span class="hidden dark:inline">{darkStill}</span></pre>
+</figure>
+
+<style>
+  .latte-art {
+    container-type: inline-size;
+  }
+
+  /* 33 columns at ~0.6em per character: scale to fit the container, capped at 18px. */
+  .latte-art-text {
+    width: fit-content;
+    margin: 0 auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+    font-size: min(18px, calc(100cqw / 20));
+    line-height: 1.15;
+    letter-spacing: 0;
+    white-space: pre;
+    font-variant-ligatures: none;
+    overflow: hidden;
+  }
+</style>
