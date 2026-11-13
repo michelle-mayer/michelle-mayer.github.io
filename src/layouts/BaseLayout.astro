@@ -24,14 +24,15 @@ const pathname = Astro.url.pathname;
 const cleanPath = pathname.replace(/^\/|\/$/g, "");
 const isHome = cleanPath === "";
 const is404 = cleanPath === "404" || pathname.startsWith("/404");
-const showBreadcrumbs = props.showBreadcrumbs !== undefined ? props.showBreadcrumbs : (!isHome && !is404);
-const hasBreadcrumbExtra = Astro.slots.has('breadcrumb-extra');
-const showSubBar = showBreadcrumbs || hasBreadcrumbExtra;
+const hasTrail = !isHome && !is404;
+// The breadcrumb bar under the header is off by default; pass `showBreadcrumbs` to bring it back.
+// The trail still feeds the BreadcrumbList structured data in <Head>.
+const showBreadcrumbs = props.showBreadcrumbs ?? false;
 
 let breadcrumbsList: BreadcrumbItem[] =
-  showBreadcrumbs && props.breadcrumbs ? [...props.breadcrumbs] : [];
+  hasTrail && props.breadcrumbs ? [...props.breadcrumbs] : [];
 
-if (showBreadcrumbs && breadcrumbsList.length === 0) {
+if (hasTrail && breadcrumbsList.length === 0) {
   const segments = cleanPath.split("/").filter(Boolean);
 
   if (segments.length === 1) {
@@ -71,17 +72,18 @@ const htmlLang = (siteConfig.site.language || 'en').replace(
     </svg>
     <div class="flex-1 flex flex-col">
       <Navigation />
-      {showSubBar && (
-        <aside aria-label={showBreadcrumbs ? "Breadcrumb navigation" : "Sub-navigation"} class="border-b border-gray-200/70 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/40 transition-colors">
+      {showBreadcrumbs ? (
+        <aside aria-label="Breadcrumb navigation" class="border-b border-gray-200/70 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/40 transition-colors">
           <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-h-11 sm:h-11 py-1.5 sm:py-0 flex flex-wrap sm:flex-nowrap items-center justify-between gap-x-4 gap-y-2 min-w-0">
-            {showBreadcrumbs ? (
-              <Breadcrumbs items={breadcrumbsList} />
-            ) : (
-              <div aria-hidden="true" />
-            )}
+            <Breadcrumbs items={breadcrumbsList} />
             <slot name="breadcrumb-extra" />
           </div>
         </aside>
+      ) : (
+        <div class="contents [&_[data-nav-inline]]:hidden">
+          {/* Without the bar, a page's SectionNav keeps only its floating pill, which appears on scroll. */}
+          <slot name="breadcrumb-extra" />
+        </div>
       )}
       <main class="flex-1">
         <slot />
