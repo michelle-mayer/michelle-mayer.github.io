@@ -14,6 +14,12 @@ Repo-wide task tracker. Check items off with `[x]`. Move done items to **Done** 
   - [ ] Confirm the block in DevTools → Network
 - [ ] Monthly (recurring): record page views, visits, top 5 paths, and top referrers before detailed data ages out.
 
+## Comments (Giscus)
+
+- [ ] Add a Giscus mention to the `/privacy/` page: GitHub sign-in stores a token in the browser.
+- Uses the `Announcements` discussion category, so only Giscus and maintainers can start threads.
+- Per post: `comments: false` hides comments; `linkedinUrl: "<post url>"` adds a "Discuss on LinkedIn" link.
+
 ## Blog drafts
 
 - [ ] Finish "[Draft] Cat products I swear by" (`catProductRecommendations.md`).
@@ -29,4 +35,5 @@ Repo-wide task tracker. Check items off with `[x]`. Move done items to **Done** 
 ## Done
 
 - [x] Approved the analytics plan.
+- [x] Set up Giscus comments (Discussions enabled, app installed, IDs configured).
 

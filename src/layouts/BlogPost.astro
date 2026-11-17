@@ -3,6 +3,7 @@ import BaseLayout from './BaseLayout.astro';
 import AmbientGlow from '../components/AmbientGlow.astro';
 import TagList from '../components/TagList.astro';
 import ContactForm from '../components/ContactForm.astro';
+import Comments from '../components/Comments.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import SectionNav from '../components/SectionNav.astro';
 import TechTooltipsScript from '../components/scripts/TechTooltipsScript.astro';
@@ -57,6 +58,8 @@ const {
   sectionDepth,
   sections: manualSections,
   numberedHeadings = false,
+  comments = true,
+  linkedinUrl,
   hasMermaid = true,
   hasYouTube = true,
 } = Astro.props;
@@ -144,6 +147,8 @@ const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
           <TagList tags={tags} showLabel={true} />
         </div>
       </div>
+
+      <Comments linkedinUrl={linkedinUrl} showGiscus={comments} />
 
       <!-- Adjacent Articles Navigation -->
       {(nextPost || prevPost) && (

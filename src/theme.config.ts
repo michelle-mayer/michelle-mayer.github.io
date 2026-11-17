@@ -104,6 +104,19 @@ export interface ThemeMechanicsConfig {
       scriptUrl: string;
       websiteId: string;
     };
+
+    /**
+     * Giscus comments backed by GitHub Discussions (`src/components/Comments.astro`).
+     * Get the IDs from https://giscus.app after enabling Discussions and installing the giscus app.
+     * Comments render only when `enabled` is true and every ID is filled in.
+     */
+    giscus: {
+      enabled: boolean;
+      repo: string;
+      repoId: string;
+      category: string;
+      categoryId: string;
+    };
   };
 
   navigation: {
@@ -178,6 +191,13 @@ export const themeMechanics: ThemeMechanicsConfig = {
       enabled: false,
       scriptUrl: 'https://cloud.umami.is/script.js',
       websiteId: '',
+    },
+    giscus: {
+      enabled: true,
+      repo: 'michelle-mayer/michelle-mayer.github.io',
+      repoId: 'R_kgDOVl1D9A',
+      category: 'Announcements',
+      categoryId: 'DIC_kwDOVl1D9M4DLT8F',
     },
   },
 

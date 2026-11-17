@@ -1,0 +1,94 @@
+---
+import { themeConfig } from '../theme.config';
+
+interface Props {
+  linkedinUrl?: string;
+  showGiscus?: boolean;
+}
+
+const { linkedinUrl, showGiscus = true } = Astro.props;
+const giscus = themeConfig.integrations.giscus;
+const giscusReady = Boolean(
+  showGiscus && giscus.enabled && giscus.repo && giscus.repoId && giscus.category && giscus.categoryId
+);
+---
+
+{(giscusReady || linkedinUrl) && (
+  <section aria-labelledby="comments-heading" class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h2 id="comments-heading" class="text-lg font-semibold text-gray-900 dark:text-white">
+        Let's talk 💬
+      </h2>
+      {linkedinUrl && (
+        <a
+          href={linkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium ring-1 ring-gray-200 dark:ring-gray-700 text-gray-700 dark:text-gray-200 hover:text-accent-700 hover:ring-accent-400 dark:hover:text-accent-400 transition no-underline"
+        >
+          <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z" />
+          </svg>
+          Discuss on LinkedIn
+        </a>
+      )}
+    </div>
+    {giscusReady && (
+      <>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          Comments use GitHub sign-in. Please be kind, and avoid sharing sensitive personal details.
+        </p>
+        <div
+          class="giscus mt-6"
+          data-giscus-repo={giscus.repo}
+          data-giscus-repo-id={giscus.repoId}
+          data-giscus-category={giscus.category}
+          data-giscus-category-id={giscus.categoryId}
+        ></div>
+      </>
+    )}
+  </section>
+)}
+
+<script>
+  const giscusTheme = () =>
+    document.documentElement.classList.contains('dark') ? 'noborder_dark' : 'noborder_light';
+
+  function loadGiscus() {
+    const container = document.querySelector<HTMLElement>('.giscus[data-giscus-repo]');
+    if (!container || container.dataset.giscusLoaded === 'true') return;
+    container.dataset.giscusLoaded = 'true';
+
+    const { giscusRepo, giscusRepoId, giscusCategory, giscusCategoryId } = container.dataset;
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.async = true;
+    script.crossOrigin = 'anonymous';
+    Object.entries({
+      'data-repo': giscusRepo ?? '',
+      'data-repo-id': giscusRepoId ?? '',
+      'data-category': giscusCategory ?? '',
+      'data-category-id': giscusCategoryId ?? '',
+      'data-mapping': 'pathname',
+      'data-strict': '1',
+      'data-reactions-enabled': '1',
+      'data-emit-metadata': '0',
+      'data-input-position': 'top',
+      'data-theme': giscusTheme(),
+      'data-lang': 'en',
+      'data-loading': 'lazy',
+    }).forEach(([key, value]) => script.setAttribute(key, value));
+    container.after(script);
+
+    // Keep the comment frame in sync with the site's light/dark toggle.
+    new MutationObserver(() => {
+      const frame = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+      frame?.contentWindow?.postMessage(
+        { giscus: { setConfig: { theme: giscusTheme() } } },
+        'https://giscus.app'
+      );
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  loadGiscus();
+</script>

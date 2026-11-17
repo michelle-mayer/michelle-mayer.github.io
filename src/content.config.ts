@@ -56,6 +56,10 @@ const blog = defineCollection({
 			sections: z.array(customSectionItemSchema).optional(),
 			// Number the post's h2 headings 1, 2, 3… in order, for list posts that may be reordered
 			numberedHeadings: z.boolean().optional(),
+			// Giscus comments are on by default; set `comments: false` to hide them on this post
+			comments: z.boolean().optional(),
+			// Optional LinkedIn post for this article; shows a "Discuss on LinkedIn" link
+			linkedinUrl: z.url().optional(),
 		}),
 });
 
