@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import type { CollectionEntry } from 'astro:content';
+import { INLINE_SVG_DIGEST } from '../plugins/remark-inline-svg.mjs';
 
 const BLOG_TEMPLATE_DIGEST = (() => {
   const h = crypto.createHash('sha256');
@@ -18,6 +19,7 @@ const BLOG_TEMPLATE_DIGEST = (() => {
     'src/scripts/mermaid-zoom.ts',
     'src/styles/global.css',
     'src/plugins/remark-alerts.mjs',
+    'src/plugins/remark-inline-svg.mjs',
     'src/plugins/rehype-mermaid-a11y.mjs',
     'src/components/scripts/TechTooltipsScript.astro',
     'src/components/scripts/MermaidZoomScript.astro',
@@ -29,6 +31,8 @@ const BLOG_TEMPLATE_DIGEST = (() => {
       // ignore if path unavailable
     }
   }
+  // Graphics are inlined into post HTML, so their contents belong in every post's cache key.
+  h.update(INLINE_SVG_DIGEST);
   return h.digest('hex');
 })();
 

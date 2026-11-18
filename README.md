@@ -220,6 +220,22 @@ links to an item keep working. Every `##` heading gets a number, so end the post
 with plain paragraphs rather than another `##` section, and use `###` for
 subheadings inside an item.
 
+### Graphics in posts
+
+Save an SVG graphic in [src/images/graphics/](./src/images/graphics/) and add it
+to a post as an image on its own line. The alt text describes the graphic for
+screen readers, and the optional quoted title becomes a caption:
+
+```md
+![Describe what the graphic shows.](../../images/graphics/my-graphic.svg "Optional caption")
+```
+
+The build pastes the SVG into the page instead of linking to it, so the
+graphic's own `<style>` can switch colors with the site's dark mode, e.g.
+`:where(.dark) .my-graphic { … }`. See
+[microsoft-levels.svg](./src/images/graphics/microsoft-levels.svg) for an
+example. Restart `npm run dev` after editing a graphic to see the change.
+
 Before publishing v1:
 
 - Replace `Your location`, `hello@example.com`, and the author tagline

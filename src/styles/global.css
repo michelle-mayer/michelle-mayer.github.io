@@ -54,6 +54,22 @@
   color: var(--color-accent-400);
 }
 
+/* Graphics inlined by `remark-inline-svg.mjs`. A graphic that sets a min-width scrolls sideways
+   on screens narrower than that instead of shrinking its text past legibility. */
+.svg-figure-scroll {
+  overflow-x: auto;
+}
+
+.svg-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.svg-figure figcaption {
+  text-align: center;
+}
+
 /* ==========================================================================
    Ambient Atmospheric Glows (AmbientGlow.astro)
    ========================================================================== */

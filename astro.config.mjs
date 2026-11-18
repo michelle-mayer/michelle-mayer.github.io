@@ -8,6 +8,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { remarkAlerts } from './src/plugins/remark-alerts.mjs';
 import { remarkYouTube } from './src/plugins/remark-youtube.mjs';
+import { remarkInlineSvg, INLINE_SVG_DIGEST } from './src/plugins/remark-inline-svg.mjs';
 import { THUMB_CACHE_DIR, THUMB_PUBLIC_PREFIX, THUMB_FILENAME_RE, buildThumbnailBuffer, remoteThumbnailUrl } from './src/utils/youtube-thumbnail.mjs';
 import { rehypeMermaidA11y } from './src/plugins/rehype-mermaid-a11y.mjs';
 import { rehypeTechTooltips, TECH_TOOLTIPS_DIGEST } from './src/plugins/rehype-tech-tooltips.mjs';
@@ -325,7 +326,7 @@ export default defineConfig({
       excludeLangs: ['mermaid'],
     },
     processor: unified({
-      remarkPlugins: [[remarkAlerts, { version: 'v2-note' }], remarkYouTube],
+      remarkPlugins: [[remarkAlerts, { version: 'v2-note' }], remarkYouTube, [remarkInlineSvg, { digest: INLINE_SVG_DIGEST }]],
       rehypePlugins: [
         [
           rehypeMermaid,
