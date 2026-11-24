@@ -113,6 +113,51 @@ timeline.
 `skills` as empty arrays for a minimal snapshot. Set `isCurrent: true` only for
 the current role. An empty `experiences` array hides the timeline.
 
+### Bookshelf
+
+The [/bookshelf/](./src/pages/bookshelf.astro) page shows books and podcasts you
+recommend on a painted bookcase, with Chester and Milo napping on the shelves.
+Visitors hover over or tap a book or record to read your review. Add picks, in
+shelf order, to [bookshelf.ts](./src/data/bookshelf.ts):
+
+```ts
+// in `books`
+{
+  title: 'The Culture Map',
+  author: 'Erin Meyer',
+  isbn: '9781610392501', // finds the cover and builds the Amazon link
+  review: 'One line on why you recommend it.',
+},
+
+// in `podcasts`: link an episode, or a whole show
+{
+  title: 'Episode title',
+  show: 'Podcast name',
+  spotifyUrl: 'https://open.spotify.com/episode/…', // and/or appleUrl
+  review: 'One line on why you recommend it.',
+},
+```
+
+Book covers come from [Open Library](https://openlibrary.org/) by ISBN.
+Podcast artwork comes from the Spotify link, or the Apple Podcasts link if
+there's no Spotify link. Both are downloaded and optimized when the site builds.
+If a cover is missing or wrong, set `cover` (books) or `artwork` (podcasts) to an
+image URL or an image imported from `src/images/`, and set a book's `url` to
+link somewhere other than Amazon. If a lookup fails, the build still succeeds
+and draws a plain stand-in cover.
+
+Covers shrink as a shelf fills up; the build warns when a shelf gets crowded.
+The day and night paintings in [src/images/bookshelf/](./src/images/bookshelf/)
+switch with the site theme. If you replace them, update the shelf and cat
+positions at the top of
+[BookshelfView.astro](./src/components/pages/BookshelfView.astro), which are in
+pixels of the 1536×1024 artwork.
+
+Edit the heading and subtitle in
+[bookshelf.md](./src/content/pages/bookshelf.md), and set `enabled: false` on the
+Bookshelf item in [src/theme.config.ts](./src/theme.config.ts) to remove it from
+the menu.
+
 ### Homepage introduction and animations
 
 The homepage card reads its text from `intro` in

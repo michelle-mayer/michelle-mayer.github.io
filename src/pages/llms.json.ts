@@ -75,6 +75,7 @@ export async function GET(context: APIContext) {
     showBlog ? { name: 'Blog', url: abs('/blog/'), description: 'Technical articles and homelab write-ups.' } : null,
     showPhotography ? { name: 'Photography', url: abs('/photography/'), description: 'Portfolio of landscape, architecture, and street photography.' } : null,
     showTags ? { name: 'Tags', url: abs('/tags/'), description: 'Cross-collection topic directory.' } : null,
+    { name: 'Bookshelf', url: abs('/bookshelf/'), description: 'Books and podcasts worth recommending.' },
     showContact ? { name: 'Contact', url: abs('/contact/'), description: 'How to get in touch.' } : null,
   ].filter(Boolean);
 

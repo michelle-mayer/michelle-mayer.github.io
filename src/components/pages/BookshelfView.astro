@@ -1,0 +1,612 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AmbientGlow from '../AmbientGlow.astro';
+import SectionNav from '../SectionNav.astro';
+import { getEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
+import nookDay from '../../images/bookshelf/nook-day.webp';
+import nookNight from '../../images/bookshelf/nook-night.webp';
+import { books, podcasts } from '../../data/bookshelf';
+import { bookCover, bookLink, linkLabel, podcastArtwork } from '../../utils/bookshelf';
+
+const page = (await getEntry('pages', 'bookshelf'))!.data;
+
+// Where things sit in the painted scene, in pixels of the 1536×1024 artwork. The day and night
+// paintings share one layout; re-measure these if the artwork changes.
+const SCENE = { width: 1536, height: 1024 };
+const SHELVES = {
+  books: { left: 268, right: 1005, base: 408 }, // upper compartment, up to where Chester sleeps
+  podcasts: { left: 478, right: 1245, base: 750 }, // lower compartment, after Milo
+};
+const CATS = [
+  { name: 'Chester', where: 'the top shelf', box: [1018, 278, 1262, 392], zzz: '8%' },
+  { name: 'Milo', where: 'the bottom shelf', box: [243, 650, 465, 748], zzz: '80%' },
+];
+const TILTS = [-4, 3, -2, 4, -3, 2];
+
+const [day, night] = await Promise.all(
+  [nookDay, nookNight].map((src) => getImage({ src, width: SCENE.width, format: 'webp', quality: 80 }))
+);
+
+const shelfBooks = await Promise.all(
+  books.map(async (book, i) => {
+    const href = bookLink(book);
+    return { ...book, href, label: href && linkLabel(href), image: await bookCover(book), tilt: TILTS[i % TILTS.length] };
+  })
+);
+const shelfPodcasts = await Promise.all(
+  podcasts.map(async (podcast) => ({ ...podcast, image: await podcastArtwork(podcast) }))
+);
+
+// Covers shrink as a shelf fills up. Sizes are in cqw (1% of the scene's width), and each shelf
+// reserves room for its chalkboard sign.
+const cqw = (px: number) => (px * 100) / SCENE.width;
+const bookAspects = shelfBooks.map((book) => (book.image ? book.image.width / book.image.height : 2 / 3));
+const bookRoom = cqw(SHELVES.books.right - SHELVES.books.left) - 7 - bookAspects.length;
+const bookSize = Math.min(13.5, bookRoom / (bookAspects.reduce((sum, aspect) => sum + aspect, 0) || 1));
+const recordRoom = cqw(SHELVES.podcasts.right - SHELVES.podcasts.left) - 8.6 - shelfPodcasts.length * 1.2;
+const recordSize = Math.min(12.5, recordRoom / (shelfPodcasts.length * 1.3 || 1));
+if (bookSize < 7 || recordSize < 7) {
+  console.warn('[bookshelf] A shelf is crowded, so its covers are shrinking to fit. It may be time for another shelf.');
+}
+
+const shelfStyle = (shelf: { left: number; right: number; base: number }, size: number) =>
+  `--left:${shelf.left};--right:${shelf.right};--base:${shelf.base};--size:${size.toFixed(2)}cqw`;
+---
+
+<BaseLayout
+  pageTitle={page.pageTitle}
+  description={page.description}
+  image="/og/bookshelf.jpg"
+  breadcrumbs={[{ name: 'Bookshelf' }]}
+>
+  <SectionNav slot="breadcrumb-extra" />
+
+  <section class="relative isolate overflow-hidden py-24 sm:py-32">
+    <AmbientGlow preset="bookshelf" />
+
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <p class="text-base/7 font-semibold text-accent-700 dark:text-accent-500">{page.eyebrow ?? 'Bookshelf'}</p>
+        <h1 class="mt-2 text-4xl font-semibold tracking-tight text-pretty text-gray-900 dark:text-white sm:text-5xl">
+          {page.heading ?? 'Bookshelf'}
+        </h1>
+        {page.subtitle && <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">{page.subtitle}</p>}
+      </div>
+
+      <div class="bookshelf-frame mt-12" data-bookshelf-frame>
+        <div class="bookshelf-scene" style={`--day:url("${day.src}");--night:url("${night.src}")`}>
+          {shelfBooks.length > 0 && (
+            <section class="shelf shelf-books" aria-labelledby="shelf-books" style={shelfStyle(SHELVES.books, bookSize)}>
+              <h2 id="shelf-books" class="chalk-sign">Books</h2>
+              <ul role="list" class="shelf-items">
+                {shelfBooks.map((book) => (
+                  <li class="shelf-item book" tabindex="0" style={`--tilt:${book.tilt}deg`}>
+                    {book.image ? (
+                      <img
+                        class="book-cover"
+                        src={book.image.src}
+                        width={book.image.width}
+                        height={book.image.height}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <span class="book-cover book-plain" aria-hidden="true">{book.title}</span>
+                    )}
+                    <span class="book-spine" aria-hidden="true"></span>
+                    <div class="shelf-card">
+                      <p class="card-title">{book.title}</p>
+                      <p class="card-by">{book.author}</p>
+                      <p class="card-review">{book.review}</p>
+                      {book.href && (
+                        <p class="card-links">
+                          <a class="card-link" href={book.href} target="_blank" rel="noopener noreferrer">{book.label}</a>
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {shelfPodcasts.length > 0 && (
+            <section class="shelf shelf-podcasts" aria-labelledby="shelf-podcasts" style={shelfStyle(SHELVES.podcasts, recordSize)}>
+              <h2 id="shelf-podcasts" class="chalk-sign">Podcasts</h2>
+              <ul role="list" class="shelf-items">
+                {shelfPodcasts.map((podcast) => (
+                  <li class="shelf-item record" tabindex="0" style={podcast.image && `--art:url("${podcast.image.src}")`}>
+                    <span class="record-vinyl" aria-hidden="true"></span>
+                    <span class="record-sleeve" aria-hidden="true">
+                      {podcast.image ? (
+                        <img
+                          src={podcast.image.src}
+                          width={podcast.image.width}
+                          height={podcast.image.height}
+                          alt=""
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <span class="record-plain">{podcast.show}</span>
+                      )}
+                    </span>
+                    <div class="shelf-card">
+                      <p class="card-title">{podcast.title}</p>
+                      <p class="card-by">{podcast.show}</p>
+                      <p class="card-review">{podcast.review}</p>
+                      {(podcast.spotifyUrl || podcast.appleUrl) && (
+                        <p class="card-links">
+                          {podcast.spotifyUrl && (
+                            <a class="card-link" href={podcast.spotifyUrl} target="_blank" rel="noopener noreferrer">Spotify</a>
+                          )}
+                          {podcast.appleUrl && (
+                            <a class="card-link" href={podcast.appleUrl} target="_blank" rel="noopener noreferrer">Apple Podcasts</a>
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {CATS.map((cat) => (
+            <span
+              class="shelf-cat"
+              tabindex="0"
+              role="img"
+              aria-label={`${cat.name}, napping on ${cat.where}`}
+              style={`--x1:${cat.box[0]};--y1:${cat.box[1]};--x2:${cat.box[2]};--y2:${cat.box[3]};--zzz:${cat.zzz}`}
+            >
+              <span class="cat-z" aria-hidden="true">z</span>
+              <span class="cat-z" aria-hidden="true">z</span>
+              <span class="cat-name" aria-hidden="true">Shh, {cat.name} is napping</span>
+            </span>
+          ))}
+        </div>
+      </div>
+      <p class="mt-4 text-center text-sm text-gray-500 dark:text-gray-400 min-[808px]:hidden">
+        Swipe sideways to see the whole shelf.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // On narrow screens the scene scrolls sideways; start at the bookcase rather than the window.
+  for (const frame of document.querySelectorAll<HTMLElement>('[data-bookshelf-frame]')) {
+    if (frame.scrollWidth > frame.clientWidth) frame.scrollLeft = (frame.scrollWidth * 200) / 1536;
+  }
+</script>
+
+<style>
+  .bookshelf-frame {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    border-radius: 1.75rem;
+    box-shadow: 0 24px 60px -24px rgb(60 30 10 / 0.55);
+    scrollbar-width: thin;
+  }
+
+  .bookshelf-scene {
+    position: relative;
+    min-width: 760px;
+    aspect-ratio: 3 / 2;
+    container-type: inline-size;
+    background: var(--day) center / cover no-repeat;
+  }
+
+  :global(.dark) .bookshelf-scene {
+    background-image: var(--night);
+  }
+
+  /* A shelf row stands on a painted shelf; positions are fractions of the 1536×1024 artwork. */
+  .shelf {
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    left: calc(var(--left) / 1536 * 100%);
+    width: calc((var(--right) - var(--left)) / 1536 * 100%);
+    bottom: calc((1024 - var(--base)) / 1024 * 100%);
+  }
+
+  .shelf:hover,
+  .shelf:focus-within {
+    z-index: 3;
+  }
+
+  .chalk-sign {
+    flex: none;
+    display: grid;
+    place-items: center;
+    height: 4.2cqw;
+    margin: 0 0.6cqw 0 0;
+    padding: 0 1.1cqw;
+    rotate: -4deg;
+    transform-origin: bottom left;
+    border: 0.4cqw solid #8a5a32;
+    border-radius: 0.3cqw;
+    background:
+      radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.07), transparent 45%),
+      radial-gradient(circle at 75% 70%, rgb(255 255 255 / 0.05), transparent 40%),
+      #2e3832;
+    box-shadow: 0.35cqw 0.25cqw 0.6cqw rgb(35 18 6 / 0.5), inset 0 0 0.6cqw rgb(0 0 0 / 0.4);
+    color: #f4efe6;
+    font: 700 max(11px, 1.15cqw) / 1 'Chalkboard SE', 'Segoe Print', 'Bradley Hand', cursive;
+  }
+
+  .shelf-items {
+    display: flex;
+    align-items: flex-end;
+    gap: 1cqw;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .shelf-item {
+    position: relative;
+    outline: none;
+  }
+
+  .shelf-item:hover,
+  .shelf-item:focus-within {
+    z-index: 2;
+  }
+
+  /* Contact shadow where an item meets the shelf. */
+  .shelf-item::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: -4%;
+    right: -14%;
+    bottom: -0.45cqw;
+    height: 1cqw;
+    background: radial-gradient(closest-side, rgb(35 18 6 / 0.5), transparent);
+  }
+
+  .shelf-item:focus-visible > .book-cover,
+  .shelf-item:focus-visible > .record-sleeve {
+    outline: 3px solid var(--color-accent-400);
+    outline-offset: 3px;
+  }
+
+  /* Books */
+  .book-cover {
+    display: block;
+    height: var(--size);
+    width: auto;
+    border-radius: 0.15cqw 0.35cqw 0.35cqw 0.15cqw;
+    transform-origin: bottom center;
+    transition: transform 0.25s;
+    filter: sepia(0.14) saturate(0.92) brightness(0.96) drop-shadow(0.45cqw 0.2cqw 0.4cqw rgb(35 18 6 / 0.45));
+  }
+
+  :global(.dark) .book-cover {
+    filter: sepia(0.22) saturate(0.85) brightness(0.8) drop-shadow(0.45cqw 0.2cqw 0.4cqw rgb(10 5 2 / 0.6));
+  }
+
+  .book-plain {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 2 / 3;
+    padding: 0.8cqw;
+    box-sizing: border-box;
+    background: linear-gradient(90deg, #5e2a20, #7a3b2e 12%);
+    color: #f3e3c3;
+    font: 600 max(10px, 1cqw) / 1.25 Georgia, 'Times New Roman', serif;
+    text-align: center;
+  }
+
+  .book-spine {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgb(0 0 0 / 0.32), rgb(255 255 255 / 0.14) 4%, transparent 9%, transparent 92%, rgb(0 0 0 / 0.12));
+    transform-origin: bottom center;
+    transition: transform 0.25s;
+  }
+
+  .book:hover > .book-cover,
+  .book:hover > .book-spine,
+  .book:focus-within > .book-cover,
+  .book:focus-within > .book-spine {
+    transform: translateY(-0.8cqw) rotate(var(--tilt)) scale(1.04);
+  }
+
+  /* Podcasts: a sleeve with its record peeking out; the record slides out and spins on hover. */
+  .record {
+    margin-right: calc(var(--size) * 0.3);
+  }
+
+  .record-sleeve {
+    position: relative;
+    z-index: 2;
+    display: block;
+    width: var(--size);
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 0.35cqw;
+    box-shadow: 0.45cqw 0.3cqw 0.7cqw rgb(35 18 6 / 0.5);
+  }
+
+  .record-sleeve img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(0.12) saturate(0.92) brightness(0.97);
+  }
+
+  :global(.dark) .record-sleeve img {
+    filter: sepia(0.2) saturate(0.85) brightness(0.8);
+  }
+
+  .record-sleeve::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgb(255 255 255 / 0.16), transparent 42%);
+  }
+
+  .record-plain {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    padding: 1cqw;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #d9b98f, #b98a5c);
+    color: #3b2a1e;
+    font: 700 max(10px, 1.1cqw) / 1.2 ui-sans-serif, system-ui, sans-serif;
+    text-align: center;
+  }
+
+  .record-vinyl {
+    position: absolute;
+    z-index: 1;
+    top: 4%;
+    left: calc(var(--size) * 0.38);
+    width: calc(var(--size) * 0.9);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, transparent 0 17%, #121216 17.5% 19%, transparent 19.5%),
+      repeating-radial-gradient(circle, #1d1d23 0 0.14cqw, #2a2a33 0.14cqw 0.28cqw);
+    box-shadow: 0.2cqw 0.3cqw 0.7cqw rgb(0 0 0 / 0.4);
+    transition: translate 0.5s;
+  }
+
+  .record-vinyl::before,
+  .record-vinyl::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+  }
+
+  .record-vinyl::before {
+    inset: 32%;
+    background: var(--art, #c58a55) center / cover;
+  }
+
+  .record-vinyl::after {
+    inset: 48.5%;
+    background: #f5e6d3;
+  }
+
+  .record:hover > .record-vinyl,
+  .record:focus-within > .record-vinyl {
+    translate: calc(var(--size) * 0.4) 0;
+    animation: spin 2.4s linear infinite;
+  }
+
+  /* Review card: below the books, above the records, so it stays inside the scene. */
+  .shelf-card {
+    position: absolute;
+    z-index: 5;
+    left: 50%;
+    width: 15rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid #ecd9c2;
+    border-radius: 0.75rem;
+    background: #fffaf2;
+    box-shadow: 0 14px 30px rgb(60 30 10 / 0.3);
+    color: #3b2a1e;
+    text-align: left;
+    opacity: 0;
+    pointer-events: none;
+    translate: -50% 0.4rem;
+    transition: opacity 0.2s, translate 0.2s;
+  }
+
+  .shelf-books .shelf-card {
+    top: calc(100% + 1.2cqw);
+  }
+
+  .shelf-podcasts .shelf-card {
+    bottom: calc(100% + 1.2cqw);
+    translate: -50% -0.4rem;
+  }
+
+  /* Bridges the gap so the card stays open while the pointer moves onto it. */
+  .shelf-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: calc(1.2cqw + 2px);
+  }
+
+  .shelf-books .shelf-card::before {
+    bottom: 100%;
+  }
+
+  .shelf-podcasts .shelf-card::before {
+    top: 100%;
+  }
+
+  .shelf-item:hover > .shelf-card,
+  .shelf-item:focus-within > .shelf-card {
+    opacity: 1;
+    pointer-events: auto;
+    translate: -50% 0;
+  }
+
+  :global(.dark) .shelf-card {
+    border-color: #4f3d2e;
+    background: #2a2019;
+    color: #f3e9dc;
+  }
+
+  .card-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .card-by {
+    margin-top: 0.125rem;
+    font-size: 0.75rem;
+    color: #80695a;
+  }
+
+  :global(.dark) .card-by {
+    color: #c8b5a1;
+  }
+
+  .card-review {
+    margin-top: 0.5rem;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+
+  .card-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.65rem;
+  }
+
+  .card-link {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: var(--color-accent-100);
+    color: var(--color-accent-800);
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: background-color 0.15s;
+  }
+
+  .card-link:hover {
+    background: var(--color-accent-200);
+  }
+
+  :global(.dark) .card-link {
+    background: rgb(156 137 230 / 0.18);
+    color: var(--color-accent-200);
+  }
+
+  :global(.dark) .card-link:hover {
+    background: rgb(156 137 230 / 0.3);
+  }
+
+  /* Cats are painted into the scene; these hotspots add their names and a little snoring. */
+  .shelf-cat {
+    position: absolute;
+    z-index: 1;
+    left: calc(var(--x1) / 1536 * 100%);
+    top: calc(var(--y1) / 1024 * 100%);
+    width: calc((var(--x2) - var(--x1)) / 1536 * 100%);
+    height: calc((var(--y2) - var(--y1)) / 1024 * 100%);
+    border-radius: 40%;
+    outline: none;
+  }
+
+  .shelf-cat:focus-visible {
+    outline: 2px dashed rgb(255 250 242 / 0.85);
+    outline-offset: 2px;
+  }
+
+  .cat-z {
+    position: absolute;
+    left: var(--zzz);
+    top: 4%;
+    color: #8a6446;
+    font: 700 max(11px, 1.1cqw) / 1 ui-sans-serif, system-ui, sans-serif;
+    opacity: 0;
+    animation: snooze 3.6s ease-in-out infinite;
+  }
+
+  .cat-z + .cat-z {
+    left: calc(var(--zzz) + 5%);
+    top: -4%;
+    font-size: max(9px, 0.85cqw);
+    animation-delay: -1.8s;
+  }
+
+  :global(.dark) .cat-z {
+    color: #e9c99a;
+  }
+
+  .cat-name {
+    position: absolute;
+    bottom: calc(100% + 0.4rem);
+    left: 50%;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    background: #fffaf2;
+    box-shadow: 0 4px 10px rgb(60 30 10 / 0.28);
+    color: #3b2a1e;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    translate: -50% 0.25rem;
+    transition: opacity 0.2s, translate 0.2s;
+  }
+
+  .shelf-cat:hover .cat-name,
+  .shelf-cat:focus .cat-name {
+    opacity: 1;
+    translate: -50% 0;
+  }
+
+  @keyframes spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  @keyframes snooze {
+    0% {
+      opacity: 0;
+      translate: 0 0;
+    }
+    30% {
+      opacity: 0.9;
+    }
+    100% {
+      opacity: 0;
+      translate: 0.8cqw -1.6cqw;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .record:hover > .record-vinyl,
+    .record:focus-within > .record-vinyl {
+      animation: none;
+    }
+
+    .cat-z {
+      animation: none;
+      opacity: 0.8;
+    }
+  }
+</style>

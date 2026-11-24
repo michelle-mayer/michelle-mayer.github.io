@@ -320,6 +320,18 @@ export default defineConfig({
     },
   },
   site: themeConfig.site.url,
+  image: {
+    // Bookshelf covers and podcast artwork are downloaded and optimized at build time.
+    remotePatterns: [
+      { protocol: 'https', hostname: 'covers.openlibrary.org' },
+      // Open Library redirects many covers to archive.org and its mirror subdomains.
+      { protocol: 'https', hostname: 'archive.org' },
+      { protocol: 'https', hostname: '**.archive.org' },
+      { protocol: 'https', hostname: '**.mzstatic.com' },
+      { protocol: 'https', hostname: '**.spotifycdn.com' },
+      { protocol: 'https', hostname: 'i.scdn.co' },
+    ],
+  },
   markdown: {
     syntaxHighlight: {
       type: 'shiki',

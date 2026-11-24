@@ -162,6 +162,16 @@ export async function getStaticPaths() {
       ),
       theme: 'lavender',
     },
+    bookshelf: {
+      badge: 'Bookshelf',
+      ...pageMeta(
+        'bookshelf',
+        'Bookshelf',
+        'Books and podcasts I keep recommending.',
+        ['Books', 'Podcasts', 'Recommendations'],
+      ),
+      theme: 'lavender',
+    },
     default: {
       badge: siteConfig.author.jobTitle,
       title: `${siteConfig.author.name} — ${siteConfig.site.domain}`,

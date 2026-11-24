@@ -207,6 +207,7 @@ export const themeMechanics: ThemeMechanicsConfig = {
       { label: 'About', href: '/about/', enabled: true },
       { label: 'Now', href: '/now/', enabled: true },
       { label: 'Blog', href: '/blog/', enabled: true, activePrefixes: ['/tags'] },
+      { label: 'Bookshelf', href: '/bookshelf/', enabled: true },
       { label: 'Photography', href: '/photography/', enabled: true },
       { label: 'Log', href: '/log/', enabled: true },
       { label: 'Contact', href: '/contact/', enabled: true },

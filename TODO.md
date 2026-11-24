@@ -27,6 +27,12 @@ Repo-wide task tracker. Check items off with `[x]`. Move done items to **Done** 
 - [ ] Finish "[Draft] Lessons I learned at Microsoft" (`lessonsFromMicrosoft.md`).
 - [ ] Finish "[Draft] Words of Wisdom from a Zillennial in Tech" (`wisdomForNewGrads.md`).
 - [ ] Finish "[Draft] A Software Engineer's Perspective: AI Gripes and Praises" (`aiGripesAndPraises.md`).
+- [ ] Finish "[Draft] Tips for people pleasers in tech" (`peoplePleasersInTech.md`).
+
+## Bookshelf
+
+- [ ] Write the reviews for the bookshelf picks in `src/data/bookshelf.ts`, and confirm or swap the two starter books (from the Zillennial draft).
+- [ ] Add a Spotify link for "The Birth of Emoji" if it's on Spotify.
 
 ## Later / ideas
 

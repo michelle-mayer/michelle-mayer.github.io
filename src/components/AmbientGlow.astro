@@ -14,6 +14,7 @@ export type GlowPreset =
   | 'contact'
   | 'tags-index'
   | 'tag-detail'
+  | 'bookshelf'
   | '404'
   | 'blog-post';
 
@@ -72,6 +73,7 @@ const ATMOSPHERES: Record<GlowPreset, GlowAtmosphere> = {
   contact: { placement: 'top', ...blend('sky', '28% 12%', 'lavender', '74% 10%'), fadeMask: TOP_FADE },
   'tags-index': { placement: 'top', ...blend('lavender', '30% 12%', 'sky', '74% 10%'), fadeMask: TOP_FADE },
   'tag-detail': { placement: 'top', ...blend('lavender', '28% 12%', 'sky', '74% 10%'), fadeMask: TOP_FADE },
+  bookshelf: { placement: 'top', ...blend('lavender', '28% 12%', 'blush', '74% 10%'), fadeMask: TOP_FADE },
   '404': { placement: 'top', ...blend('blush', '34% 16%', 'lavender', '68% 18%'), fadeMask: TOP_FADE },
   'blog-post': { placement: 'top', ...blend('lavender', '28% 10%', 'blush', '70% 14%'), fadeMask: SOFT_TOP_FADE },
 };

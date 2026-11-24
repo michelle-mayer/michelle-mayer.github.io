@@ -23,11 +23,15 @@ starting their tech journey.
 - hsa 
 
 ## You will get lots of unsolicited advice
-**Oh the irony of this appearing in an advice article**. Starting off your career, tons of people will offer varying degrees of advice-- most of it helpful. Although, if I had to listen to someone mansplain basic investing one more time... :) 
+**Oh the irony of this appearing in an advice article**... 😋 Starting off your career, tons of people will offer varying degrees of advice. Of course, most (if not all) of the people offering it are trying to be helpful. But not all of it will suit your path or preferences. This is fine! Always do your own research and consider the potential biases of the person **giving** the advice. For example, if you're in your 20s, I'd bet a lot of money that someone at some point has advised you to buy a home as early as you can. 
+
+A bunch of other people told me to invest early. Now this is 100% sound advice IMO. 
+
+Although, if I had to listen to someone mansplain basic investing one more time... :) 
 - advice on buying a house, company hopping, etc
 
 ## Sitting is the new smoking
-I saw this quippy piece of advice a few years back and wrote it on a sticky note for my monitor. 
+I saw this quippy piece of advice a few years back and wrote it on a sticky note for my monitor. It's funny telling young people that they need to stand more often because you'd think the affects of not are way more damaging for someone older. 
 
 ## Vulnerability in tech is a rare gem
 I don't want to get on a soapbox about gender roles in tech
@@ -36,6 +40,8 @@ USE YOUR MENTAL HEALTH DAYS
 if comfortable, be open about therapy
 
 ## Accountability and shame are two different things
+ When problems are shared, the question after
+something breaks is "How do we fix it?" instead of "Whose fault is it?"
 
 Accountability sounds like, "I made a mistake. Here's what happened, and here's
 how I'll fix it." Shame sounds like, "I *am* the mistake."
@@ -55,26 +61,25 @@ identifiable colleagues, or confidential details.]
 
 [What you do now: How you respond to your own mistakes, or to a teammate's.]
 
-## It's not me, it's we
+## Ask for help sooner
 
-It's easy to treat a career like a solo climb: my code, my review, my promotion.
-But when I look at the work I'm proudest of, almost none of it was mine alone.
-
-Thinking in "we" changes how a team works. When wins are shared, people help each
-other instead of competing. When problems are shared, the question after
-something breaks is "How do we fix it?" instead of "Whose fault is it?"
-
-[Your story: When did this click for you? Maybe a teammate who unblocked you, a
-launch that took the whole team, or the moment you realized that helping someone
-else succeed was some of your best work.]
-
-[What you do now: How you show up as part of a "we," like asking for help sooner,
-sharing credit, pairing, or mentoring.]
 
 ## Feedback without tangible suggestions will be viewed as unhelpful
 
 ## You will learn what your personality needs from a job 
+
+
 (just earning a paycheck, large customer usage, just learning new things, etc)
+
+## It's okay if you're not a startup founder by 25
+To some, it might sound ridiculous to feel like you're "falling behind" in your twenties, but the tech space is a unique one. Bill Gates was only 19 when he cofounded Microsoft. Mark Zuckerberg founded Facebook at 19;  Evan Spiegel cofounded Snapchat at 21... ok let's stop, I'm getting imposter syndrome. 
+
+Snapchat, Instagram, Canva, Stripe, Spotify, Dropbox, Tinder, Bumble, Pinterest, Airbnb, GOOGLE...
+
+Bezos was 41 when Amazon Prime launched 
+1
+.
+Jobs was 52 when the iPhone arrived 
 
 ## Rest is part of the work
 

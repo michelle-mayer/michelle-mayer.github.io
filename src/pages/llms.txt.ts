@@ -67,6 +67,7 @@ export async function GET(context: APIContext) {
     showBlog ? `- [Blog](${abs('/blog/')}): Writing, ideas, and articles.` : '',
     showPhotography ? `- [Photography](${abs('/photography/')}): Photographs and their stories.` : '',
     showTags ? `- [Tags & Topics](${abs('/tags/')}): Explore content by topic.` : '',
+    `- [Bookshelf](${abs('/bookshelf/')}): Books and podcasts worth recommending.`,
     showContact ? `- [Contact](${abs('/contact/')}): Public contact links and social channels.` : '',
   ].filter(Boolean);
 
