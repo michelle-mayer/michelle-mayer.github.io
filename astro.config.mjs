@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { remarkAlerts } from './src/plugins/remark-alerts.mjs';
+import { remarkHighlight } from './src/plugins/remark-highlight.mjs';
 import { remarkYouTube } from './src/plugins/remark-youtube.mjs';
 import { remarkInlineSvg, INLINE_SVG_DIGEST } from './src/plugins/remark-inline-svg.mjs';
 import { THUMB_CACHE_DIR, THUMB_PUBLIC_PREFIX, THUMB_FILENAME_RE, buildThumbnailBuffer, remoteThumbnailUrl } from './src/utils/youtube-thumbnail.mjs';
@@ -338,7 +339,12 @@ export default defineConfig({
       excludeLangs: ['mermaid'],
     },
     processor: unified({
-      remarkPlugins: [[remarkAlerts, { version: 'v2-note' }], remarkYouTube, [remarkInlineSvg, { digest: INLINE_SVG_DIGEST }]],
+      remarkPlugins: [
+        [remarkAlerts, { version: 'v3-pull-quote' }],
+        [remarkHighlight, { version: 'v1' }],
+        remarkYouTube,
+        [remarkInlineSvg, { digest: INLINE_SVG_DIGEST }],
+      ],
       rehypePlugins: [
         [
           rehypeMermaid,

@@ -281,6 +281,26 @@ graphic's own `<style>` can switch colors with the site's dark mode, e.g.
 [microsoft-levels.svg](./src/images/graphics/microsoft-levels.svg) for an
 example. Restart `npm run dev` after editing a graphic to see the change.
 
+### Highlights and pull quotes
+
+To make a key phrase stand out, wrap it in double equals signs. It gets a
+lavender highlighter stroke that draws in as readers scroll to it:
+
+```md
+However, ==simply demanding ROI doesn't mean AI tools enable it.==
+```
+
+For the one line you most want readers to remember, use a pull quote. It's set
+large and centered between paragraphs:
+
+```md
+> [!QUOTE]
+> Rest isn't a reward for finishing the work. It's part of doing the work well.
+```
+
+Use them sparingly: a highlight or two per section, and a pull quote or two per
+post. A normal `>` blockquote still renders as a regular quote.
+
 Before publishing v1:
 
 - Replace `Your location`, `hello@example.com`, and the author tagline

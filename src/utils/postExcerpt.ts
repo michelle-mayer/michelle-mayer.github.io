@@ -39,6 +39,7 @@ export function getFirstParagraph(body?: string, minChars = 200): string {
       .replace(/<[^>]+>/g, '')
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
       .replace(/[*_`]/g, '')
+      .replace(/(?<!=)==(?!=)/g, '')
       .replace(/\s+/g, ' ')
       .trim();
 
