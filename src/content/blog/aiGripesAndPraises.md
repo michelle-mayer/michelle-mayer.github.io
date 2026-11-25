@@ -5,6 +5,10 @@ pubDate: "2026-11-13"
 category: "tech"
 tags: ["ai", "perspective", "pro/con"]
 sectionNav: "h2"
+disclaimer: |
+  These views are my own and don't represent my employer. Please also note that I am sharing my personal experience so other devs experiencing similar things feel less alone. I am not intending to blashpheme my employer, as many of these issues are industry-wide currently and an unavoidable side-affect of an innovation wave.
+
+  I wanted to keep this article focused primarily on developer experience, so I avoided mentioning other concerning societal implications of superintelligence such as deepfakes, genai spam content, mental health, weapons development,  artistic implications, etc. Those are real concerns that we must keep an eye on.
 ---
 Everyone inside and outside of tech seems to have an opinion about AI right now. I'm lucky to have a front seat to this transformation.
 
@@ -30,7 +34,7 @@ It can be an act of "bravery" to simply admit as a dev these days that you feel 
 ### Death of workplace culture
 In response to this pressure, employees are discarding anything that is a hindrance to direct productivity. Asking someone how their day is going when pinging them in Teams used to be common courtesy, but now people are often too mentally overwhelmed or output-focused to participate in politeness. 
 
-Employees haven't become this way of their own accord, this behavior is in direct (albeit probably subconscious) response to top-down deprioritization of workplace culture. 
+Employees haven't become this way of their own accord, this behavior is in direct (albeit probably subconscious) response to top-down deprioritization of workplace culture. The past few years of layoffs have rid of many of the local campus leaders that previously led employee morale events, community volunteering events, and Employee Resource Groups. When I joined Microsoft, there was a section on our bi-annual performance writeups where employees were asked to list their contributions toward building a more diverse and inclusive Microsoft.  
 
 Triangle of quality, speed, work life balance
 
@@ -80,7 +84,3 @@ Healthcare, mathematics, etc
 
 Hopefully this was food for thought. Drop your experiences below! 👇
 
-> [!DISCLAIMER]
-> These views are my own and don't represent my employer. Please also note that I am sharing my personal experience so other devs experiencing similar things feel less alone. I am not intending to blashpheme my employer, as many of these issues are industry-wide currently and an unavoidable side-affect of an innovation wave.
->
-> I wanted to keep this article focused primarily on developer experience, so I avoided mentioning other concerning societal implications of superintelligence such as deepfakes, genai spam content, mental health, weapons development,  artistic implications, etc. Those are real concerns that we must keep an eye on.

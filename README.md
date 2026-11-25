@@ -313,12 +313,15 @@ large and centered between paragraphs:
 Use them sparingly: a highlight or two per section, and a pull quote or two per
 post. A normal `>` blockquote still renders as a regular quote.
 
-For fine print such as an employer disclaimer, use `> [!DISCLAIMER]`. It renders
-as small, muted text:
+For fine print such as an employer disclaimer, add `disclaimer` to the post's
+frontmatter. It appears in small, muted text below the tags at the end of the
+post. Separate paragraphs with a blank line:
 
-```md
-> [!DISCLAIMER]
-> These views are my own and don't represent my employer.
+```yaml
+disclaimer: |
+  These views are my own and don't represent my employer.
+
+  A second paragraph, if you need one.
 ```
 
 Before publishing v1:

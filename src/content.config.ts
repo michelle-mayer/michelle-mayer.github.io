@@ -60,6 +60,9 @@ const blog = defineCollection({
 			comments: z.boolean().optional(),
 			// Optional LinkedIn post for this article; shows a "Discuss on LinkedIn" link
 			linkedinUrl: z.url().optional(),
+			// Optional fine print, like "These views are my own", in small text below the tags.
+			// Separate paragraphs with a blank line.
+			disclaimer: z.string().trim().min(1).optional(),
 		}),
 });
 

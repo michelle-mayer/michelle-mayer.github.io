@@ -30,7 +30,7 @@ export function remarkAlerts() {
       if (firstChild?.type === 'paragraph') {
         const firstText = firstChild.children?.[0];
         if (firstText?.type === 'text') {
-          const match = firstText.value.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION|QUOTE|DISCLAIMER)\](?:\r?\n|\s+|$)/i);
+          const match = firstText.value.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION|QUOTE)\](?:\r?\n|\s+|$)/i);
           if (match) {
             const type = match[1].toLowerCase();
             const config = ALERT_CONFIG[type] || {
@@ -52,13 +52,6 @@ export function remarkAlerts() {
             // blockquote, without an alert header.
             if (type === 'quote') {
               node.data.hProperties = { className: ['pull-quote'] };
-              return;
-            }
-
-            // `> [!DISCLAIMER]` is fine print, e.g. "These views are my own", in small, muted text.
-            if (type === 'disclaimer') {
-              node.data.hName = 'div';
-              node.data.hProperties = { className: ['post-disclaimer'], role: 'note' };
               return;
             }
 

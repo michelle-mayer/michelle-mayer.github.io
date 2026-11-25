@@ -65,6 +65,7 @@ export function computeBlogCacheKey(
   hash.update((post.data.tags || []).join(','));
   hash.update(post.data.heroImage ? JSON.stringify(post.data.heroImage) : '');
   hash.update(post.data.heroImageAlt || '');
+  hash.update(post.data.disclaimer || '');
   hash.update(
     JSON.stringify([
       post.data.showSections ?? null,

@@ -341,7 +341,7 @@ export default defineConfig({
     },
     processor: unified({
       remarkPlugins: [
-        [remarkAlerts, { version: 'v4-disclaimer' }],
+        [remarkAlerts, { version: 'v3-pull-quote' }],
         [remarkHighlight, { version: 'v1' }],
         remarkYouTube,
         [remarkInlineSvg, { digest: INLINE_SVG_DIGEST }],

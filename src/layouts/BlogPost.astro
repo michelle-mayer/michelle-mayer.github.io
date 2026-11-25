@@ -60,9 +60,15 @@ const {
   numberedHeadings = false,
   comments = true,
   linkedinUrl,
+  disclaimer,
   hasMermaid = true,
   hasYouTube = true,
 } = Astro.props;
+
+const disclaimerParagraphs = (disclaimer ?? '')
+  .split(/\n\s*\n/)
+  .map((paragraph) => paragraph.trim())
+  .filter(Boolean);
 
 // With `numberedHeadings`, CSS numbers each h2 in order; the section pills carry the same numbers.
 const h2Numbers = new Map(headings.filter((h) => h.depth === 2).map((h, i) => [h.slug, i + 1]));
@@ -145,6 +151,11 @@ const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
         <slot />
         <div class="not-prose mt-8 border-t border-gray-200 dark:border-gray-800 pt-6">
           <TagList tags={tags} showLabel={true} />
+          {disclaimerParagraphs.length > 0 && (
+            <div class="mt-6 space-y-2 text-[0.8125rem]/6 text-gray-500 dark:text-gray-400">
+              {disclaimerParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+            </div>
+          )}
         </div>
       </div>
 
@@ -654,26 +665,6 @@ const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
 
   :where(.dark, .dark *) .prose blockquote.pull-quote::before {
     color: var(--color-accent-700);
-  }
-
-  /* Disclaimers (`> [!DISCLAIMER]`, from `remark-alerts.mjs`): small, muted fine print. */
-  .prose .post-disclaimer {
-    margin-top: 2.5em;
-    color: var(--color-gray-500);
-    font-size: 0.8125rem;
-    line-height: 1.6;
-  }
-
-  .prose .post-disclaimer p {
-    margin: 0 0 0.75em;
-  }
-
-  .prose .post-disclaimer p:last-child {
-    margin-bottom: 0;
-  }
-
-  :where(.dark, .dark *) .prose .post-disclaimer {
-    color: var(--color-gray-400);
   }
 
   /* Highlights (`==a key phrase==`, from `remark-highlight.mjs`): a lavender highlighter stroke
