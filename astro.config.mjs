@@ -10,6 +10,7 @@ import { remarkAlerts } from './src/plugins/remark-alerts.mjs';
 import { remarkHighlight } from './src/plugins/remark-highlight.mjs';
 import { remarkYouTube } from './src/plugins/remark-youtube.mjs';
 import { remarkInlineSvg, INLINE_SVG_DIGEST } from './src/plugins/remark-inline-svg.mjs';
+import { remarkImageCaptions } from './src/plugins/remark-image-captions.mjs';
 import { THUMB_CACHE_DIR, THUMB_PUBLIC_PREFIX, THUMB_FILENAME_RE, buildThumbnailBuffer, remoteThumbnailUrl } from './src/utils/youtube-thumbnail.mjs';
 import { rehypeMermaidA11y } from './src/plugins/rehype-mermaid-a11y.mjs';
 import { rehypeTechTooltips, TECH_TOOLTIPS_DIGEST } from './src/plugins/rehype-tech-tooltips.mjs';
@@ -340,10 +341,12 @@ export default defineConfig({
     },
     processor: unified({
       remarkPlugins: [
-        [remarkAlerts, { version: 'v3-pull-quote' }],
+        [remarkAlerts, { version: 'v4-disclaimer' }],
         [remarkHighlight, { version: 'v1' }],
         remarkYouTube,
         [remarkInlineSvg, { digest: INLINE_SVG_DIGEST }],
+        // After remarkInlineSvg, which captions SVG graphics itself.
+        [remarkImageCaptions, { version: 'v1' }],
       ],
       rehypePlugins: [
         [

@@ -66,8 +66,14 @@
   height: auto;
 }
 
-.svg-figure figcaption {
+.svg-figure figcaption,
+.image-figure figcaption {
   text-align: center;
+}
+
+/* Captioned images, from `remark-image-captions.mjs`. Small images (like most GIFs) are centered. */
+.image-figure img {
+  margin-inline: auto;
 }
 
 /* ==========================================================================

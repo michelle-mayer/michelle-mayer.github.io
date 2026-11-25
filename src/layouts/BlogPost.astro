@@ -656,6 +656,26 @@ const ogImage = heroImage || (id ? `/og/blog/${id}.jpg` : '/og/blog.jpg');
     color: var(--color-accent-700);
   }
 
+  /* Disclaimers (`> [!DISCLAIMER]`, from `remark-alerts.mjs`): small, muted fine print. */
+  .prose .post-disclaimer {
+    margin-top: 2.5em;
+    color: var(--color-gray-500);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+  }
+
+  .prose .post-disclaimer p {
+    margin: 0 0 0.75em;
+  }
+
+  .prose .post-disclaimer p:last-child {
+    margin-bottom: 0;
+  }
+
+  :where(.dark, .dark *) .prose .post-disclaimer {
+    color: var(--color-gray-400);
+  }
+
   /* Highlights (`==a key phrase==`, from `remark-highlight.mjs`): a lavender highlighter stroke
      that `setupHighlights()` draws in as it scrolls into view. */
   .prose mark {

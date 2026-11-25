@@ -20,6 +20,7 @@ const BLOG_TEMPLATE_DIGEST = (() => {
     'src/styles/global.css',
     'src/plugins/remark-alerts.mjs',
     'src/plugins/remark-highlight.mjs',
+    'src/plugins/remark-image-captions.mjs',
     'src/plugins/remark-inline-svg.mjs',
     'src/plugins/rehype-mermaid-a11y.mjs',
     'src/components/scripts/TechTooltipsScript.astro',

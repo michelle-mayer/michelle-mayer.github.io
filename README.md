@@ -265,6 +265,18 @@ links to an item keep working. Every `##` heading gets a number, so end the post
 with plain paragraphs rather than another `##` section, and use `###` for
 subheadings inside an item.
 
+### Images in posts
+
+Save an image (GIFs work too) in [src/images/](./src/images/) and add it to a
+post on its own line. The alt text describes the image for screen readers, and
+optional quoted text after the path becomes a caption under the image:
+
+```md
+![Describe what the image shows.](../../images/my-image.gif "Optional caption")
+```
+
+The build optimizes images when it publishes the site; GIFs stay animated.
+
 ### Graphics in posts
 
 Save an SVG graphic in [src/images/graphics/](./src/images/graphics/) and add it
@@ -300,6 +312,14 @@ large and centered between paragraphs:
 
 Use them sparingly: a highlight or two per section, and a pull quote or two per
 post. A normal `>` blockquote still renders as a regular quote.
+
+For fine print such as an employer disclaimer, use `> [!DISCLAIMER]`. It renders
+as small, muted text:
+
+```md
+> [!DISCLAIMER]
+> These views are my own and don't represent my employer.
+```
 
 Before publishing v1:
 
